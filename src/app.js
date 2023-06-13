@@ -1,6 +1,5 @@
 import express from 'express'
 import createError from 'http-errors'
-
 import router from '@/routes/routes'
 
 const app = express()
