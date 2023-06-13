@@ -1,0 +1,13 @@
+{
+	"diff": true,
+	"extension": ["js"],
+	"package": "./package.json",
+	"reporter": "spec",
+	"retries": 1,
+	"slow": 75,
+	"timeout": 2000,
+	"color": true,
+	"watch-files": ["*-test.js"],
+	"spec": ["*-test.js"],
+	"watch-ignore": ["node_modules", ".git", "dist"]
+}

@@ -1,0 +1,10 @@
+node_modules
+dist
+.idea
+
+*.md
+!/README.md
+
+package-lock.json
+
+

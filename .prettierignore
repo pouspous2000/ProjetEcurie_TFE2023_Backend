@@ -1,0 +1,23 @@
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+
+# dotenv files
+*.env
+
+# eslint config
+.eslintrc.js
+.eslintignore
+
+# prettier config
+.prettierrc
+.prettierignore
+
+
+# package
+package.json
+package-lock.json
+
+*.md
+

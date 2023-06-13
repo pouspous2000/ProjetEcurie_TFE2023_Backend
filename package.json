@@ -1,0 +1,49 @@
+{
+  "name": "stable_api",
+  "version": "1.0.0",
+  "description": "stable_api",
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "start": "NODE_ENV=PROD node ./dist/bin/www.js",
+    "dev": "NODE_ENV=DEV  nodemon --ignore dist/ --ignore test/ --exec babel-node ./src/bin/www.js",
+    "lint": "eslint .",
+    "prettier": "prettier . --check",
+    "prettier:fix": "npm run prettier -- --write",
+    "test": "NODE_ENV=TEST mocha . --require @babel/register --exit",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pouspous2000/ProjetEcurie_TFE2023_Backend.git"
+  },
+  "author": "pouspous2000",
+  "bugs": {
+    "url": "https://github.com/pouspous2000/ProjetEcurie_TFE2023_Backend/issues"
+  },
+  "homepage": "https://github.com/pouspous2000/ProjetEcurie_TFE2023_Backend#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-errors": "^2.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.5",
+    "@babel/core": "^7.22.5",
+    "@babel/node": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "@babel/register": "^7.22.5",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "chai": "^4.3.7",
+    "eslint": "^8.42.0",
+    "eslint-import-resolver-babel-module": "^5.3.2",
+    "eslint-plugin-import": "^2.27.5",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.8"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
+  }
+}
