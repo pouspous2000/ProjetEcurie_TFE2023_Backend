@@ -6,5 +6,6 @@ const HorseContributorJobRouter = Router()
 const prefix = 'horse_contributor_jobs'
 HorseContributorJobRouter.get(`/${prefix}`, HorseContributorJobController.index)
 HorseContributorJobRouter.get(`/${prefix}/:id`, HorseContributorJobController.show)
+HorseContributorJobRouter.delete(`/${prefix}/:id`, HorseContributorJobController.delete)
 
 export default HorseContributorJobRouter

@@ -32,4 +32,11 @@ describe('HorseContributorJob Module', function () {
 		response.body.should.have.property('createdAt')
 		response.body.should.have.property('updatedAt')
 	})
+
+	it('delete', async function () {
+		const veterinary = await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
+
+		const response = await chai.request(app).delete(`${routePrefix}/${veterinary.id}`)
+		response.should.have.status(204)
+	})
 })
