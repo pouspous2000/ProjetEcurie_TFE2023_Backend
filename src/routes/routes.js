@@ -1,10 +1,12 @@
 import { Router } from 'express'
-import i18next from '../../i18n'
+import swaggerUi from 'swagger-ui-express'
+import swaggerDocument from '../../swagger.json'
+import HorseContributorJobRouter from '@/modules/horse-contributor-job/routes'
 
 const router = Router()
+router.use(HorseContributorJobRouter)
 
-router.get('/', (request, response) => {
-	return response.send(i18next.t('hello_world'))
-})
+router.use('/docs', swaggerUi.serve)
+router.get('/docs', swaggerUi.setup(swaggerDocument))
 
 export default router

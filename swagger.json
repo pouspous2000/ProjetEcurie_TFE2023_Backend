@@ -1,0 +1,165 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "stable api",
+    "version": "1.0.0",
+    "title": "STABLE API"
+  },
+  "tags": [
+    {
+      "name": "auth"
+    },
+    {
+      "name": "HorseContributorJob"
+    }
+  ],
+  "securityDefinitions": {
+    "bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+    }
+  },
+  "paths": {
+    "/horse_contributor_jobs": {
+      "get": {
+        "summary": "List all horseContributor Jobs",
+        "parameters": [],
+        "tags": [
+          "HorseContributorJob"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/HorseContributorJobList"
+            }
+          }
+        }
+      }
+    },
+    "/horse_contributor_jobs/{id}": {
+      "get": {
+        "summary": "Get horseContributorJob by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "horseContributorJob id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/HorseContributorJob"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "HorseContributorJob"
+        ],
+        "description": "Get horseContributorJob by id"
+      }
+    }
+  },
+  "definitions": {
+    "ErrorResponse": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "UnprocessableEntityResponse": {
+      "type": "object",
+      "required": [
+        "message",
+        "errors"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UnprocessableEntityResponseItem"
+          }
+        }
+      }
+    },
+    "UnprocessableEntityResponseItem": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "param": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        }
+      }
+    },
+    "HorseContributorJob": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "HorseContributorJobList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
