@@ -4,6 +4,9 @@ import helmet from 'helmet'
 import cors from 'cors'
 import router from '@/routes/routes'
 import i18next from '../i18n'
+import expressWinston from 'express-winston'
+import { requestLogger } from '@/loggers/loggers'
+import { errorHandlerLogger } from '@/loggers/loggers'
 
 import { Dotenv } from '@/utils/Dotenv'
 import { generalExceptLoginRateLimiter } from '@/middlewares/rate-limiter'
@@ -21,14 +24,28 @@ app.use(cors(corsConfig))
 if (environment.environment === 'PROD') {
 	app.use(generalExceptLoginRateLimiter)
 }
+app.use(
+	expressWinston.logger({
+		winstonInstance: requestLogger,
+		statusLevels: true,
+	})
+)
 
 //routes
 app.use(router)
 
-// 404 and error handlers
+// 404 handler
 app.use((req, res, next) => {
 	next(createError(404, i18next.t('common_404')))
 })
+
+// middleware to log unhandled errors, position if not a choice
+app.use(
+	expressWinston.errorLogger({
+		winstonInstance: errorHandlerLogger,
+		statusLevels: true,
+	})
+)
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, request, response, _next) => {
