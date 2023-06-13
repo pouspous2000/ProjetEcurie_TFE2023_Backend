@@ -13,7 +13,7 @@ export const EnvironmentEnum = new Enum(
 )
 
 export class Dotenv {
-	// notice it is NOT a "strict" singleton as it is always possible to change the class from outside of its scope
+	// notice it is NOT a "strict" singleton as it is always possible to change the class from outside its scope
 	static instance = undefined
 
 	constructor(environment = process.env.NODE_ENV) {
