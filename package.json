@@ -10,7 +10,15 @@
     "prettier": "prettier . --check",
     "prettier:fix": "npm run prettier -- --write",
     "test": "NODE_ENV=TEST mocha . --require @babel/register --exit",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "db:migrate:dev": "NODE_ENV=DEV npx sequelize-cli db:migrate",
+    "db:rollback:dev": "NODE_ENV=DEV npx sequelize-cli db:migrate:undo:all",
+    "db:seed:dev": "NODE_ENV=DEV npx sequelize-cli db:seed:all",
+    "db:unseed:dev": "NODE_ENV=DEV npx sequelize-cli db:seed:undo:all",
+    "db:migrate:test": "NODE_ENV=TEST npx sequelize-cli db:migrate",
+    "db:rollback:test": "NODE_ENV=TEST npx sequelize-cli db:migrate:undo:all",
+    "db:seed:test": "NODE_ENV=TEST npx sequelize-cli db:seed:all",
+    "db:unseed:test": "NODE_ENV=TEST npx sequelize-cli db:seed:undo:all"
   },
   "repository": {
     "type": "git",
@@ -42,6 +50,7 @@
     "@babel/node": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
     "@babel/register": "^7.22.5",
+    "@faker-js/faker": "^8.0.2",
     "babel-plugin-module-resolver": "^5.0.0",
     "chai": "^4.3.7",
     "eslint": "^8.42.0",
