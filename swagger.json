@@ -69,6 +69,33 @@
           "HorseContributorJob"
         ],
         "description": "Get horseContributorJob by id"
+      },
+      "delete": {
+        "summary": "Delete horseContributorJob by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "horseContributorJob id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "HorseContributorJob"
+        ],
+        "description": "Delete horseContributorJob by id"
       }
     }
   },
