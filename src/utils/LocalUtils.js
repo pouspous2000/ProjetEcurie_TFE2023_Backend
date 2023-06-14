@@ -9,6 +9,7 @@ export class LocalUtils {
 				hello_world: 'Bonjour tout le monde!',
 				common_404: 'Resource introuvable',
 				common_error: 'Une erreur est survenue',
+				common_validation_error: 'Erreur(s) de validation',
 			},
 			en: {
 				hello_world: 'Hello world!',

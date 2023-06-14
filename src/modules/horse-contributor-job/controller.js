@@ -1,5 +1,6 @@
 import { HorseContributorJobService } from '@/modules/horse-contributor-job/service'
 import { HorseContributorJobView } from '@/modules/horse-contributor-job/views'
+import i18next from '../../../i18n'
 
 export class HorseContributorJobController {
 	static async index(request, response, next) {
@@ -16,6 +17,17 @@ export class HorseContributorJobController {
 		try {
 			const horseContributorJob = await HorseContributorJobService.findOrFail(id)
 			return response.status(200).json(horseContributorJob)
+		} catch (error) {
+			return next(error)
+		}
+	}
+
+	static async delete(request, response, next) {
+		const { id } = request.params
+		try {
+			const horseContributorJob = await HorseContributorJobService.findOrFail(id)
+			await HorseContributorJobService.delete(horseContributorJob)
+			return response.status(204).send()
 		} catch (error) {
 			return next(error)
 		}
@@ -51,25 +63,14 @@ export class HorseContributorJobController {
 		}
 	}
 
-	static async delete(request, response, next) {
-		const { id } = request.params
-		try {
-			const horseContributorJob = await HorseContributorJobService.findOrFail(id)
-			await HorseContributorJobService.delete(horseContributorJob)
-			return response.status(204).send()
-		} catch (error) {
-			return next(error)
-		}
-	}
-
 	static processUniqueConstraintError(error) {
 		if (error.name === 'SequelizeUniqueConstraintError') {
 			return {
-				message: 'Validation errors',
+				message: i18next.t('common_validation_error'),
 				errors: [
 					{
 						type: 'field',
-						msg: 'name must be unique',
+						msg: i18next.t('horseContributorJob_sql_validation_name_unique'),
 						path: error.errors.path,
 						location: 'body',
 					},

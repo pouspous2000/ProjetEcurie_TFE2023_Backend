@@ -15,6 +15,14 @@ export class HorseContributorJobService {
 		await horseContributorJobInstance.destroy()
 	}
 
+	static async create(data) {
+		return await db.models.HorseContributorJob.create(data)
+	}
+
+	static async update(horseContributorJobInstance, data) {
+		return await horseContributorJobInstance.set(data).save()
+	}
+
 	static async findOrFail(id) {
 		const horseContributorJob = await db.models.HorseContributorJob.findByPk(id)
 		if (!horseContributorJob) {
