@@ -12,7 +12,7 @@ export class HorseContributorJobService {
 	}
 
 	static async delete(horseContributorJobInstance) {
-		await horseContributorJobInstance.destroy()
+		return await horseContributorJobInstance.destroy()
 	}
 
 	static async create(data) {

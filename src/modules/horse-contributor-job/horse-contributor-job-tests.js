@@ -53,6 +53,15 @@ describe('HorseContributorJob Module', function () {
 		response.should.have.status(204)
 	})
 
+	it('create', async function () {
+		const veterinaryObj = HorseContributorJobFactory.createVeterinary()
+		const response = await chai.request(app).post(`${routePrefix}`).send(veterinaryObj)
+		response.should.have.status(201)
+		response.body.should.have.property('name').eql(i18next.t('horseContributorJob_factory_veterinarian'))
+		response.body.should.have.property('createdAt')
+		response.body.should.have.property('updatedAt')
+	})
+
 	it('create invalid - duplicate unique name', async function () {
 		// we assume the error is the handled sql constraint error
 		await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
