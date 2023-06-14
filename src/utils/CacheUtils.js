@@ -39,6 +39,7 @@ export class CacheUtils {
 	static async getAllKeysStartingWith(prefix) {
 		try {
 			const reply = await redisClient.scan('0', 'MATCH', `${prefix}*`)
+			otherLogger.log('debug', `reply for prefix ${prefix} : ${reply}`)
 			return Array.isArray(reply.keys) ? [...reply.keys] : []
 		} catch (error) {
 			console.error(`Error fetching all keys with prefix ${prefix}`)

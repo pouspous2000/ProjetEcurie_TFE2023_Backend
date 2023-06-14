@@ -22,7 +22,7 @@ export default function (modelName) {
 				for (const key of keys) {
 					cachedValues.push(await CacheUtils.get(key))
 				}
-				if (cachedValues) {
+				if (cachedValues.length) {
 					return response.status(200).json(cachedValues)
 				}
 				next()
