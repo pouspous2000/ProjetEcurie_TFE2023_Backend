@@ -3,6 +3,8 @@ import debugLib from 'debug'
 import app from '@/app'
 import db from '@/database'
 import redisClient from '@/cache'
+import transporter from '@/email'
+
 import { Dotenv } from '@/utils/Dotenv'
 import { errorHandlerLogger, otherLogger } from '@/loggers/loggers'
 
@@ -46,6 +48,18 @@ redisClient
 	.catch(error => {
 		console.error(`Redis connection or flush error ${error}`) // [IMP] refactore with async await the entire file
 		errorHandlerLogger.log('error', `Redis connection error ${error}`)
+	})
+
+// check smtp connexion and log if connexion is down
+transporter
+	.verify()
+	.then(() => {
+		console.log('smtp: connected')
+		otherLogger.log('info', 'smtp is connected')
+	})
+	.catch(error => {
+		console.error(`SMTP connection error ${error}`)
+		errorHandlerLogger.log('error', `SMTP connection error ${error}`)
 	})
 
 //Event listener for HTTP server "error" event.
