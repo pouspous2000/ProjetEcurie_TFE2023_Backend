@@ -1,9 +1,13 @@
 import { Model, DataTypes } from 'sequelize'
-import { CacheUtils } from '@/utils/CacheUtils'
+import { ModelCacheHooksUtils } from '@/utils/CacheUtils'
 
 export class HorseContributorJob extends Model {
 	static getTable() {
 		return 'horse_contributor_jobs'
+	}
+
+	static getModelName() {
+		return 'HorseContributorJob'
 	}
 }
 
@@ -26,42 +30,26 @@ export default function (sequelize) {
 		},
 		{
 			sequelize,
-			modelName: 'HorseContributorJob',
+			modelName: HorseContributorJob.getModelName(),
 			tableName: HorseContributorJob.getTable(),
 		}
 	)
 
 	// define hooks here
 	HorseContributorJob.addHook('afterFind', async records => {
-		if (records === null) {
-			return
-		}
-		if (!Array.isArray(records)) {
-			records = [records] // beware it is not a pure method !
-		}
-		for (const record of records) {
-			// [IMP] Promise.all for extra perf
-			const cacheKey = `HorseContributorJob_${record.id}`
-			const cacheValue = await CacheUtils.get(cacheKey)
-			if (!cacheValue) {
-				await CacheUtils.set(cacheKey, record)
-			}
-		}
+		await ModelCacheHooksUtils.afterFind(records, HorseContributorJob.getModelName())
 	})
 
 	HorseContributorJob.addHook('afterDestroy', async record => {
-		const cacheKey = `HorseContributorJob_${record.id}`
-		await CacheUtils.del(cacheKey)
+		await ModelCacheHooksUtils.afterDestroy(record, HorseContributorJob.getModelName())
 	})
 
 	HorseContributorJob.addHook('afterCreate', async record => {
-		const cacheKey = `HorseContributorJob_${record.id}`
-		await CacheUtils.set(cacheKey, record)
+		await ModelCacheHooksUtils.afterCreate(record, HorseContributorJob.getModelName())
 	})
 
 	HorseContributorJob.addHook('afterUpdate', async record => {
-		const cacheKey = `HorseContributorJob_${record.id}`
-		await CacheUtils.set(cacheKey, record)
+		await ModelCacheHooksUtils.afterUpdate(record, HorseContributorJob.getModelName())
 	})
 
 	return HorseContributorJob

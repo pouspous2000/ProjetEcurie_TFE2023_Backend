@@ -3,11 +3,12 @@ import * as configs from '@/configuration/sequelize'
 
 // import models here
 import HorseContributorJobModel from '@/modules/horse-contributor-job/model'
+import StableModel from '@/modules/stable/model'
 
 const sequelize = new Sequelize(configs[process.env.NODE_ENV])
 
 // add all models into this array
-const modelDefiners = [HorseContributorJobModel]
+const modelDefiners = [HorseContributorJobModel, StableModel]
 
 // eslint-disable-next-line no-restricted-syntax
 modelDefiners.forEach(modelDefiner => {

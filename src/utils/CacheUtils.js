@@ -47,3 +47,41 @@ export class CacheUtils {
 		}
 	}
 }
+
+export class ModelCacheHooksUtils {
+	static _getCacheKey(record, modelName) {
+		return `${modelName}_${record.id}`
+	}
+
+	static async afterFind(records, modelName) {
+		if (records === null) {
+			return
+		}
+		if (!Array.isArray(records)) {
+			records = [records] // [WARN] this is not a pure function
+		}
+		for (const record of records) {
+			// [IMP] Promise.all for extra perf
+			const cacheKey = this._getCacheKey(record, modelName)
+			const cacheValue = await CacheUtils.get(cacheKey)
+			if (!cacheValue) {
+				await CacheUtils.set(cacheKey, record)
+			}
+		}
+	}
+
+	static async afterDestroy(record, modelName) {
+		const cacheKey = this._getCacheKey(record, modelName)
+		await CacheUtils.del(cacheKey)
+	}
+
+	static async afterCreate(record, modelName) {
+		const cacheKey = this._getCacheKey(record, modelName)
+		await CacheUtils.set(cacheKey, record)
+	}
+
+	static async afterUpdate(record, modelName) {
+		const cacheKey = this._getCacheKey(record, modelName)
+		await CacheUtils.set(cacheKey, record)
+	}
+}
