@@ -40,10 +40,10 @@ export default function (sequelize) {
 			records = [records] // beware it is not a pure method !
 		}
 		for (const record of records) {
-			// notice we could Promise.all for extra perf
+			// [IMP] Promise.all for extra perf
 			const cacheKey = `HorseContributorJob_${record.id}`
-			const cachedValue = await CacheUtils.get(cacheKey)
-			if (!cachedValue) {
+			const cacheValue = await CacheUtils.get(cacheKey)
+			if (!cacheValue) {
 				await CacheUtils.set(cacheKey, record)
 			}
 		}

@@ -7,9 +7,9 @@ export default function (modelName) {
 		if (request.params.id) {
 			cacheKey += `_${request.params.id}`
 			try {
-				const cachedValue = await CacheUtils.get(cacheKey)
-				if (cachedValue) {
-					return response.status(200).json(cachedValue)
+				const cacheValue = await CacheUtils.get(cacheKey)
+				if (cacheValue) {
+					return response.status(200).json(cacheValue)
 				}
 				next()
 			} catch (error) {
@@ -17,13 +17,16 @@ export default function (modelName) {
 			}
 		} else {
 			try {
-				const keys = await CacheUtils.getAllKeysStartingWith(cacheKey)
-				const cachedValues = []
-				for (const key of keys) {
-					cachedValues.push(await CacheUtils.get(key))
+				let keys = await CacheUtils.getAllKeysStartingWith(cacheKey)
+				if (!Array.isArray(keys)) {
+					keys = []
 				}
-				if (cachedValues.length) {
-					return response.status(200).json(cachedValues)
+				const cacheValues = []
+				for (const key of keys) {
+					cacheValues.push(await CacheUtils.get(key)) // [IMP] we could use a single call with all keys
+				}
+				if (cacheValues.length) {
+					return response.status(200).json(cacheValues)
 				}
 				next()
 			} catch (error) {

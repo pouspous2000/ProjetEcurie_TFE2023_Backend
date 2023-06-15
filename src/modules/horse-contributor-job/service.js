@@ -1,6 +1,7 @@
 import createError from 'http-errors'
 import db from '@/database'
 import i18next from '../../../i18n'
+import { CacheUtils } from '@/utils/CacheUtils'
 
 export class HorseContributorJobService {
 	static async index() {
@@ -24,10 +25,16 @@ export class HorseContributorJobService {
 	}
 
 	static async findOrFail(id) {
-		const horseContributorJob = await db.models.HorseContributorJob.findByPk(id)
-		if (!horseContributorJob) {
-			throw createError(404, i18next.t('horseContributorJob_404'))
+		const cacheKey = `HorseContributorJob_${id}`
+		const cacheValue = await CacheUtils.get(cacheKey)
+		if (cacheValue) {
+			return db.models.HorseContributorJob.build(cacheValue)
+		} else {
+			const horseContributorJob = await db.models.HorseContributorJob.findByPk(id)
+			if (!horseContributorJob) {
+				throw createError(404, i18next.t('horseContributorJob_404'))
+			}
+			return horseContributorJob
 		}
-		return horseContributorJob
 	}
 }

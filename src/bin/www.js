@@ -30,10 +30,21 @@ db.authenticate()
 redisClient
 	.connect()
 	.then(() => {
+		console.log('redis connection : ok')
 		otherLogger.log('info', 'redis is connected')
 	})
+	.then(() => {
+		redisClient
+			.flushAll()
+			.then(() => {
+				console.log('redis flushed')
+			})
+			.catch(() => {
+				console.log('error while redis  flush')
+			})
+	})
 	.catch(error => {
-		console.error(`Redis connection error ${error}`)
+		console.error(`Redis connection or flush error ${error}`) // [IMP] refactore with async await the entire file
 		errorHandlerLogger.log('error', `Redis connection error ${error}`)
 	})
 
