@@ -1,3 +1,4 @@
+import { Op } from 'sequelize'
 import createError from 'http-errors'
 import db from '@/database'
 import i18next from '../../../i18n'
@@ -5,7 +6,30 @@ import { CacheUtils } from '@/utils/CacheUtils'
 
 export class HorseContributorJobService {
 	static async index() {
-		return await db.models.HorseContributorJob.findAll()
+		try {
+			let keys = await CacheUtils.getAllKeysStartingWith('HorseContributorJob')
+			if (!Array.isArray(keys)) {
+				keys = []
+			}
+			const cacheValues = []
+			const cacheIds = []
+
+			for (const key of keys) {
+				cacheValues.push(db.models.HorseContributorJob.build(await CacheUtils.get(key)))
+				cacheIds.push(key.replace(/^HorseContributorJob_/, ''))
+			}
+			const dbValues = await db.models.HorseContributorJob.findAll({
+				where: {
+					id: {
+						[Op.notIn]: cacheIds,
+					},
+				},
+			})
+			// [IMP] we could order by result but sequelize does not order by ... default => if we add such a scope impact here
+			return [...dbValues, ...cacheValues]
+		} catch (error) {
+			return await db.models.HorseContributorJob.findAll()
+		}
 	}
 
 	static async single(id) {
