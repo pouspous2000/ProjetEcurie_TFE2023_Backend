@@ -195,7 +195,7 @@
         "tags": [
           "HorseContributorJob"
         ],
-        "description": "Create new horseContributorJob"
+        "description": "Update horseContributorJob"
       }
     },
     "/stables/{id}": {
@@ -228,6 +228,70 @@
           "Stable"
         ],
         "description": "Get stable by id"
+      },
+      "put": {
+        "summary": "Update stable",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "vat": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "invoiceNb": {
+                  "type": "integer"
+                },
+                "invoicePrefix": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "stable id"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Stable"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Stable"
+        ],
+        "description": "Update stable"
       }
     }
   },
