@@ -11,6 +11,9 @@
     },
     {
       "name": "HorseContributorJob"
+    },
+    {
+      "name": "Stable"
     }
   ],
   "securityDefinitions": {
@@ -194,6 +197,38 @@
         ],
         "description": "Create new horseContributorJob"
       }
+    },
+    "/stables/{id}": {
+      "get": {
+        "summary": "Get stable by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "stable id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Stable"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Stable"
+        ],
+        "description": "Get stable by id"
+      }
     }
   },
   "definitions": {
@@ -282,6 +317,40 @@
           "name": {
             "type": "string"
           }
+        }
+      }
+    },
+    "Stable": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "vat": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "invoiceNb": {
+          "type": "integer"
+        },
+        "invoicePrefix": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     }

@@ -1,7 +1,11 @@
 import { Router } from 'express'
 import swaggerUi from 'swagger-ui-express'
 import swaggerDocument from '../../swagger.json'
+
 import HorseContributorJobRouter from '@/modules/horse-contributor-job/routes'
+import StableRouter from '@/modules/stable/routes'
+
+// [TMP] the code below will be moved when auth
 import { EmailUtils } from '@/utils/EmailUtils'
 import path from 'path'
 import { PathUtils } from '@/utils/PathUtils'
@@ -24,6 +28,7 @@ router.get('/email', async (request, response) => {
 })
 
 router.use(HorseContributorJobRouter)
+router.use(StableRouter)
 
 router.use('/docs', swaggerUi.serve)
 router.get('/docs', swaggerUi.setup(swaggerDocument))

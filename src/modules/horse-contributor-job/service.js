@@ -1,64 +1,28 @@
-import { Op } from 'sequelize'
-import createError from 'http-errors'
-import db from '@/database'
-import i18next from '../../../i18n'
-import { CacheUtils } from '@/utils/CacheUtils'
+import { BaseService } from '@/core/BaseService'
 
-export class HorseContributorJobService {
+export class HorseContributorJobService extends BaseService {
+	// [IMP] it now makes sens to use instance methods as we need the modelName everywhere
 	static async index() {
-		try {
-			let keys = await CacheUtils.getAllKeysStartingWith('HorseContributorJob')
-			if (!Array.isArray(keys)) {
-				keys = []
-			}
-			const cacheValues = []
-			const cacheIds = []
-
-			for (const key of keys) {
-				cacheValues.push(db.models.HorseContributorJob.build(await CacheUtils.get(key)))
-				cacheIds.push(key.replace(/^HorseContributorJob_/, ''))
-			}
-			const dbValues = await db.models.HorseContributorJob.findAll({
-				where: {
-					id: {
-						[Op.notIn]: cacheIds,
-					},
-				},
-			})
-			// [IMP] we could order by result but sequelize does not order by ... default => if we add such a scope impact here
-			return [...dbValues, ...cacheValues]
-		} catch (error) {
-			return await db.models.HorseContributorJob.findAll()
-		}
+		return await super.index('HorseContributorJob')
 	}
 
 	static async single(id) {
-		return await db.models.HorseContributorJob.findByPk(id)
+		return await super.single('HorseContributorJob', id)
 	}
 
-	static async delete(horseContributorJobInstance) {
-		return await horseContributorJobInstance.destroy()
+	static async delete(instance) {
+		return await super.delete(instance)
 	}
 
 	static async create(data) {
-		return await db.models.HorseContributorJob.create(data)
+		return await super.create('HorseContributorJob', data)
 	}
 
-	static async update(horseContributorJobInstance, data) {
-		return await horseContributorJobInstance.set(data).save()
+	static async update(instance, data) {
+		return await super.update(instance, data)
 	}
 
 	static async findOrFail(id) {
-		const cacheKey = `HorseContributorJob_${id}`
-		const cacheValue = await CacheUtils.get(cacheKey)
-		if (cacheValue) {
-			return db.models.HorseContributorJob.build(cacheValue)
-		} else {
-			const horseContributorJob = await db.models.HorseContributorJob.findByPk(id)
-			if (!horseContributorJob) {
-				throw createError(404, i18next.t('horseContributorJob_404'))
-			}
-			return horseContributorJob
-		}
+		return await super.findOrFail('HorseContributorJob', id, 'horseContributorJob_404')
 	}
 }

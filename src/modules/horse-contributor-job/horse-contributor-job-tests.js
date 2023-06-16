@@ -36,7 +36,7 @@ describe('HorseContributorJob Module', function () {
 		response.body.should.have.length(10)
 	})
 
-	it('single', async function () {
+	it('single valid', async function () {
 		const veterinary = await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
 
 		const response = await chai.request(app).get(`${routePrefix}/${veterinary.id}`)
@@ -44,6 +44,11 @@ describe('HorseContributorJob Module', function () {
 		response.body.should.have.property('name').eql(veterinary.name)
 		response.body.should.have.property('createdAt')
 		response.body.should.have.property('updatedAt')
+	})
+
+	it('single 404', async function () {
+		const response = await chai.request(app).get(`${routePrefix}/1`)
+		response.should.have.status(404)
 	})
 
 	it('delete', async function () {
