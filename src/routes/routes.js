@@ -4,6 +4,7 @@ import swaggerDocument from '../../swagger.json'
 
 import HorseContributorJobRouter from '@/modules/horse-contributor-job/routes'
 import StableRouter from '@/modules/stable/routes'
+import RoleRouter from '@/modules/role/routes'
 
 // [TMP] the code below will be moved when auth
 import { EmailUtils } from '@/utils/EmailUtils'
@@ -29,6 +30,7 @@ router.get('/email', async (request, response) => {
 
 router.use(HorseContributorJobRouter)
 router.use(StableRouter)
+router.use(RoleRouter)
 
 router.use('/docs', swaggerUi.serve)
 router.get('/docs', swaggerUi.setup(swaggerDocument))
