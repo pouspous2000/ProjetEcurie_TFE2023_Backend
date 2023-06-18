@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize'
 import { ModelCacheHooksUtils } from '@/utils/CacheUtils'
+import { StringUtils } from '@/utils/StringUtils'
 
 export class HorseContributorJob extends Model {
 	static getTable() {
@@ -24,7 +25,7 @@ export default function (sequelize) {
 				allowNull: false,
 				unique: true,
 				set(value) {
-					this.setDataValue('name', value.charAt(0).toUpperCase() + value.slice(1))
+					this.setDataValue('name', StringUtils.capitalizeFirstLetter(value.toLowerCase()))
 				},
 			},
 		},

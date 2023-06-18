@@ -1,6 +1,7 @@
 import { locales as middlewarelocales } from '@/middlewares/locales'
 import { HorseContributorJobLocales } from '@/modules/horse-contributor-job/locales'
 import { StableLocales } from '@/modules/stable/locales'
+import { RoleLocales } from '@/modules/role/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -26,6 +27,7 @@ export class LocalUtils {
 		middlewarelocales,
 		HorseContributorJobLocales,
 		StableLocales,
+		RoleLocales,
 	]
 
 	static getLocales() {

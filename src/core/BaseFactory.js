@@ -1,4 +1,12 @@
 export class BaseFactory {
+	static uniqueConstraints = {}
+
+	/*
+		{
+			argName: [values]
+		}
+	 */
+
 	static create() {
 		return {} // should be implemented by subclasses
 	}

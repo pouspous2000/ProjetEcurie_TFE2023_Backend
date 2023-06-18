@@ -93,7 +93,7 @@ describe('HorseContributorJob Module', function () {
 			name: 'updatedName',
 		})
 		response.should.have.status(201)
-		response.body.should.have.property('name').eql('UpdatedName')
+		response.body.should.have.property('name').eql('Updatedname')
 		response.body.should.have.property('createdAt')
 		response.body.should.have.property('updatedAt')
 	})
