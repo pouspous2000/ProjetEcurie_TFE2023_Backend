@@ -40,6 +40,11 @@ export default function (sequelize) {
 					this.setDataValue('name', StringUtils.capitalizeFirstLetter(value.toLowerCase()))
 				},
 			},
+			isEditable: {
+				type: DataTypes.BOOLEAN,
+				allowNull: true,
+				defaultValue: true,
+			},
 		},
 		{
 			sequelize,
@@ -53,16 +58,16 @@ export default function (sequelize) {
 		await ModelCacheHooksUtils.afterFind(records, Role.getModelName())
 	})
 
-	Role.addHook('afterDestroy', async record => {
-		await ModelCacheHooksUtils.afterDestroy(record, Role.getModelName())
+	Role.addHook('afterDestroy', async () => {
+		await ModelCacheHooksUtils.clearModelCache(Role.getModelName()) //[IMP] we could keep the cache and update it instead of clear
 	})
 
-	Role.addHook('afterCreate', async record => {
-		await ModelCacheHooksUtils.afterCreate(record, Role.getModelName())
+	Role.addHook('afterCreate', async () => {
+		await ModelCacheHooksUtils.clearModelCache(Role.getModelName()) //[IMP] we could keep the cache and update it instead of clear
 	})
 
-	Role.addHook('afterUpdate', async record => {
-		await ModelCacheHooksUtils.afterUpdate(record, Role.getModelName())
+	Role.addHook('afterUpdate', async () => {
+		await ModelCacheHooksUtils.clearModelCache(Role.getModelName()) //[IMP] we could keep the cache and update it instead of clear
 	})
 
 	return Role

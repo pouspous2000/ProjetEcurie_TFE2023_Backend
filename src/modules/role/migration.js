@@ -23,6 +23,11 @@ export const upRole = async (queryInterface, Sequelize) =>
 			allowNull: false,
 			unique: true,
 		},
+		isEditable: {
+			type: DataTypes.BOOLEAN,
+			allowNull: true,
+			defaultValue: true,
+		},
 		createdAt: {
 			allowNull: false,
 			type: Sequelize.DATE,

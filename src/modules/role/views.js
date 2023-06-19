@@ -7,6 +7,7 @@ export class RoleView {
 		return {
 			id: role.dataValues.id,
 			name: role.dataValues.name,
+			isEditable: role.isEditable,
 			parent: {
 				id: role.dataValues.parent?.id,
 				name: role.dataValues.parent?.name,

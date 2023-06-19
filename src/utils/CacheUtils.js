@@ -82,4 +82,9 @@ export class ModelCacheHooksUtils {
 		const cacheKey = this._getCacheKey(record, modelName)
 		await CacheUtils.set(cacheKey, record)
 	}
+
+	static async clearModelCache(modelName) {
+		let keys = await CacheUtils.getAllKeysStartingWith(modelName)
+		await CacheUtils.del(keys)
+	}
 }

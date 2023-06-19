@@ -21,7 +21,7 @@ describe('Role Module', function () {
 		await db.models.Role.bulkCreate(roles)
 		const response = await chai.request(app).get(`${routePrefix}`)
 		response.should.have.status(200)
-		response.body.should.have.length(3)
+		response.body.should.have.length(roles.length)
 	})
 
 	it('single valid', async function () {
@@ -29,6 +29,9 @@ describe('Role Module', function () {
 		const response = await chai.request(app).get(`${routePrefix}/${admin.id}`)
 		response.should.have.status(200)
 		response.body.should.have.property('name').eql(admin.name)
+		response.body.should.have.property('isEditable').eql(false)
+		response.body.should.have.property('parent').eql({})
+		response.body.should.have.property('children').eql([])
 		response.body.should.have.property('createdAt')
 		response.body.should.have.property('updatedAt')
 	})
@@ -36,5 +39,30 @@ describe('Role Module', function () {
 	it('single 404', async function () {
 		const response = await chai.request(app).get(`${routePrefix}/1`)
 		response.should.have.status(404)
+	})
+
+	it('delete cascade editable', async function () {
+		const rootRole = await db.models.Role.create(RoleFactory.create())
+		const secondRoleObj = RoleFactory.create()
+		secondRoleObj.parentId = rootRole.id
+		await db.models.Role.create(secondRoleObj)
+
+		const otherRole = await db.models.Role.create(RoleFactory.create())
+		const response = await chai.request(app).delete(`${routePrefix}/${rootRole.id}`)
+		response.should.have.status(204)
+
+		const roles = await db.models.Role.findAll()
+		roles.should.have.length(1)
+		roles[0].dataValues.id.should.be.eql(otherRole.id)
+	})
+
+	it('delete non editable not possible', async function () {
+		const admin = await db.models.Role.create(RoleFactory.createAdmin())
+		const response = await chai.request(app).delete(`${routePrefix}/${admin.id}`)
+		response.should.have.status(401)
+
+		const roles = await db.models.Role.findAll()
+		roles.should.have.length(1)
+		roles[0].dataValues.id.should.be.eql(admin.id)
 	})
 })

@@ -24,6 +24,7 @@ export class RoleFactory extends BaseFactory {
 		this.uniqueConstraints.name.push('ADMIN')
 		return {
 			name: 'ADMIN',
+			isEditable: false,
 			...this._create(),
 		}
 	}
@@ -32,6 +33,7 @@ export class RoleFactory extends BaseFactory {
 		this.uniqueConstraints.name.push('EMPLOYEE')
 		return {
 			name: 'EMPLOYEE',
+			isEditable: false,
 			...this._create(),
 		}
 	}
@@ -40,6 +42,7 @@ export class RoleFactory extends BaseFactory {
 		this.uniqueConstraints.name.push('CLIENT')
 		return {
 			name: 'CLIENT',
+			isEditable: false,
 			...this._create(),
 		}
 	}

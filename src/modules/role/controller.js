@@ -11,7 +11,7 @@ export class RoleController {
 					{ model: Role, as: 'parent' },
 				],
 			})
-			return response.status(200).json(roles)
+			return response.status(200).json(RoleView.index(roles))
 		} catch (error) {
 			return next(error)
 		}
@@ -27,6 +27,17 @@ export class RoleController {
 				],
 			})
 			return response.status(200).json(RoleView.single(role))
+		} catch (error) {
+			return next(error)
+		}
+	}
+
+	static async delete(request, response, next) {
+		const { id } = request.params
+		try {
+			const role = await RoleService.findOrFail(id)
+			await RoleService.delete(role)
+			return response.status(204).send()
 		} catch (error) {
 			return next(error)
 		}
