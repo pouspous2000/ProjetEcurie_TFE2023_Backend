@@ -29,7 +29,6 @@ describe('Role Module', function () {
 		const response = await chai.request(app).get(`${routePrefix}/${admin.id}`)
 		response.should.have.status(200)
 		response.body.should.have.property('name').eql(admin.name)
-		response.body.should.have.property('parentId').to.be.null
 		response.body.should.have.property('createdAt')
 		response.body.should.have.property('updatedAt')
 	})

@@ -31,7 +31,6 @@ export class CacheUtils {
 			await redisClient.del(cacheKey)
 			otherLogger.log('debug', `Cache del for key ${cacheKey}`)
 		} catch (error) {
-			console.error(`Error deleting cache ${cacheKey}`)
 			errorHandlerLogger.log('error', `Error deleting cache ${cacheKey}`)
 		}
 	}
@@ -42,7 +41,6 @@ export class CacheUtils {
 			otherLogger.log('debug', `reply for prefix ${prefix} : ${reply}`)
 			return Array.isArray(reply.keys) ? [...reply.keys] : []
 		} catch (error) {
-			console.error(`Error fetching all keys with prefix ${prefix}`)
 			errorHandlerLogger.log('error', `Error fetching all keys with prefix ${prefix}`)
 		}
 	}

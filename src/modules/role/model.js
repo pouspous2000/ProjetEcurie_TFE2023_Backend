@@ -12,8 +12,8 @@ export class Role extends Model {
 	}
 
 	static associate(models) {
-		Role.hasOne(models.Role, { foreignKey: 'parentId' })
-		Role.hasMany(models.Role, { foreignKey: 'parentId', useJunctionTable: false })
+		Role.belongsTo(models.Role, { foreignKey: 'parentId', as: 'parent' })
+		Role.hasMany(models.Role, { foreignKey: 'parentId', as: 'children' })
 	}
 }
 

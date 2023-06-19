@@ -308,7 +308,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/Role"
+              "$ref": "#/definitions/RoleList"
             }
           }
         }
@@ -477,10 +477,29 @@
           "type": "integer"
         },
         "name": {
-          "type": "string"
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          }
         },
-        "parentId": {
-          "type": "integer"
+        "parent": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            }
+          }
+        },
+        "children": {
+          "type": "array"
         },
         "createdAt": {
           "type": "string",
@@ -490,6 +509,12 @@
           "type": "string",
           "format": "date-time"
         }
+      }
+    },
+    "RoleList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Role"
       }
     }
   }
