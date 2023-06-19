@@ -18,7 +18,7 @@ export class StableController {
 			const data = request.body // hook me to add something else such as user id when authentication is implemented
 			const stable = await StableService.findOrFail(id)
 			const updatedStable = await StableService.update(stable, data)
-			return response.status(201).json(updatedStable)
+			return response.status(200).json(updatedStable)
 		} catch (error) {
 			const sqlError = new SequelizeErrorFormatter(error)
 			if (sqlError) {

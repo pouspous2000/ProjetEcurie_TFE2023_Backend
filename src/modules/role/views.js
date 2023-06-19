@@ -20,4 +20,19 @@ export class RoleView {
 			updatedAt: role.dataValues.updatedAt,
 		}
 	}
+
+	static create(role) {
+		return {
+			id: role.dataValues.id,
+			name: role.dataValues.name,
+			parentId: role.dataValues.parentId,
+			isEditable: role.dataValues.isEditable,
+			createdAt: role.dataValues.createdAt,
+			updatedAt: role.dataValues.updatedAt,
+		}
+	}
+
+	static update(role) {
+		return this.create(role)
+	}
 }

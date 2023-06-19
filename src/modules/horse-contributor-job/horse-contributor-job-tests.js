@@ -92,7 +92,7 @@ describe('HorseContributorJob Module', function () {
 		const response = await chai.request(app).put(`${routePrefix}/${veterinary.id}`).send({
 			name: 'updatedName',
 		})
-		response.should.have.status(201)
+		response.should.have.status(200)
 		response.body.should.have.property('name').eql('Updatedname')
 		response.body.should.have.property('createdAt')
 		response.body.should.have.property('updatedAt')

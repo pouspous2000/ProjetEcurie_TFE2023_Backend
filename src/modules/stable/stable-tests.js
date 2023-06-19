@@ -46,7 +46,7 @@ describe('Stable Module', function () {
 			invoiceNb: 10,
 		})
 
-		response.should.have.status(201)
+		response.should.have.status(200)
 		response.body.should.have.property('name').eql('UpdatedName')
 		response.body.should.have.property('vat').eql('BE0123456787')
 		response.body.should.have.property('phone').eql('validphone')

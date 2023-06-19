@@ -53,7 +53,7 @@ export class HorseContributorJobController {
 			const data = request.body // hook me to add something else such as user id
 			const horseContributorJob = await HorseContributorJobService.findOrFail(id)
 			const updatedHorseContributorJob = await HorseContributorJobService.update(horseContributorJob, data)
-			return response.status(201).json(updatedHorseContributorJob)
+			return response.status(200).json(updatedHorseContributorJob)
 		} catch (error) {
 			const sqlError = new SequelizeErrorFormatter(error)
 			if (sqlError) {
