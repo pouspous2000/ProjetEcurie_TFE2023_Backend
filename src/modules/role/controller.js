@@ -1,7 +1,6 @@
 import { RoleService } from '@/modules/role/service'
 import { Role } from '@/modules/role/model'
 import { RoleView } from '@/modules/role/views'
-import { SequelizeErrorFormatter } from '@/core/SequelizeErrorFormatter'
 
 export class RoleController {
 	static async index(request, response, next) {
@@ -50,10 +49,6 @@ export class RoleController {
 			const role = await RoleService.create(data)
 			return response.status(201).json(RoleView.create(role))
 		} catch (error) {
-			const sqlError = new SequelizeErrorFormatter(error)
-			if (sqlError) {
-				return response.status(422).json(sqlError)
-			}
 			return next(error)
 		}
 	}
@@ -66,10 +61,6 @@ export class RoleController {
 			const updatedRole = await RoleService.update(role, data)
 			return response.status(200).json(RoleView.update(updatedRole))
 		} catch (error) {
-			const sqlError = new SequelizeErrorFormatter(error)
-			if (sqlError) {
-				return response.status(422).json(sqlError)
-			}
 			return next(error)
 		}
 	}

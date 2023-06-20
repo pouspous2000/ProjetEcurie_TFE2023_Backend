@@ -1,10 +1,11 @@
+import createError from 'http-errors'
 import i18next from 'i18next'
 
 export class SequelizeErrorFormatter {
 	// instance based as we could have different scenarios
 	constructor(error) {
 		if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-			return {
+			throw createError(422, {
 				message: i18next.t('common_validation_error'),
 				errors: error.errors.map(err => {
 					return {
@@ -14,7 +15,7 @@ export class SequelizeErrorFormatter {
 						location: 'body',
 					}
 				}),
-			}
+			})
 		}
 		return undefined
 	}

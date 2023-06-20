@@ -11,6 +11,7 @@ import { errorHandlerLogger } from '@/loggers/loggers'
 import { Dotenv } from '@/utils/Dotenv'
 import { generalExceptLoginRateLimiter } from '@/middlewares/rate-limiter'
 import corsConfig from '@/configuration/cors'
+import { SequelizeErrorFormatter } from '@/core/SequelizeErrorFormatter'
 
 const environment = new Dotenv()
 const app = express()
@@ -46,6 +47,16 @@ app.use(
 		statusLevels: true,
 	})
 )
+
+app.use((error, request, response, next) => {
+	// sequelize error formatter
+	try {
+		new SequelizeErrorFormatter(error)
+	} catch (error) {
+		return response.status(422).json(error)
+	}
+	next(error)
+})
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, request, response, _next) => {

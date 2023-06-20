@@ -32,6 +32,9 @@ export class EmailUtils {
 	}
 
 	static async sendEmail(to, subject, html, attachments = []) {
+		if (process.env.NODE_ENV === 'TEST') {
+			return
+		}
 		const transporter = await this.getTransporter()
 		const email = {
 			from: process.env.SMTP_MAIL_SENDER,

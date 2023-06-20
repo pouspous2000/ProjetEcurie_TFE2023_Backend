@@ -1,5 +1,4 @@
 import createError from 'http-errors'
-import { SequelizeErrorFormatter } from '@/core/SequelizeErrorFormatter'
 import { AuthenticationService } from '@/modules/authentication/service'
 import { AuthenticationView } from '@/modules/authentication/views'
 import { User } from '@/modules/authentication/model'
@@ -15,10 +14,6 @@ export class AuthenticationController {
 			await AuthenticationService.register(data)
 			return response.status(201).json(AuthenticationView.register())
 		} catch (error) {
-			const sqlError = new SequelizeErrorFormatter(error)
-			if (sqlError) {
-				return response.status(422).json(sqlError)
-			}
 			return next(error)
 		}
 	}
@@ -37,9 +32,6 @@ export class AuthenticationController {
 			await AuthenticationService.confirm(user)
 			return response.status(200).send(AuthenticationView.confirm())
 		} catch (error) {
-			if (error.status === 422) {
-				return response.status(422).json(error)
-			}
 			return next(error)
 		}
 	}

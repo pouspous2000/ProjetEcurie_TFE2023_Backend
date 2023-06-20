@@ -1,6 +1,5 @@
 import { HorseContributorJobService } from '@/modules/horse-contributor-job/service'
 import { HorseContributorJobView } from '@/modules/horse-contributor-job/views'
-import { SequelizeErrorFormatter } from '@/core/SequelizeErrorFormatter'
 
 export class HorseContributorJobController {
 	static async index(request, response, next) {
@@ -39,10 +38,6 @@ export class HorseContributorJobController {
 			const horseContributorJob = await HorseContributorJobService.create(data)
 			return response.status(201).json(horseContributorJob)
 		} catch (error) {
-			const sqlError = new SequelizeErrorFormatter(error)
-			if (sqlError) {
-				return response.status(422).json(sqlError)
-			}
 			return next(error)
 		}
 	}
@@ -55,10 +50,6 @@ export class HorseContributorJobController {
 			const updatedHorseContributorJob = await HorseContributorJobService.update(horseContributorJob, data)
 			return response.status(200).json(updatedHorseContributorJob)
 		} catch (error) {
-			const sqlError = new SequelizeErrorFormatter(error)
-			if (sqlError) {
-				return response.status(422).json(sqlError)
-			}
 			return next(error)
 		}
 	}

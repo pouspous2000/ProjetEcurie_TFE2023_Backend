@@ -64,7 +64,7 @@ describe('Authentication module', function () {
 	it('confirm invalid - already active user', async function () {
 		const cecile = await db.models.User.create(UserFactory.createCecile())
 		const response = await chai.request(app).get(`${routePrefix}/confirm/${cecile.confirmationCode}`)
-		response.should.have.status(422)
+		response.should.have.status(422) // j'ai une 404 au lieu d'une 422 => à vérifier p e moi qui déconne
 		response.body.should.have.property('message').eql(i18next.t('authentication_already_confirmed'))
 	})
 })
