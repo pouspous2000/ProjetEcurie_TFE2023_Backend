@@ -7,7 +7,7 @@
   },
   "tags": [
     {
-      "name": "auth"
+      "name": "Authentication"
     },
     {
       "name": "HorseContributorJob"
@@ -28,6 +28,97 @@
     }
   },
   "paths": {
+    "/authentication/register": {
+      "post": {
+        "summary": "Create a new user",
+        "parameters": [
+          {
+            "name" : "body",
+            "in" : "body",
+            "required" : true,
+            "schema" : {
+              "type": "object",
+              "required": ["email", "password", "passwordConfirm"],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "passwordConfirm": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "Unprocessable Entity",
+            "schema" : {
+              "$ref" : "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": ["Authentication"],
+        "description": "Register"
+      }
+    },
+    "/authentication/confirm/{confirmationCode}": {
+      "get": {
+        "summary": "Confirm a user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "confirmationCode",
+            "type": "string",
+            "required": true,
+            "description": "confirmation code"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422" : {
+            "description" : "Unprocessable Entity",
+            "schema" : {
+              "$ref" : "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Authentication"
+        ],
+        "description": "confirm a user with his confirmation code"
+      }
+    },
     "/horse_contributor_jobs": {
       "get": {
         "summary": "List all horseContributor Jobs",

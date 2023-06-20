@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 	next(createError(404, i18next.t('common_404')))
 })
 
-// middleware to log unhandled errors, position if not a choice
+// middleware to log unhandled errors, position is not a choice
 app.use(
 	expressWinston.errorLogger({
 		winstonInstance: errorHandlerLogger,

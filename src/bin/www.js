@@ -3,7 +3,7 @@ import debugLib from 'debug'
 import app from '@/app'
 import db from '@/database'
 import redisClient from '@/cache'
-import transporter from '@/email'
+import { EmailUtils } from '@/utils/EmailUtils'
 
 import { Dotenv } from '@/utils/Dotenv'
 import { errorHandlerLogger, otherLogger } from '@/loggers/loggers'
@@ -51,8 +51,10 @@ redisClient
 	})
 
 // check smtp connexion and log if connexion is down
-transporter
-	.verify()
+EmailUtils.getTransporter()
+	.then(transporter => {
+		transporter.verify()
+	})
 	.then(() => {
 		console.log('smtp: connected')
 		otherLogger.log('info', 'smtp is connected')

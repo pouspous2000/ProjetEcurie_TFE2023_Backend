@@ -3,9 +3,9 @@ import { UserFactory } from '@/modules/authentication/factory'
 
 export const upUser = async queryInterface => {
 	const users = []
-	users.push(await UserFactory.createCecile())
-	users.push(...(await UserFactory.bulkCreate(5, false)))
-	users.push(...(await UserFactory.bulkCreate(5, true)))
+	users.push(UserFactory.createCecile())
+	users.push(...UserFactory.bulkCreate(5, false))
+	users.push(...UserFactory.bulkCreate(5, true))
 	await queryInterface.bulkInsert(User.getTable(), users)
 }
 
