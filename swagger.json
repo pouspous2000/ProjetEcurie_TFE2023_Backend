@@ -182,6 +182,31 @@
         "description": "Login"
       }
     },
+    "/authentication/me": {
+      "delete": {
+        "summary": "Delete current user",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Delete current user"
+      }
+    },
     "/horse_contributor_jobs": {
       "get": {
         "summary": "List all horseContributor Jobs",

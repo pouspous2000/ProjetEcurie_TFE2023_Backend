@@ -59,4 +59,18 @@ export class UserFactory extends BaseFactory {
 			...this._create(),
 		}
 	}
+
+	static createTestUser() {
+		const email = 'user.test@gail.com'
+		this.uniqueConstraints.email.push(email)
+		let confirmationCode = 'test_user_confirmation_code'
+		this.uniqueConstraints.confirmationCode.push(confirmationCode)
+		return {
+			email: email,
+			password: 'password',
+			status: 'ACTIVE',
+			confirmationCode: confirmationCode,
+			...this._create(),
+		}
+	}
 }

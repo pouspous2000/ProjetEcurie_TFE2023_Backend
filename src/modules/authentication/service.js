@@ -29,6 +29,10 @@ export class AuthenticationService {
 		}
 	}
 
+	static async delete(user) {
+		return await user.destroy()
+	}
+
 	static async validatePassword(user, password) {
 		const isPasswordValid = await user.validatePassword(password)
 		if (!isPasswordValid) {

@@ -31,9 +31,8 @@ describe('HorseContributorJob Module', function () {
 		await db.models.HorseContributorJob.destroy({ truncate: true })
 		await db.models.User.destroy({ truncate: true })
 
-		// et je dois ajouter le user , en cours
-		const cecile = await db.models.User.create(UserFactory.createCecile())
-		token = cecile.generateToken()
+		const testUser = await db.models.User.create(UserFactory.createTestUser())
+		token = testUser.generateToken()
 	})
 
 	it('index', async function () {

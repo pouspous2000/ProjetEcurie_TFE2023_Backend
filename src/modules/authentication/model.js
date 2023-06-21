@@ -108,5 +108,15 @@ export default function (sequelize) {
 		user.sendMail('email verification', html)
 	})
 
+	User.addHook('afterDestroy', async user => {
+		const templateSource = await readFile(
+			path.join(PathUtils.getSrcPath(), 'modules', 'authentication', 'emails', 'delete.hbs'),
+			'utf8'
+		)
+		const template = handlebars.compile(templateSource)
+		const html = template({})
+		user.sendMail('account deletion', html)
+	})
+
 	return User
 }

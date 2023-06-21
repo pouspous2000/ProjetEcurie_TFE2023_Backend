@@ -37,4 +37,14 @@ export class AuthenticationController {
 			next(error)
 		}
 	}
+
+	static async delete(request, response, next) {
+		try {
+			const user = request.user
+			await AuthenticationService.delete(user)
+			return response.status(204).send()
+		} catch (error) {
+			next(error)
+		}
+	}
 }

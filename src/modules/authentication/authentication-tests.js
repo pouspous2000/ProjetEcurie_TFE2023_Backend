@@ -13,8 +13,13 @@ chai.use(chaiHttp)
 const routePrefix = '/authentication'
 
 describe('Authentication module', function () {
+	let token = ''
+
 	beforeEach(async function () {
 		await db.models.User.destroy({ truncate: true })
+
+		const testUser = await db.models.User.create(UserFactory.createTestUser())
+		token = testUser.generateToken()
 	})
 
 	// register
@@ -120,5 +125,10 @@ describe('Authentication module', function () {
 		})
 		response.should.have.status(400)
 		response.body.should.have.property('message').eql(i18next.t('authentication_login_user_unconfirmed'))
+	})
+
+	it('delete user', async function () {
+		const response = await chai.request(app).delete(`${routePrefix}/me`).set('Authorization', `Bearer ${token}`)
+		response.should.have.status(204)
 	})
 })
