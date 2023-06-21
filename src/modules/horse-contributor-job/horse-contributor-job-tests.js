@@ -6,6 +6,7 @@ import i18next from '../../../i18n'
 import app from '@/app'
 import db from '@/database'
 import { HorseContributorJobFactory } from '@/modules/horse-contributor-job/factory'
+import { UserFactory } from '@/modules/authentication/factory'
 
 chai.should()
 chai.use(chaiHttp)
@@ -25,13 +26,20 @@ describe('HorseContributorJob Module', function () {
 				- the need arises to test the corresponding service
 				- and/or test execution time becomes an issue
 	 */
+	let token = ''
 	beforeEach(async function () {
 		await db.models.HorseContributorJob.destroy({ truncate: true })
+		await db.models.User.destroy({ truncate: true })
+
+		// et je dois ajouter le user , en cours
+		const cecile = await db.models.User.create(UserFactory.createCecile())
+		token = cecile.generateToken()
 	})
 
 	it('index', async function () {
 		await db.models.HorseContributorJob.bulkCreate(HorseContributorJobFactory.bulkCreate(10))
-		const response = await chai.request(app).get(`${routePrefix}`)
+		const response = await chai.request(app).get(`${routePrefix}`).set('Authorization', `Bearer ${token}`)
+
 		response.should.have.status(200)
 		response.body.should.have.length(10)
 	})

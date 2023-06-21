@@ -185,6 +185,11 @@
     "/horse_contributor_jobs": {
       "get": {
         "summary": "List all horseContributor Jobs",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [],
         "tags": [
           "HorseContributorJob"

@@ -12,6 +12,7 @@ import { Dotenv } from '@/utils/Dotenv'
 import { generalExceptLoginRateLimiter } from '@/middlewares/rate-limiter'
 import corsConfig from '@/configuration/cors'
 import { sequelizeErrorFormatter } from '@/middlewares/sql-error'
+import authenticate from '@/middlewares/authentication'
 
 const environment = new Dotenv()
 const app = express()
@@ -31,6 +32,7 @@ app.use(
 		statusLevels: true,
 	})
 )
+app.use(authenticate)
 
 //routes
 app.use(router)

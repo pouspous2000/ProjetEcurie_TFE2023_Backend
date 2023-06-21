@@ -21,6 +21,7 @@ export const AuthenticationLocales = {
 		// login
 		authentication_login_password_invalid: 'Mot de passe incorrect',
 		authentication_login_user_unconfirmed: 'Veuillez confirmer votre compte',
+		authentication_notAuthenticated: 'Pas identifié',
 	},
 	en: {},
 	nl: {},
