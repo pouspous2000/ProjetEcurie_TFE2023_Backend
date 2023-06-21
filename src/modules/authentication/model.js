@@ -1,7 +1,7 @@
 import path from 'path'
 import { readFile } from 'fs/promises'
 import handlebars from 'handlebars'
-import { hash } from 'bcrypt'
+import { compare, hash } from 'bcrypt'
 import i18next from '../../../i18n'
 import { Model, DataTypes } from 'sequelize'
 import { StringUtils } from '@/utils/StringUtils'
@@ -19,8 +19,22 @@ export class User extends Model {
 		return 'User'
 	}
 
+	async validatePassword(passwordPlain) {
+		return await compare(passwordPlain, this.password)
+	}
+
 	async sendMail(subject, html) {
 		await EmailUtils.sendEmail(this.email, subject, html)
+	}
+
+	generateToken(expiresIn = '1h') {
+		return TokenUtils.generateToken(
+			{
+				id: this.id,
+				email: this.email,
+			},
+			{ expiresIn: expiresIn }
+		)
 	}
 }
 

@@ -33,12 +33,16 @@
         "summary": "Create a new user",
         "parameters": [
           {
-            "name" : "body",
-            "in" : "body",
-            "required" : true,
-            "schema" : {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
               "type": "object",
-              "required": ["email", "password", "passwordConfirm"],
+              "required": [
+                "email",
+                "password",
+                "passwordConfirm"
+              ],
               "properties": {
                 "email": {
                   "type": "string"
@@ -65,14 +69,16 @@
               }
             }
           },
-          "422" : {
-            "description" : "Unprocessable Entity",
-            "schema" : {
-              "$ref" : "#/definitions/UnprocessableEntityResponse"
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
             }
           }
         },
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "description": "Register"
       }
     },
@@ -106,10 +112,10 @@
               "$ref": "#/definitions/ErrorResponse"
             }
           },
-          "422" : {
-            "description" : "Unprocessable Entity",
-            "schema" : {
-              "$ref" : "#/definitions/UnprocessableEntityResponse"
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
             }
           }
         },
@@ -117,6 +123,63 @@
           "Authentication"
         ],
         "description": "confirm a user with his confirmation code"
+      }
+    },
+    "/authentication/login": {
+      "post": {
+        "summary": "Login",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Login"
       }
     },
     "/horse_contributor_jobs": {
@@ -606,6 +669,17 @@
         "success": {
           "type": "boolean",
           "default": true
+        }
+      }
+    },
+    "TokenResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
         }
       }
     },

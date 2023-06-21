@@ -12,5 +12,6 @@ AuthenticationRouter.post(
 	AuthenticationController.register
 )
 AuthenticationRouter.get(`${prefix}/confirm/:confirmationCode`, AuthenticationController.confirm)
+AuthenticationRouter.post(`${prefix}/login`, validate(AuthenticationValidator.login()), AuthenticationController.login)
 
 export default AuthenticationRouter

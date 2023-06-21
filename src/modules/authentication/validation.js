@@ -16,4 +16,12 @@ export class AuthenticationValidator {
 			body('email').isEmail().withMessage(i18next.t('authentication_request_validation_email_isEmail')),
 		]
 	}
+
+	static login() {
+		return [
+			body('password').exists().withMessage(i18next.t('authentication_request_validation_password_exists')),
+			body('email').exists().withMessage(i18next.t('authentication_request_validation_email_exists')),
+			body('email').isEmail().withMessage(i18next.t('authentication_request_validation_email_isEmail')),
+		]
+	}
 }

@@ -17,6 +17,7 @@ describe('Authentication module', function () {
 		await db.models.User.destroy({ truncate: true })
 	})
 
+	// register
 	it('register valid', async function () {
 		const data = {
 			email: 'arsene.lupin@gmail.com',
@@ -51,6 +52,7 @@ describe('Authentication module', function () {
 		response.body.errors[0].errors.should.have.length(1)
 	})
 
+	// confirm
 	it('confirm valid', async function () {
 		const userObj = UserFactory.create()
 		await db.models.User.create(userObj)
@@ -68,5 +70,55 @@ describe('Authentication module', function () {
 		const response = await chai.request(app).get(`${routePrefix}/confirm/${cecile.confirmationCode}`)
 		response.should.have.status(422) // j'ai une 404 au lieu d'une 422 => à vérifier p e moi qui déconne
 		response.body.should.have.property('message').eql(i18next.t('authentication_already_confirmed'))
+	})
+
+	// login
+	it('login valid', async function () {
+		const cecileObj = UserFactory.createCecile()
+		await db.models.User.create(cecileObj)
+		const response = await chai.request(app).post(`${routePrefix}/login`).send({
+			email: cecileObj.email,
+			password: cecileObj.password,
+		})
+		response.should.have.status(200)
+		response.body.should.have.property('token')
+		response.body.should.have.property('refreshToken')
+	})
+
+	it('login invalid - validation middleware', async function () {
+		const response = await chai.request(app).post(`${routePrefix}/login`).send({})
+		response.should.have.status(422)
+		response.body.errors.should.have.length(2) // email and password
+	})
+
+	it('login invalid - inexisting email', async function () {
+		const response = await chai.request(app).post(`${routePrefix}/login`).send({
+			email: 'arsene.lupin@gmail.com',
+			password: 'password',
+		})
+		response.should.have.status(404)
+		response.body.should.have.property('message').eql(i18next.t('authentication_404'))
+	})
+
+	it('login invalid - wrong password', async function () {
+		const cecileObj = UserFactory.createCecile()
+		await db.models.User.create(cecileObj)
+		const response = await chai.request(app).post(`${routePrefix}/login`).send({
+			email: cecileObj.email,
+			password: 'wrong password',
+		})
+		response.should.have.status(400)
+		response.body.should.have.property('message').eql(i18next.t('authentication_login_password_invalid'))
+	})
+
+	it('login invalid - not confirmed user', async function () {
+		const userObj = UserFactory.create()
+		await db.models.User.create(userObj)
+		const response = await chai.request(app).post(`${routePrefix}/login`).send({
+			email: userObj.email.toLowerCase(),
+			password: userObj.password,
+		})
+		response.should.have.status(400)
+		response.body.should.have.property('message').eql(i18next.t('authentication_login_user_unconfirmed'))
 	})
 })

@@ -1,6 +1,6 @@
 export const AuthenticationLocales = {
 	fr: {
-		authentication_404: 'utilisateur introuvable',
+		authentication_404: 'Utilisateur introuvable',
 
 		// validation
 		authentication_sql_validation_email_unique: 'Cette adresse email est déjà utilisée',
@@ -17,6 +17,10 @@ export const AuthenticationLocales = {
 		authentication_register_message: 'Vous avez reçu un email de confirmation de création du compte',
 		authentication_confirm_message: 'Confirmation de votre compte',
 		authentication_already_confirmed: 'Ce compte a déjà été confirmé',
+
+		// login
+		authentication_login_password_invalid: 'Mot de passe incorrect',
+		authentication_login_user_unconfirmed: 'Veuillez confirmer votre compte',
 	},
 	en: {},
 	nl: {},

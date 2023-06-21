@@ -14,4 +14,42 @@ export class AuthenticationService {
 		user.status = 'ACTIVE'
 		return await user.save()
 	}
+
+	static async login(data) {
+		const user = await this.findUserByEmailOrFail(data.email)
+		await this.validatePassword(user, data.password)
+		if (user.status !== 'ACTIVE') {
+			throw createError(400, i18next.t('authentication_login_user_unconfirmed'))
+		}
+		const token = user.generateToken()
+		const refreshToken = user.generateToken('2h')
+		return {
+			token,
+			refreshToken,
+		}
+	}
+
+	static async validatePassword(user, password) {
+		const isPasswordValid = await user.validatePassword(password)
+		if (!isPasswordValid) {
+			throw createError(400, i18next.t('authentication_login_password_invalid'))
+		}
+		return isPasswordValid
+	}
+
+	static async findUserByConfirmPasswordOrFail(confirmationCode) {
+		const user = await db.models.User.findOne({ where: { confirmationCode } })
+		if (!user) {
+			throw createError(404, i18next.t('authentication_404'))
+		}
+		return user
+	}
+
+	static async findUserByEmailOrFail(email) {
+		const user = await db.models.User.findOne({ where: { email } })
+		if (!user) {
+			throw createError(404, i18next.t('authentication_404'))
+		}
+		return user
+	}
 }
