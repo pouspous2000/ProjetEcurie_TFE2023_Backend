@@ -87,11 +87,15 @@ export default function (sequelize) {
 	)
 
 	User.addHook('beforeSave', async user => {
+		if (user.changed('email') && user._previousDataValues.email && user.confirmationCode) {
+			user.confirmationCode = TokenUtils.generateToken({ email: user.email })
+			user.status = 'PENDING'
+		}
 		if (user.changed('password')) {
 			user.password = await hash(user.password, 10)
-			if (!user.confirmationCode) {
-				user.confirmationCode = TokenUtils.generateToken({ email: user.email })
-			}
+		}
+		if (!user.confirmationCode) {
+			user.confirmationCode = TokenUtils.generateToken({ email: user.email })
 		}
 	})
 
@@ -106,6 +110,21 @@ export default function (sequelize) {
 			rgpdLink: AppUtils.getAbsoluteUrl('rgpd'),
 		})
 		user.sendMail('email verification', html)
+	})
+
+	User.addHook('afterUpdate', async user => {
+		if (user.changed('status')) {
+			const templateSource = await readFile(
+				path.join(PathUtils.getSrcPath(), 'modules', 'authentication', 'emails', 'update.hbs'),
+				'utf8'
+			)
+			const template = handlebars.compile(templateSource)
+			const html = template({
+				authenticationConfirmLink: AppUtils.getAbsoluteUrl(`authentication/confirm/${user.confirmationCode}`),
+				rgpdLink: AppUtils.getAbsoluteUrl('rgpd'),
+			})
+			user.sendMail('email update', html)
+		}
 	})
 
 	User.addHook('afterDestroy', async user => {

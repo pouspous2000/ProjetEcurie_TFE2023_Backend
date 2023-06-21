@@ -24,4 +24,8 @@ export class AuthenticationValidator {
 			body('email').isEmail().withMessage(i18next.t('authentication_request_validation_email_isEmail')),
 		]
 	}
+
+	static update() {
+		return this.register()
+	}
 }

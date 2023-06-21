@@ -47,4 +47,18 @@ export class AuthenticationController {
 			next(error)
 		}
 	}
+
+	static async update(request, response, next) {
+		try {
+			const user = request.user
+			const data = {
+				email: request.body.email,
+				password: request.body.password,
+			}
+			await AuthenticationService.update(user, data)
+			return response.status(200).json(AuthenticationView.update())
+		} catch (error) {
+			next(error)
+		}
+	}
 }

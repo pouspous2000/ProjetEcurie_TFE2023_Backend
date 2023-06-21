@@ -131,4 +131,15 @@ describe('Authentication module', function () {
 		const response = await chai.request(app).delete(`${routePrefix}/me`).set('Authorization', `Bearer ${token}`)
 		response.should.have.status(204)
 	})
+
+	// we do not want to test invalid data as it is exactly the same than register
+	it('update user valid', async function () {
+		const response = await chai.request(app).put(`${routePrefix}/me`).set('Authorization', `Bearer ${token}`).send({
+			email: 'arsene.lupin@gmail.com',
+			password: 'password',
+			passwordConfirm: 'password',
+		})
+		response.should.have.status(200)
+		response.body.should.have.property('message').eql(i18next.t('authentication_update_message'))
+	})
 })

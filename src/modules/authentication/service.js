@@ -33,6 +33,10 @@ export class AuthenticationService {
 		return await user.destroy()
 	}
 
+	static async update(user, data) {
+		return await user.set(data).save()
+	}
+
 	static async validatePassword(user, password) {
 		const isPasswordValid = await user.validatePassword(password)
 		if (!isPasswordValid) {

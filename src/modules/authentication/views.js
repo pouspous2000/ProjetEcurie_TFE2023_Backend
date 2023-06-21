@@ -12,4 +12,10 @@ export class AuthenticationView {
 			message: i18next.t('authentication_confirm_message'),
 		}
 	}
+
+	static update() {
+		return {
+			message: i18next.t('authentication_update_message'),
+		}
+	}
 }
