@@ -87,7 +87,7 @@ describe('Role Module', function () {
 		}
 		const response = await chai.request(app).post(`${routePrefix}`).send(invalidRole)
 		response.should.have.status(422)
-		response.body.errors.should.have.length(3) // 2 errors for name and 1 for parentId
+		response.body.errors.should.have.length(2) // name and parentId we do not check error messages
 	})
 
 	it('create valid', async function () {
@@ -118,7 +118,7 @@ describe('Role Module', function () {
 			parentId: -1,
 		})
 		response.should.have.status(422)
-		response.body.errors.should.have.length(3)
+		response.body.errors.should.have.length(2)
 	})
 
 	it('update valid', async function () {

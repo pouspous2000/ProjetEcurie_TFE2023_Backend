@@ -32,6 +32,7 @@ describe('Authentication module', function () {
 		const data = {} // missing password, passwordConfirm, email
 		const response = await chai.request(app).post(`${routePrefix}/register`).send(data)
 		response.should.have.status(422)
+		response.body.errors.should.have.length(3) // email, password, passwordConfirm
 	})
 
 	it('register invalid - sql error - non unique mail', async function () {
@@ -46,7 +47,8 @@ describe('Authentication module', function () {
 
 		response.should.have.status(422)
 		response.body.errors.should.have.length(1)
-		response.body.errors[0].should.have.property('msg').eql('email must be unique')
+		response.body.errors[0].should.have.property('path').eql('email')
+		response.body.errors[0].errors.should.have.length(1)
 	})
 
 	it('confirm valid', async function () {

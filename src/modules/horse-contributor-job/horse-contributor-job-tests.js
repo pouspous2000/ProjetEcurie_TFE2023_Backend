@@ -73,18 +73,23 @@ describe('HorseContributorJob Module', function () {
 		const invalidDuplicateRecord = HorseContributorJobFactory.createVeterinary()
 		const response = await chai.request(app).post(`${routePrefix}`).send(invalidDuplicateRecord)
 		response.should.have.status(422)
+		response.body.should.have.property('message').eql(i18next.t('common_validation_error'))
+		response.body.errors.should.have.length(1)
+		response.body.errors[0].should.have.property('path').eql('name')
+		response.body.errors[0].errors.should.eql([i18next.t('horseContributorJob_sql_validation_name_unique')])
 	})
 
 	it('create invalid - missing name', async function () {
-		// note we could use a mockup package to prevent unnecessary http requests
 		const invalidHorseContributorJob = {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		}
 		const response = await chai.request(app).post(`${routePrefix}`).send(invalidHorseContributorJob)
-		const error = JSON.parse(response.error.text)
-		error.should.have.property('message').eql(i18next.t('common_validation_error'))
+		response.body.should.have.property('message').eql(i18next.t('common_validation_error'))
 		response.should.have.status(422)
+		response.body.errors.should.have.length(1)
+		response.body.errors[0].should.have.property('path').eql('name')
+		response.body.errors[0].errors.should.eql([i18next.t('horseContributorJob_request_validation_name_exists')])
 	})
 
 	it('update', async function () {

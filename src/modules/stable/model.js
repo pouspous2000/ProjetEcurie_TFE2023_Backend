@@ -25,13 +25,17 @@ export default function (sequelize) {
 				type: DataTypes.STRING,
 				allowNull: false,
 				validate: {
-					notEmpty: true,
+					notEmpty: {
+						msg: i18next.t(''),
+					},
 				},
 			},
 			vat: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				unique: true,
+				unique: {
+					msg: i18next.t('stable_sql_validation_vat_unique'),
+				},
 				validate: {
 					isBelgianVAT(value) {
 						if (!new RegExp('^BE0[0-9]{9}').test(value)) {
@@ -46,7 +50,9 @@ export default function (sequelize) {
 			phone: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				unique: true,
+				unique: {
+					msg: i18next.t('stable_sql_validation_phone_unique'),
+				},
 				set(value) {
 					this.setDataValue('phone', StringUtils.removeAllWhiteSpaces(value)) // remove all whitespaces
 				},
@@ -54,9 +60,13 @@ export default function (sequelize) {
 			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				unique: true,
+				unique: {
+					msg: i18next.t('stable_sql_validation_email_unique'),
+				},
 				validate: {
-					isEmail: true,
+					isEmail: {
+						msg: i18next.t('stable_sql_validation_email_email'),
+					},
 				},
 				set(value) {
 					this.setDataValue('email', StringUtils.removeAllWhiteSpaces(value.toLowerCase()))
@@ -67,8 +77,13 @@ export default function (sequelize) {
 				allowNull: true,
 				default: 1,
 				validate: {
-					isInt: true,
-					min: 1,
+					isInt: {
+						msg: i18next.t('stable_sql_validation_invoiceNb_isInt'),
+					},
+					min: {
+						args: [1],
+						msg: i18next.t(''),
+					},
 				},
 			},
 			invoicePrefix: {

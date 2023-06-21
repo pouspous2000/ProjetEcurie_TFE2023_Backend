@@ -66,6 +66,6 @@ describe('Stable Module', function () {
 		})
 		response.should.have.status(422)
 		response.body.should.have.property('errors')
-		response.body.errors.should.have.length(5) // we expect 5 errors
+		response.body.errors.should.have.length(5)
 	})
 })

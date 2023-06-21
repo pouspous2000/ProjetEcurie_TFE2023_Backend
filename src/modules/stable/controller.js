@@ -1,5 +1,4 @@
 import { StableService } from '@/modules/stable/service'
-import { SequelizeErrorFormatter } from '@/core/SequelizeErrorFormatter'
 
 export class StableController {
 	static async show(request, response, next) {
@@ -20,10 +19,6 @@ export class StableController {
 			const updatedStable = await StableService.update(stable, data)
 			return response.status(200).json(updatedStable)
 		} catch (error) {
-			const sqlError = new SequelizeErrorFormatter(error)
-			if (sqlError) {
-				return response.status(422).json(sqlError)
-			}
 			return next(error)
 		}
 	}

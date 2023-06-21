@@ -11,9 +11,27 @@ export default function (validations) {
 			return next()
 		}
 
+		const formattedErrors = []
+		const formattedErrorKeys = []
+		for (const error of errors.array()) {
+			if (!formattedErrorKeys.includes(error.path)) {
+				formattedErrorKeys.push(error.path)
+				formattedErrors.push({
+					path: error.path,
+					errors: [error.msg],
+				})
+			} else {
+				formattedErrors.find((formattedError, index) => {
+					if (formattedError.path === error.path) {
+						formattedErrors[index].errors.push(error.msg)
+					}
+				})
+			}
+		}
+
 		return response.status(422).json({
 			message: i18next.t('common_validation_error'),
-			errors: errors.array(),
+			errors: formattedErrors,
 		})
 	}
 }

@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize'
 import { ModelCacheHooksUtils } from '@/utils/CacheUtils'
 import { StringUtils } from '@/utils/StringUtils'
+import i18next from '../../../i18n'
 
 export class Role extends Model {
 	static getTable() {
@@ -32,9 +33,13 @@ export default function (sequelize) {
 			name: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				unique: true,
+				unique: {
+					msg: i18next.t('role_sql_validation_name_unique'),
+				},
 				validate: {
-					notEmpty: true,
+					notEmpty: {
+						msg: i18next.t('role_sql_validation_name_notEmpty'),
+					},
 				},
 				set(value) {
 					this.setDataValue('name', StringUtils.capitalizeFirstLetter(value.toLowerCase()))

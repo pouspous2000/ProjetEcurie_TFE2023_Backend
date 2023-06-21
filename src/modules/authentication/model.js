@@ -2,6 +2,7 @@ import path from 'path'
 import { readFile } from 'fs/promises'
 import handlebars from 'handlebars'
 import { hash } from 'bcrypt'
+import i18next from '../../../i18n'
 import { Model, DataTypes } from 'sequelize'
 import { StringUtils } from '@/utils/StringUtils'
 import { EmailUtils } from '@/utils/EmailUtils'
@@ -34,9 +35,13 @@ export default function (sequelize) {
 			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				unique: true,
+				unique: {
+					msg: i18next.t('authentication_sql_validation_email_unique'),
+				},
 				validate: {
-					isEmail: true,
+					isEmail: {
+						msg: i18next.t('authentication_sql_validation_email_isEmail'),
+					},
 				},
 				set(value) {
 					this.setDataValue('email', StringUtils.removeAllWhiteSpaces(value.toLowerCase()))
@@ -54,7 +59,9 @@ export default function (sequelize) {
 			},
 			confirmationCode: {
 				type: DataTypes.STRING,
-				unique: true,
+				unique: {
+					msg: i18next.t('authentication_sql_validation_confirmationCode_unique'),
+				},
 				allowNull: true,
 			},
 		},
