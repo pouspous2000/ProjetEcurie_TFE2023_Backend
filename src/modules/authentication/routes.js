@@ -4,23 +4,20 @@ import isAuthenticated from '@/middlewares/is-authenticated'
 import { AuthenticationController } from '@/modules/authentication/controller'
 import { AuthenticationValidator } from '@/modules/authentication/validation'
 
-const prefix = '/authentication'
+const prefix = 'authentication'
 const AuthenticationRouter = Router()
+const controller = new AuthenticationController()
 
-AuthenticationRouter.post(
-	`${prefix}/register`,
-	validate(AuthenticationValidator.register()),
-	AuthenticationController.register
-)
+AuthenticationRouter.post(`/${prefix}/register`, validate(AuthenticationValidator.register()), controller.register)
 
-AuthenticationRouter.get(`${prefix}/confirm/:confirmationCode`, AuthenticationController.confirm)
-AuthenticationRouter.post(`${prefix}/login`, validate(AuthenticationValidator.login()), AuthenticationController.login)
-AuthenticationRouter.delete(`${prefix}/me`, isAuthenticated, AuthenticationController.delete)
+AuthenticationRouter.get(`/${prefix}/confirm/:confirmationCode`, controller.confirm)
+AuthenticationRouter.post(`/${prefix}/login`, validate(AuthenticationValidator.login()), controller.login)
+AuthenticationRouter.delete(`/${prefix}/me`, isAuthenticated, controller.delete)
 AuthenticationRouter.put(
-	`${prefix}/me`,
+	`/${prefix}/me`,
 	isAuthenticated,
 	validate(AuthenticationValidator.update()),
-	AuthenticationController.update
+	controller.update
 )
 
 export default AuthenticationRouter

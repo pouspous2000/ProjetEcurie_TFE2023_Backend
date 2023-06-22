@@ -1,19 +1,21 @@
 import i18next from '../../../i18n'
 
 export class AuthenticationView {
-	static register() {
+	constructor() {}
+
+	register() {
 		return {
 			message: i18next.t('authentication_register_message'),
 		}
 	}
 
-	static confirm() {
+	confirm() {
 		return {
 			message: i18next.t('authentication_confirm_message'),
 		}
 	}
 
-	static update() {
+	update() {
 		return {
 			message: i18next.t('authentication_update_message'),
 		}

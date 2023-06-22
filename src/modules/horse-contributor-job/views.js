@@ -1,6 +1,8 @@
 export class HorseContributorJobView {
-	static index(records) {
-		return records.map(record => {
+	constructor() {}
+
+	index(horseContributorJobs) {
+		return horseContributorJobs.map(record => {
 			const value = record.dataValues
 			return {
 				id: value.id,

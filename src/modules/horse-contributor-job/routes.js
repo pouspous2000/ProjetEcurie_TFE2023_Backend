@@ -5,20 +5,13 @@ import { HorseContributorJobController } from '@/modules/horse-contributor-job/c
 import { HorseContributorJobValidator } from '@/modules/horse-contributor-job/validation'
 
 const HorseContributorJobRouter = Router()
+const controller = new HorseContributorJobController()
 
 const prefix = 'horse_contributor_jobs'
-HorseContributorJobRouter.get(`/${prefix}`, isAuthenticated, HorseContributorJobController.index)
-HorseContributorJobRouter.get(`/${prefix}/:id`, HorseContributorJobController.show)
-HorseContributorJobRouter.delete(`/${prefix}/:id`, HorseContributorJobController.delete)
-HorseContributorJobRouter.post(
-	`/${prefix}`,
-	validate(HorseContributorJobValidator.create()),
-	HorseContributorJobController.create
-)
-HorseContributorJobRouter.put(
-	`/${prefix}/:id`,
-	validate(HorseContributorJobValidator.update()),
-	HorseContributorJobController.update
-)
+HorseContributorJobRouter.get(`/${prefix}`, isAuthenticated, controller.index)
+HorseContributorJobRouter.get(`/${prefix}/:id`, controller.show)
+HorseContributorJobRouter.delete(`/${prefix}/:id`, controller.delete)
+HorseContributorJobRouter.post(`/${prefix}`, validate(HorseContributorJobValidator.create()), controller.create)
+HorseContributorJobRouter.put(`/${prefix}/:id`, validate(HorseContributorJobValidator.update()), controller.update)
 
 export default HorseContributorJobRouter

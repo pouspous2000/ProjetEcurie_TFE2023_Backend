@@ -5,21 +5,26 @@ import { CacheUtils } from '@/utils/CacheUtils'
 import i18next from '../../i18n'
 
 export class BaseService {
-	static async index(model, options = {}) {
+	constructor(model, notFoundTranslationKey = 'common_404') {
+		this._model = model
+		this._notFoundTranslationKey = notFoundTranslationKey
+	}
+
+	async index(options = {}) {
 		try {
-			let keys = await CacheUtils.getAllKeysStartingWith(model)
+			let keys = await CacheUtils.getAllKeysStartingWith(this._model)
 			if (!Array.isArray(keys)) {
 				keys = []
 			}
 			const cacheValues = []
 			const cacheIds = []
-			const regex = new RegExp(`^${model}_`)
+			const regex = new RegExp(`^${this._model}_`)
 
 			for (const key of keys) {
-				cacheValues.push(db.models[model].build(await CacheUtils.get(key), options))
+				cacheValues.push(db.models[this._model].build(await CacheUtils.get(key), options))
 				cacheIds.push(key.replace(regex, ''))
 			}
-			const dbValues = await db.models[model].findAll({
+			const dbValues = await db.models[this._model].findAll({
 				where: {
 					id: {
 						[Op.notIn]: cacheIds,
@@ -27,38 +32,39 @@ export class BaseService {
 				},
 				...options,
 			})
-			// [IMP] we could order by result but sequelize does not order by ... default => if we add such a scope impact here
 			return [...dbValues, ...cacheValues]
 		} catch (error) {
-			return await db.models[model].findAll()
+			return await db.models[this._model].findAll()
 		}
 	}
 
-	static async single(model, id) {
-		return await db.models[model].findByPk(id)
+	async single(id) {
+		return await db.models[this._model].findByPk(id)
 	}
 
-	static async delete(instance) {
+	async delete(id) {
+		const instance = await this.findOrFail(id)
 		return await instance.destroy()
 	}
 
-	static async create(model, data) {
-		return await db.models[model].create(data)
+	async create(data) {
+		return await db.models[this._model].create(data)
 	}
 
-	static async update(instance, data) {
+	async update(id, data) {
+		const instance = await this.findOrFail(id)
 		return await instance.set(data).save()
 	}
 
-	static async findOrFail(model, id, options = {}, translationKey = undefined) {
-		const cacheKey = `${model}_${id}`
+	async findOrFail(id, options = {}) {
+		const cacheKey = `${this._model}_${id}`
 		const cacheValue = await CacheUtils.get(cacheKey)
 		if (cacheValue) {
-			return db.models[model].build(cacheValue, options)
+			return db.models[this._model].build(cacheValue, options)
 		} else {
-			const modelInstance = await db.models[model].findByPk(id, options)
+			const modelInstance = await db.models[this._model].findByPk(id, options)
 			if (!modelInstance) {
-				throw createError(404, i18next.t(translationKey ?? 'common_404'))
+				throw createError(404, i18next.t(this._notFoundTranslationKey))
 			}
 			return modelInstance
 		}

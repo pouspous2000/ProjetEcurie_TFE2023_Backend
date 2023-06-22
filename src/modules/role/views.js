@@ -1,9 +1,11 @@
 export class RoleView {
-	static index(roles) {
-		return roles.map(role => RoleView.single(role))
+	constructor() {}
+
+	index(roles) {
+		return roles.map(role => this.show(role))
 	}
 
-	static single(role) {
+	show(role) {
 		return {
 			id: role.dataValues.id,
 			name: role.dataValues.name,
@@ -21,7 +23,7 @@ export class RoleView {
 		}
 	}
 
-	static create(role) {
+	create(role) {
 		return {
 			id: role.dataValues.id,
 			name: role.dataValues.name,
@@ -32,7 +34,7 @@ export class RoleView {
 		}
 	}
 
-	static update(role) {
+	update(role) {
 		return this.create(role)
 	}
 }
