@@ -36,6 +36,10 @@ export class User extends Model {
 			{ expiresIn: expiresIn }
 		)
 	}
+
+	static associate(models) {
+		User.hasOne(models.Contact, { foreignKey: 'userId', as: 'contact' })
+	}
 }
 
 export default function (sequelize) {

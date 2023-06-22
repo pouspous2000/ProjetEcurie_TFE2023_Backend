@@ -29,7 +29,7 @@ describe('HorseContributorJob Module', function () {
 	let token = ''
 	beforeEach(async function () {
 		await db.models.HorseContributorJob.destroy({ truncate: true })
-		await db.models.User.destroy({ truncate: true })
+		await db.models.User.destroy({ truncate: { cascade: true } })
 
 		const testUser = await db.models.User.create(UserFactory.createTestUser())
 		token = testUser.generateToken()
