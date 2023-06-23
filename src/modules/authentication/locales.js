@@ -12,9 +12,14 @@ export const AuthenticationLocales = {
 		authentication_request_validation_passwordConfirm_custom: 'Les mots de passe douvent correspondre',
 		authentication_request_validation_email_exists: 'Le champs email doit être présent',
 		authentication_request_validation_email_isEmail: 'Le champs email doit être une adresse email valide',
+		authentication_request_validation_roleId_exists: 'Le champs role doit être indiqué',
+		authentication_request_validation_roleId_isInt:
+			'Le champs role doit être un nombre entier supérieur ou égal à 1',
 
 		//register
-		authentication_register_message: 'Vous avez reçu un email de confirmation de création du compte',
+		authentication_registerClient_message: 'Vous avez reçu un email de confirmation de création du compte',
+		authentication_registerManually_message:
+			"Un email de demande de confirmation de compte a été envoyé à l'adresse indiquée",
 		authentication_confirm_message: 'Confirmation de votre compte',
 		authentication_already_confirmed: 'Ce compte a déjà été confirmé',
 
@@ -23,6 +28,7 @@ export const AuthenticationLocales = {
 		authentication_login_user_unconfirmed: 'Veuillez confirmer votre compte',
 		authentication_notAuthenticated: 'Pas identifié',
 		authentication_update_message: 'Votre compte a bien été modifié',
+		authentication_role_incorrectRolePermission: `Votre rôle ne vous permet pas de faire cette action`,
 	},
 	en: {},
 	nl: {},

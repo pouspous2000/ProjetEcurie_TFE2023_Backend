@@ -1,4 +1,5 @@
 import { User } from '@/modules/authentication/model'
+import { Role } from '@/modules/role/model'
 import { DataTypes } from 'sequelize'
 
 export const upUser = async (queryInterface, Sequelize) =>
@@ -7,6 +8,16 @@ export const upUser = async (queryInterface, Sequelize) =>
 			type: DataTypes.INTEGER,
 			autoIncrement: true,
 			primaryKey: true,
+		},
+		roleId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			references: {
+				model: Role.getTable(),
+				field: 'id',
+			},
+			onDelete: 'NO ACTION',
+			onUpdate: 'CASCADE',
 		},
 		email: {
 			type: DataTypes.STRING,

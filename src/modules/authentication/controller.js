@@ -5,18 +5,29 @@ export class AuthenticationController {
 	constructor() {
 		this._service = new AuthenticationService()
 		this._view = new AuthenticationView()
-		this.register = this.register.bind(this)
+		this.registerClient = this.registerClient.bind(this)
+		this.registerManually = this.registerManually.bind(this)
 		this.confirm = this.confirm.bind(this)
 		this.login = this.login.bind(this)
 		this.delete = this.delete.bind(this)
 		this.update = this.update.bind(this)
 	}
 
-	async register(request, response, next) {
+	async registerClient(request, response, next) {
 		try {
 			const data = request.body
-			await this._service.register(data)
-			return response.status(201).json(this._view.register())
+			await this._service.registerClient(data)
+			return response.status(201).json(this._view.registerClient())
+		} catch (error) {
+			next(error)
+		}
+	}
+
+	async registerManually(request, response, next) {
+		try {
+			const data = request.body
+			await this._service.registerManually(data)
+			return response.status(201).json(this._view.registerManually())
 		} catch (error) {
 			next(error)
 		}

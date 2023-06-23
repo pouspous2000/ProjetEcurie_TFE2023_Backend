@@ -30,4 +30,14 @@ export class RoleController extends BaseController {
 			],
 		})
 	}
+
+	async delete(request, response, next) {
+		try {
+			const { id } = request.params
+			await this._service.delete(id)
+			return response.status(204).send()
+		} catch (error) {
+			next(error)
+		}
+	}
 }

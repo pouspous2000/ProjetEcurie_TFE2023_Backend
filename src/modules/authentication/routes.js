@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import validate from '@/middlewares/validate'
 import isAuthenticated from '@/middlewares/is-authenticated'
+import hasRoleCategory from '@/middlewares/has-role-category'
+import validate from '@/middlewares/validate'
 import { AuthenticationController } from '@/modules/authentication/controller'
 import { AuthenticationValidator } from '@/modules/authentication/validation'
 
@@ -8,8 +9,18 @@ const prefix = 'authentication'
 const AuthenticationRouter = Router()
 const controller = new AuthenticationController()
 
-AuthenticationRouter.post(`/${prefix}/register`, validate(AuthenticationValidator.register()), controller.register)
-
+AuthenticationRouter.post(
+	`/${prefix}/register-manually`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(AuthenticationValidator.registerManually()),
+	controller.registerManually
+)
+AuthenticationRouter.post(
+	`/${prefix}/register`,
+	validate(AuthenticationValidator.registerClient()),
+	controller.registerClient
+)
 AuthenticationRouter.get(`/${prefix}/confirm/:confirmationCode`, controller.confirm)
 AuthenticationRouter.post(`/${prefix}/login`, validate(AuthenticationValidator.login()), controller.login)
 AuthenticationRouter.delete(`/${prefix}/me`, isAuthenticated, controller.delete)

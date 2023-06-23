@@ -17,6 +17,9 @@
     },
     {
       "name": "Role"
+    },
+    {
+      "name": "Debug"
     }
   ],
   "securityDefinitions": {
@@ -30,7 +33,7 @@
   "paths": {
     "/authentication/register": {
       "post": {
-        "summary": "Create a new user",
+        "summary": "Create a new user (client)",
         "parameters": [
           {
             "name": "body",
@@ -79,7 +82,70 @@
         "tags": [
           "Authentication"
         ],
-        "description": "Register"
+        "description": "Register a new client"
+      }
+    },
+    "/authentication/register-manually": {
+      "post": {
+        "summary": "Create a new user (any role) [ADMIN]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password",
+                "passwordConfirm",
+                "roleId"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "passwordConfirm": {
+                  "type": "string"
+                },
+                "roleId": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Register a new user (any role)"
       }
     },
     "/authentication/confirm/{confirmationCode}": {
@@ -286,7 +352,12 @@
         }
       },
       "post": {
-        "summary": "Create new horseContributorJob",
+        "summary": "Create new horseContributorJob [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",
@@ -334,6 +405,11 @@
     "/horse_contributor_jobs/{id}": {
       "get": {
         "summary": "Get horseContributorJob by id",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -363,7 +439,12 @@
         "description": "Get horseContributorJob by id"
       },
       "delete": {
-        "summary": "Delete horseContributorJob by id",
+        "summary": "Delete horseContributorJob by id [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -390,7 +471,12 @@
         "description": "Delete horseContributorJob by id"
       },
       "put": {
-        "summary": "Update horseContributorJob",
+        "summary": "Update horseContributorJob, [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",
@@ -445,6 +531,11 @@
     "/stables/{id}": {
       "get": {
         "summary": "Get stable by id",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -474,7 +565,12 @@
         "description": "Get stable by id"
       },
       "put": {
-        "summary": "Update stable",
+        "summary": "Update stable [ADMIN]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "model",
@@ -541,6 +637,11 @@
     "/roles": {
       "get": {
         "summary": "List all roles",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [],
         "tags": [
           "Role"
@@ -555,7 +656,12 @@
         }
       },
       "post": {
-        "summary": "Create new role",
+        "summary": "Create new role [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",
@@ -613,6 +719,11 @@
     "/roles/{id}": {
       "get": {
         "summary": "Get role by id",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -642,7 +753,12 @@
         "description": "Get role by id"
       },
       "delete": {
-        "summary": "Delete role by id",
+        "summary": "Delete role by id [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -675,7 +791,12 @@
         "description": "Delete role by id"
       },
       "put": {
-        "summary": "Update role",
+        "summary": "Update role, [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",
@@ -735,6 +856,51 @@
           "Role"
         ],
         "description": "Update role"
+      }
+    },
+    "/debug": {
+      "post": {
+        "summary": "Debug",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Debug"
+        ],
+        "description": "Debug route"
       }
     }
   },

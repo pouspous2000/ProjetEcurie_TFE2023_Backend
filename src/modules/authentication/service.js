@@ -1,5 +1,6 @@
-import db from '@/database'
+import { Op } from 'sequelize'
 import createError from 'http-errors'
+import db from '@/database'
 import i18next from '../../../i18n'
 
 export class AuthenticationService {
@@ -7,6 +8,26 @@ export class AuthenticationService {
 
 	async register(data) {
 		return await db.models.User.create(data)
+	}
+
+	async registerClient(data) {
+		const clientRole = await db.models.Role.findOne({
+			where: {
+				name: {
+					[Op.eq]: 'CLIENT',
+				},
+			},
+		})
+		data.roleId = clientRole.id
+		return await this.register(data)
+	}
+
+	async registerManually(data) {
+		const role = await db.models.Role.findByPk(data.roleId)
+		if (!role) {
+			throw createError(404, i18next.t('role_404'))
+		}
+		return await this.register(data)
 	}
 
 	async confirm(confirmationCode) {

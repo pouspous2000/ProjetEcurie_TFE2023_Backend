@@ -3,9 +3,15 @@ import i18next from '../../../i18n'
 export class AuthenticationView {
 	constructor() {}
 
-	register() {
+	registerClient() {
 		return {
 			message: i18next.t('authentication_register_message'),
+		}
+	}
+
+	registerManually() {
+		return {
+			message: i18next.t('authentication_registerManually_message'),
 		}
 	}
 

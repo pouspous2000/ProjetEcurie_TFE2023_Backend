@@ -42,7 +42,12 @@ export default function (sequelize) {
 					},
 				},
 				set(value) {
-					this.setDataValue('name', StringUtils.capitalizeFirstLetter(value.toLowerCase()))
+					this.setDataValue(
+						'name',
+						['ADMIN', 'EMPLOYEE', 'CLIENT'].includes(value)
+							? value
+							: StringUtils.capitalizeFirstLetter(value.toLowerCase())
+					)
 				},
 			},
 			isEditable: {

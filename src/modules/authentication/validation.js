@@ -2,7 +2,7 @@ import { body } from 'express-validator'
 import i18next from '../../../i18n'
 
 export class AuthenticationValidator {
-	static register() {
+	static registerClient() {
 		return [
 			body('password').exists().withMessage(i18next.t('authentication_request_validation_password_exists')),
 			body('passwordConfirm')
@@ -17,6 +17,14 @@ export class AuthenticationValidator {
 		]
 	}
 
+	static registerManually() {
+		return [
+			...this.registerClient(),
+			body('roleId').exists().withMessage(i18next.t('authentication_request_validation_roleId_exists')),
+			body('roleId').isInt({ min: 1 }).withMessage(i18next.t('authentication_request_validation_roleId_isInt')),
+		]
+	}
+
 	static login() {
 		return [
 			body('password').exists().withMessage(i18next.t('authentication_request_validation_password_exists')),
@@ -26,6 +34,6 @@ export class AuthenticationValidator {
 	}
 
 	static update() {
-		return this.register()
+		return this.registerClient()
 	}
 }

@@ -1,5 +1,6 @@
 export const RoleLocales = {
 	fr: {
+		// general
 		role_admin: 'admin',
 		role_employee: 'employee',
 		role_client: 'client',

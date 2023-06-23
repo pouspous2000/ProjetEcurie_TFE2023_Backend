@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { BaseFactory } from '@/core/BaseFactory'
+import { ArrayUtils } from '@/utils/ArrayUtils'
 
 export class UserFactory extends BaseFactory {
 	static uniqueConstraints = {
@@ -7,7 +8,7 @@ export class UserFactory extends BaseFactory {
 		confirmationCode: [],
 	}
 
-	static create(isConfirmed = false) {
+	static create(roleId, isConfirmed = false) {
 		let email
 		do {
 			email = faker.internet.email()
@@ -24,6 +25,7 @@ export class UserFactory extends BaseFactory {
 		this.uniqueConstraints.confirmationCode.push(confirmationCode)
 
 		return {
+			roleId: roleId,
 			email: email,
 			password: 'password',
 			status: isConfirmed ? 'ACTIVE' : 'PENDING',
@@ -32,15 +34,15 @@ export class UserFactory extends BaseFactory {
 		}
 	}
 
-	static bulkCreate(nbRecords, isConfirmed = false) {
+	static bulkCreate(nbRecords, roleIds, isConfirmed = false) {
 		const records = []
 		for (let i = 0; i < nbRecords; i++) {
-			records.push(this.create(isConfirmed))
+			records.push(this.create(ArrayUtils.getRandomElement(roleIds), isConfirmed))
 		}
 		return records
 	}
 
-	static createCecile() {
+	static createCecile(roleId) {
 		this.uniqueConstraints.email.push('cecile.bonnet@gail.com')
 
 		let confirmationCode = 'confirmation'
@@ -52,6 +54,7 @@ export class UserFactory extends BaseFactory {
 		this.uniqueConstraints.confirmationCode.push(confirmationCode)
 
 		return {
+			roleId: roleId,
 			email: 'cecile.bonnet@gail.com',
 			password: 'password',
 			status: 'ACTIVE',
@@ -60,12 +63,43 @@ export class UserFactory extends BaseFactory {
 		}
 	}
 
-	static createTestUser() {
-		const email = 'user.test@gail.com'
+	static createTestAdmin(roleId) {
+		const email = 'user.test.admin@gail.com'
 		this.uniqueConstraints.email.push(email)
-		let confirmationCode = 'test_user_confirmation_code'
+		let confirmationCode = 'test_user_admin_confirmation_code'
 		this.uniqueConstraints.confirmationCode.push(confirmationCode)
 		return {
+			roleId: roleId,
+			email: email,
+			password: 'password',
+			status: 'ACTIVE',
+			confirmationCode: confirmationCode,
+			...this._create(),
+		}
+	}
+
+	static createTestEmployee(roleId) {
+		const email = 'user.test.employee@gail.com'
+		this.uniqueConstraints.email.push(email)
+		let confirmationCode = 'test_user_employee_confirmation_code'
+		this.uniqueConstraints.confirmationCode.push(confirmationCode)
+		return {
+			roleId: roleId,
+			email: email,
+			password: 'password',
+			status: 'ACTIVE',
+			confirmationCode: confirmationCode,
+			...this._create(),
+		}
+	}
+
+	static createTestClient(roleId) {
+		const email = 'user.test.client@gail.com'
+		this.uniqueConstraints.email.push(email)
+		let confirmationCode = 'test_user_client_confirmation_code'
+		this.uniqueConstraints.confirmationCode.push(confirmationCode)
+		return {
+			roleId: roleId,
 			email: email,
 			password: 'password',
 			status: 'ACTIVE',

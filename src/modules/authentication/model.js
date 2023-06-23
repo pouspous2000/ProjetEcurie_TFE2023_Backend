@@ -50,6 +50,10 @@ export default function (sequelize) {
 				autoIncrement: true,
 				primaryKey: true,
 			},
+			roleId: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
 			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
