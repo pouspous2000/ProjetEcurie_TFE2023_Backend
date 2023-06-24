@@ -89,4 +89,18 @@ export class RoleService extends BaseService {
 		}
 		return subRoleIds
 	}
+
+	async getRoleByNameOrFail(name) {
+		const role = await db.models.Role.findOne({
+			where: {
+				name: {
+					[Op.eq]: name,
+				},
+			},
+		})
+		if (!role) {
+			throw createError(404, i18next.t('role_404'))
+		}
+		return role
+	}
 }
