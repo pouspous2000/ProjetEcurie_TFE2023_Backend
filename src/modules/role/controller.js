@@ -5,7 +5,7 @@ import { RoleView } from '@/modules/role/views'
 
 export class RoleController extends BaseController {
 	constructor() {
-		super(new RoleService(), new RoleView())
+		super(new RoleService(), undefined, new RoleView())
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
 		this.delete = this.delete.bind(this)
@@ -29,15 +29,5 @@ export class RoleController extends BaseController {
 				{ model: Role, as: 'parent' },
 			],
 		})
-	}
-
-	async delete(request, response, next) {
-		try {
-			const { id } = request.params
-			await this._service.delete(id)
-			return response.status(204).send()
-		} catch (error) {
-			next(error)
-		}
 	}
 }

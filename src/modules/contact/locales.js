@@ -1,6 +1,7 @@
 export const ContactLocales = {
 	fr: {
 		contact_404: 'Ce contact est introuvable',
+		contact_unauthorized: "Vous n'avez pas les permissions requises pour ce contact",
 
 		//validation
 		contact_sql_validation_userId_isInt: 'le contact doit être associé à un utilisateur valide',

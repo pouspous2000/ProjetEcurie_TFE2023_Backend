@@ -110,7 +110,7 @@ describe('Contact module', function () {
 				.request(app)
 				.get(`${routePrefix}/${testAdminContact.id}`)
 				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
-			response.should.have.status(404)
+			response.should.have.status(401)
 
 			const response2 = await chai
 				.request(app)
@@ -130,13 +130,13 @@ describe('Contact module', function () {
 				.request(app)
 				.get(`${routePrefix}/${testAdminContact.id}`)
 				.set('Authorization', `Bearer ${testClientUser.token}`)
-			response.should.have.status(404)
+			response.should.have.status(401)
 
 			const response2 = await chai
 				.request(app)
 				.get(`${routePrefix}/${testEmployeeContact.id}`)
 				.set('Authorization', `Bearer ${testClientUser.token}`)
-			response2.should.have.status(404)
+			response2.should.have.status(401)
 
 			const response3 = await chai
 				.request(app)
@@ -172,7 +172,7 @@ describe('Contact module', function () {
 				.request(app)
 				.delete(`${routePrefix}/${testAdminContact.id}`)
 				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
-			response.should.have.status(404)
+			response.should.have.status(401)
 
 			const response2 = await chai
 				.request(app)
@@ -192,13 +192,13 @@ describe('Contact module', function () {
 				.request(app)
 				.delete(`${routePrefix}/${testAdminContact.id}`)
 				.set('Authorization', `Bearer ${testClientUser.token}`)
-			response.should.have.status(404)
+			response.should.have.status(401)
 
 			const response2 = await chai
 				.request(app)
 				.delete(`${routePrefix}/${testEmployeeContact.id}`)
 				.set('Authorization', `Bearer ${testClientUser.token}`)
-			response2.should.have.status(404)
+			response2.should.have.status(401)
 
 			const response3 = await chai
 				.request(app)

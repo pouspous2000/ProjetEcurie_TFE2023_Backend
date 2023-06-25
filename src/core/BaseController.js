@@ -1,12 +1,16 @@
 export class BaseController {
-	constructor(service, view = undefined) {
+	constructor(service, policy = undefined, view = undefined) {
 		this._service = service
+		this._policy = policy
 		this._view = view
 	}
 
 	async index(request, response, next, options = {}) {
 		try {
-			const instances = await this._service.index(options)
+			let instances = await this._service.index(options)
+			if (this._policy && this._policy.index) {
+				instances = await this._policy.index(request, instances)
+			}
 			return response.status(200).json(this._view && this._view.index ? this._view.index(instances) : instances)
 		} catch (error) {
 			return next(error)
@@ -17,6 +21,9 @@ export class BaseController {
 		try {
 			const { id } = request.params
 			const instance = await this._service.findOrFail(id, options)
+			if (this._policy && this._policy.show) {
+				await this._policy.show(request, instance)
+			}
 			return response.status(200).json(this._view && this._view.show ? this._view.show(instance) : instance)
 		} catch (error) {
 			return next(error)
@@ -26,7 +33,11 @@ export class BaseController {
 	async delete(request, response, next, options = {}) {
 		try {
 			const { id } = request.params
-			await this._service.delete(id, options)
+			const instance = await this._service.findOrFail(id, options)
+			if (this._policy && this._policy.delete) {
+				await this._policy.delete(request, instance)
+			}
+			await this._service.delete(instance, options)
 			return response.status(204).send()
 		} catch (error) {
 			next(error)
@@ -36,6 +47,9 @@ export class BaseController {
 	async create(request, response, next) {
 		try {
 			const data = request.body
+			if (this._policy && this._policy.create) {
+				await this._policy.create(request, data)
+			}
 			const instance = await this._service.create(data)
 			return response.status(201).json(this._view && this._view.create ? this._view.create(instance) : instance)
 		} catch (error) {
@@ -47,7 +61,12 @@ export class BaseController {
 		try {
 			const { id } = request.params
 			const data = request.body
-			const instance = await this._service.update(id, data, options)
+			let instance = await this._service.findOrFail(id, options)
+			if (this._policy && this._policy.update) {
+				await this._policy.update(request, instance, data)
+			}
+
+			instance = await this._service.update(instance, data, options)
 			return response.status(200).json(this._view && this._view.update ? this._view.update(instance) : instance)
 		} catch (error) {
 			return next(error)

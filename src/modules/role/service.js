@@ -12,8 +12,7 @@ export class RoleService extends BaseService {
 		super(Role.getModelName(), 'role_404')
 	}
 
-	async delete(id) {
-		const role = await this.findOrFail(id)
+	async delete(role) {
 		if (!role.isEditable) {
 			throw createError(401, i18next.t('role_crud_record_unauthorized'))
 		}
@@ -50,8 +49,7 @@ export class RoleService extends BaseService {
 		return await super.create(data)
 	}
 
-	async update(id, data) {
-		const role = await this.findOrFail(id)
+	async update(role, data) {
 		if (!role.isEditable) {
 			throw createError(401, i18next.t('role_crud_record_unauthorized'))
 		}

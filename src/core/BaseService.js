@@ -42,8 +42,7 @@ export class BaseService {
 		return await db.models[this._model].findByPk(id)
 	}
 
-	async delete(id, options = {}) {
-		const instance = await this.findOrFail(id, options)
+	async delete(instance) {
 		return await instance.destroy()
 	}
 
@@ -51,8 +50,7 @@ export class BaseService {
 		return await db.models[this._model].create(data)
 	}
 
-	async update(id, data, options = {}) {
-		const instance = await this.findOrFail(id, options)
+	async update(instance, data) {
 		return await instance.set(data).save()
 	}
 
