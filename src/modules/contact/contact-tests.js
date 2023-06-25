@@ -145,4 +145,66 @@ describe('Contact module', function () {
 			response3.should.have.status(200)
 		})
 	})
+
+	describe('delete', async function () {
+		it('delete  with role admin', async function () {
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testAdminContact.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(204)
+
+			const response2 = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testEmployeeContact.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response2.should.have.status(204)
+
+			const response3 = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testClientContact.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response3.should.have.status(204)
+		})
+
+		it('delete  with role employee', async function () {
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testAdminContact.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+			response.should.have.status(404)
+
+			const response2 = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testEmployeeContact.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+			response2.should.have.status(204)
+
+			const response3 = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testClientContact.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+			response3.should.have.status(204)
+		})
+
+		it('delete  with role client', async function () {
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testAdminContact.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+			response.should.have.status(404)
+
+			const response2 = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testEmployeeContact.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+			response2.should.have.status(404)
+
+			const response3 = await chai
+				.request(app)
+				.delete(`${routePrefix}/${testClientContact.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+			response3.should.have.status(204)
+		})
+	})
 })

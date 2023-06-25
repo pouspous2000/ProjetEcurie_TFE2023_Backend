@@ -23,10 +23,10 @@ export class BaseController {
 		}
 	}
 
-	async delete(request, response, next) {
+	async delete(request, response, next, options = {}) {
 		try {
 			const { id } = request.params
-			await this._service.delete(id)
+			await this._service.delete(id, options)
 			return response.status(204).send()
 		} catch (error) {
 			next(error)
@@ -43,11 +43,11 @@ export class BaseController {
 		}
 	}
 
-	async update(request, response, next) {
+	async update(request, response, next, options = {}) {
 		try {
 			const { id } = request.params
 			const data = request.body
-			const instance = await this._service.update(id, data)
+			const instance = await this._service.update(id, data, options)
 			return response.status(200).json(this._view && this._view.update ? this._view.update(instance) : instance)
 		} catch (error) {
 			return next(error)
