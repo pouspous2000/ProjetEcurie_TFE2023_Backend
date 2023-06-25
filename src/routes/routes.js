@@ -8,6 +8,7 @@ import StableRouter from '@/modules/stable/routes'
 import RoleRouter from '@/modules/role/routes'
 import ContactRouter from '@/modules/contact/routes'
 import AuthenticationRouter from '@/modules/authentication/routes'
+import { PensionFactory } from '@/modules/pension/factory'
 
 const router = Router()
 
@@ -19,7 +20,15 @@ router.use(RoleRouter)
 router.use(ContactRouter)
 
 // eslint-disable-next-line no-unused-vars
-router.post(`/debug`, async function (request, response) {})
+router.post(`/debug`, async function (request, response) {
+	const machin = PensionFactory.create()
+	const bidule = PensionFactory.bulkCreate(10)
+	console.log(bidule.length)
+	console.log(machin)
+	return response.status(200).json({
+		data: PensionFactory.create(),
+	})
+})
 
 router.use('/docs', swaggerUi.serve)
 router.get('/docs', swaggerUi.setup(swaggerDocument))

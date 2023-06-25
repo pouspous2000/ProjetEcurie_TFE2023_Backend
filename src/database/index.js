@@ -7,11 +7,12 @@ import HorseContributorJobModel from '@/modules/horse-contributor-job/model'
 import StableModel from '@/modules/stable/model'
 import RoleModel from '@/modules/role/model'
 import ContactModel from '@/modules/contact/model'
+import PensionModel from '@/modules/pension/model'
 
 const sequelize = new Sequelize(configs[process.env.NODE_ENV])
 
 // add all models into this array
-const modelDefiners = [UserModel, HorseContributorJobModel, StableModel, RoleModel, ContactModel]
+const modelDefiners = [UserModel, HorseContributorJobModel, StableModel, RoleModel, ContactModel, PensionModel]
 
 // eslint-disable-next-line no-restricted-syntax
 modelDefiners.forEach(modelDefiner => {
