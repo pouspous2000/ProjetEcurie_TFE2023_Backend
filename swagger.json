@@ -929,7 +929,7 @@
     },
     "/contacts": {
       "get": {
-        "summary": "List contacts (result depending of role)",
+        "summary": "List contacts (result depending of role)  [ADMIN, EMPLOYEE, CLIENT]",
         "security": [
           {
             "bearer": []
@@ -954,11 +954,79 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create new contact [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "userId",
+                "firstName",
+                "lastName",
+                "address"
+              ],
+              "properties": {
+                "userId": {
+                  "type": "integer"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "mobile": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Role"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Contact"
+        ],
+        "description": "Create new contact"
       }
     },
     "/contacts/{id}": {
       "get": {
-        "summary": "Get contact by id",
+        "summary": "Get contact by id  [ADMIN, EMPLOYEE, CLIENT]",
         "security": [
           {
             "bearer": []
@@ -999,7 +1067,7 @@
         "description": "Get contact by id"
       },
       "delete": {
-        "summary": "Delete contact by id ",
+        "summary": "Delete contact by id  [ADMIN, EMPLOYEE, CLIENT]",
         "security": [
           {
             "bearer": []
@@ -1035,6 +1103,83 @@
           "Contact"
         ],
         "description": "Delete contact by id"
+      },
+      "put": {
+        "summary": "Update contact, [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "firstName",
+                "lastName",
+                "address"
+              ],
+              "properties": {
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "mobile": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "contact id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Contact"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Contact"
+        ],
+        "description": "Update contact"
       }
     },
     "/debug": {

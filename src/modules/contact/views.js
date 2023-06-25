@@ -20,4 +20,12 @@ export class ContactView {
 			updatedAt: contact.updatedAt,
 		}
 	}
+
+	create(contact) {
+		return this.show(contact)
+	}
+
+	update(contact) {
+		return this.show(contact)
+	}
 }

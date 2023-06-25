@@ -1,7 +1,6 @@
 import { Contact } from '@/modules/contact/model'
 import { DataTypes } from 'sequelize'
 import { User } from '@/modules/authentication/model'
-import i18next from '../../../i18n'
 
 export const upContact = async (queryInterface, Sequelize) =>
 	queryInterface.createTable(Contact.getTable(), {
@@ -35,9 +34,7 @@ export const upContact = async (queryInterface, Sequelize) =>
 		mobile: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: {
-				msg: i18next.t('contact_sql_validation_mobile_unique'),
-			},
+			unique: true,
 		},
 		address: {
 			type: DataTypes.TEXT,
