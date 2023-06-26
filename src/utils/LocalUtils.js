@@ -3,6 +3,7 @@ import { HorseContributorJobLocales } from '@/modules/horse-contributor-job/loca
 import { StableLocales } from '@/modules/stable/locales'
 import { RoleLocales } from '@/modules/role/locales'
 import { AuthenticationLocales } from '@/modules/authentication/locales'
+import { PensionLocales } from '@/modules/pension/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -30,6 +31,7 @@ export class LocalUtils {
 		StableLocales,
 		RoleLocales,
 		AuthenticationLocales,
+		PensionLocales,
 	]
 
 	static getLocales() {

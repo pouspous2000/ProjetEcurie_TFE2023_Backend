@@ -22,6 +22,9 @@
       "name": "HorseContributorJob"
     },
     {
+      "name": "Pension"
+    },
+    {
       "name": "Debug"
     }
   ],
@@ -1182,6 +1185,77 @@
         "description": "Update contact"
       }
     },
+    "/pensions": {
+      "get": {
+        "summary": "List all pensions",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [],
+        "tags": [
+          "Pension"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PensionList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/pensions/{id}": {
+      "get": {
+        "summary": "Get pension by id",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "pension id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PensionList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Pension"
+        ],
+        "description": "Get pension by id"
+      }
+    },
     "/debug": {
       "post": {
         "summary": "Debug",
@@ -1447,6 +1521,37 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Contact"
+      }
+    },
+    "Pension": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "monthlyPrice": {
+          "type": "number"
+        },
+        "description": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PensionList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Pension"
       }
     }
   }
