@@ -44,7 +44,7 @@ export default function (sequelize) {
 						msg: i18next.t('pension_sql_validation_monthlyPrice_notEmpty'),
 					},
 					min: {
-						args: [1],
+						args: [0.0],
 						msg: i18next.t('pension_sql_validation_monthlyPrice_min'),
 					},
 				},

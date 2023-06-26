@@ -17,4 +17,12 @@ export class PensionView {
 			updatedAt: pension.updatedAt,
 		}
 	}
+
+	create(pension) {
+		return this.show(pension)
+	}
+
+	update(pension) {
+		return this.show(pension)
+	}
 }

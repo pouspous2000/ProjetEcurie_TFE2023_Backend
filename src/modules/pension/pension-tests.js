@@ -7,6 +7,7 @@ import db from '@/database'
 import { RoleFactory } from '@/modules/role/factory'
 import { UserFactory } from '@/modules/authentication/factory'
 import { PensionFactory } from '@/modules/pension/factory'
+import { StringUtils } from '@/utils/StringUtils'
 
 chai.should()
 chai.use(chaiHttp)
@@ -147,6 +148,134 @@ describe('Pension module', function () {
 				.request(app)
 				.delete(`${routePrefix}/${pension.id}`)
 				.set('Authorization', `Bearer ${testClientUser.token}`)
+
+			response.should.have.status(401)
+		})
+	})
+
+	describe('create', async function () {
+		it('create valid - role admin', async function () {
+			const pensionData = PensionFactory.create()
+			const response = await chai
+				.request(app)
+				.post(`${routePrefix}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send(pensionData)
+			response.should.have.status(201)
+			response.body.should.have.property('id')
+			response.body.should.have
+				.property('name')
+				.eql(StringUtils.capitalizeFirstLetter(pensionData.name.toLowerCase()))
+			response.body.should.have.property('description').eql(pensionData.description)
+			response.body.should.have.property('createdAt')
+			response.body.should.have.property('updatedAt')
+		})
+
+		it('create valid - role employee', async function () {
+			const pensionData = PensionFactory.create()
+			const response = await chai
+				.request(app)
+				.post(`${routePrefix}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+				.send(pensionData)
+			response.should.have.status(401)
+		})
+
+		it('create valid - role client', async function () {
+			const pensionData = PensionFactory.create()
+			const response = await chai
+				.request(app)
+				.post(`${routePrefix}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+				.send(pensionData)
+			response.should.have.status(401)
+		})
+
+		it('create invalid - middleware', async function () {
+			const pensionData = {}
+			const response = await chai
+				.request(app)
+				.post(`${routePrefix}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send(pensionData)
+			response.should.have.status(422)
+			response.body.errors.map(error => error.path).should.eql(['name', 'monthlyPrice', 'description'])
+		})
+
+		describe('create invalid - sql errors', async function () {
+			it('duplicate name entry', async function () {
+				const pension1 = await db.models.Pension.create(PensionFactory.create())
+				const pension2 = PensionFactory.create()
+				pension2.name = pension1.name
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(pension2)
+
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['name'])
+			})
+
+			it('negative monthlyPrice', async function () {
+				const pension = PensionFactory.create()
+				pension.monthlyPrice = '-3.234'
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(pension)
+
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['monthlyPrice'])
+			})
+		})
+	})
+
+	describe('update', async function () {
+		// we will only check permissions as the update validation rules are the same and also for the views
+		it('with role admin', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const updatedData = PensionFactory.create()
+
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${pension.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send(updatedData)
+
+			response.should.have.status(200)
+			response.body.should.have.property('id').eql(pension.id)
+			response.body.should.have
+				.property('name')
+				.eql(StringUtils.capitalizeFirstLetter(updatedData.name.toLowerCase()))
+			response.body.should.have.property('description').eql(updatedData.description)
+			response.body.should.have.property('createdAt')
+			response.body.should.have.property('updatedAt')
+		})
+		it('with role employee', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const updatedData = PensionFactory.create()
+
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${pension.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+				.send(updatedData)
+
+			response.should.have.status(401)
+		})
+
+		it('with role client', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const updatedData = PensionFactory.create()
+
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${pension.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+				.send(updatedData)
 
 			response.should.have.status(401)
 		})

@@ -21,4 +21,18 @@ export class PensionPolicy {
 		}
 		throw createError(401, i18next.t('pension_unauthorized'))
 	}
+
+	async create(request) {
+		if (request.user.roleCategory === 'ADMIN') {
+			return
+		}
+		throw createError(401, i18next.t('pension_unauthorized'))
+	}
+
+	async update(request) {
+		if (request.user.roleCategory === 'ADMIN') {
+			return
+		}
+		throw createError(401, i18next.t('pension_unauthorized'))
+	}
 }
