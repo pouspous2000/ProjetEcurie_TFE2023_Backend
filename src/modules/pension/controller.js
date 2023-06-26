@@ -8,5 +8,6 @@ export class PensionController extends BaseController {
 		super(new PensionService(), new PensionPolicy(), new PensionView())
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
+		this.delete = this.delete.bind(this)
 	}
 }

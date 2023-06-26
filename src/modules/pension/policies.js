@@ -1,4 +1,6 @@
+import createError from 'http-errors'
 import { PensionService } from '@/modules/pension/service'
+import i18next from '../../../i18n'
 
 export class PensionPolicy {
 	constructor() {
@@ -11,5 +13,12 @@ export class PensionPolicy {
 
 	async show(request, pension) {
 		return pension
+	}
+
+	async delete(request) {
+		if (request.user.roleCategory === 'ADMIN') {
+			return
+		}
+		throw createError(401, i18next.t('pension_unauthorized'))
 	}
 }

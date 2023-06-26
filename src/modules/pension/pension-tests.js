@@ -119,4 +119,36 @@ describe('Pension module', function () {
 			response.should.have.status(404)
 		})
 	})
+
+	describe('delete', async function () {
+		it('delete with role admin', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${pension.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+			response.should.have.status(204)
+		})
+
+		it('delete with role employee', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${pension.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+
+			response.should.have.status(401)
+		})
+
+		it('delete with role client', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${pension.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+
+			response.should.have.status(401)
+		})
+	})
 })
