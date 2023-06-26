@@ -11,6 +11,14 @@ export class HorseContributorJob extends Model {
 	static getModelName() {
 		return 'HorseContributorJob'
 	}
+
+	static associate(models) {
+		HorseContributorJob.belongsToMany(models.HorseContributor, {
+			through: models.HorseContributorHorseContributorJob,
+			foreignKey: 'horseContributorJobId',
+			otherKey: 'horseContributorId',
+		})
+	}
 }
 
 export default function (sequelize) {
