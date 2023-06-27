@@ -6,6 +6,7 @@ import { AuthenticationLocales } from '@/modules/authentication/locales'
 import { PensionLocales } from '@/modules/pension/locales'
 import { HorseContributorLocales } from '@/modules/horse-contributor/locales'
 import { AdditiveLocales } from '@/modules/additive/locales'
+import { HorseLocales } from '@/modules/horse/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -36,6 +37,7 @@ export class LocalUtils {
 		PensionLocales,
 		HorseContributorLocales,
 		AdditiveLocales,
+		HorseLocales,
 	]
 
 	static getLocales() {

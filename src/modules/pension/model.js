@@ -11,6 +11,10 @@ export class Pension extends Model {
 	static getModelName() {
 		return 'Pension'
 	}
+
+	static associate(models) {
+		Pension.hasMany(models.Horse, { foreignKey: 'pensionId', as: 'horses' })
+	}
 }
 
 export default function (sequelize) {

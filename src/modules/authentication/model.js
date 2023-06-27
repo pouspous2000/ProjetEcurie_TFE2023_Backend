@@ -39,6 +39,7 @@ export class User extends Model {
 
 	static associate(models) {
 		User.hasOne(models.Contact, { foreignKey: 'userId', as: 'contact' })
+		User.hasMany(models.Horse, { foreignKey: 'ownerId', as: 'horses' })
 	}
 }
 
