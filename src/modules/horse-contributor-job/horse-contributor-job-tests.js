@@ -18,7 +18,7 @@ describe('HorseContributorJob Module', function () {
 	let testAdmin, testEmployee, testClient
 
 	beforeEach(async function () {
-		await db.models.HorseContributorJob.destroy({ truncate: true })
+		await db.models.HorseContributorJob.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
