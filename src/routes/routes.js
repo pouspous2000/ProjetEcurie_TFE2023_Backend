@@ -9,6 +9,7 @@ import RoleRouter from '@/modules/role/routes'
 import ContactRouter from '@/modules/contact/routes'
 import AuthenticationRouter from '@/modules/authentication/routes'
 import PensionRouter from '@/modules/pension/routes'
+import HorseContributorRouter from '@/modules/horse-contributor/routes'
 
 import { PensionFactory } from '@/modules/pension/factory'
 
@@ -21,6 +22,7 @@ router.use(StableRouter)
 router.use(RoleRouter)
 router.use(ContactRouter)
 router.use(PensionRouter)
+router.use(HorseContributorRouter)
 
 // eslint-disable-next-line no-unused-vars
 router.post(`/debug`, async function (request, response) {

@@ -4,6 +4,7 @@ import { StableLocales } from '@/modules/stable/locales'
 import { RoleLocales } from '@/modules/role/locales'
 import { AuthenticationLocales } from '@/modules/authentication/locales'
 import { PensionLocales } from '@/modules/pension/locales'
+import { HorseContributorLocales } from '@/modules/horse-contributor/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -32,6 +33,7 @@ export class LocalUtils {
 		RoleLocales,
 		AuthenticationLocales,
 		PensionLocales,
+		HorseContributorLocales,
 	]
 
 	static getLocales() {
