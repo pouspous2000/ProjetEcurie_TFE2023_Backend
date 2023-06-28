@@ -22,7 +22,7 @@ export const upHorse = async (queryInterface, Sequelize) =>
 		},
 		pensionId: {
 			type: DataTypes.INTEGER,
-			allowNull: false,
+			allowNull: true,
 			references: {
 				model: Pension.getTable(),
 				field: 'id',
