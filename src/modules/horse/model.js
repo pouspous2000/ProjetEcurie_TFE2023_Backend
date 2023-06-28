@@ -13,6 +13,12 @@ export class Horse extends Model {
 	static associate(models) {
 		Horse.belongsTo(models.User, { foreignKey: 'ownerId', as: 'owner' })
 		Horse.belongsTo(models.Pension, { foreignKey: 'pensionId', as: 'pension' })
+		Horse.belongsToMany(models.User, {
+			through: models.HorseUser,
+			foreignKey: 'horseId',
+			otherKey: 'userId',
+			as: 'horsemen',
+		})
 	}
 }
 

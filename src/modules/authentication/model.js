@@ -40,6 +40,12 @@ export class User extends Model {
 	static associate(models) {
 		User.hasOne(models.Contact, { foreignKey: 'userId', as: 'contact' })
 		User.hasMany(models.Horse, { foreignKey: 'ownerId', as: 'horses' })
+		User.belongsToMany(models.Horse, {
+			through: models.HorseUser,
+			foreignKey: 'userId',
+			otherKey: 'horseId',
+			as: 'rideHorses',
+		})
 	}
 }
 
