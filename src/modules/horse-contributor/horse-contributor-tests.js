@@ -94,10 +94,10 @@ describe('HorseContributor module', function () {
 			response.body.should.have.property('id').eql(horseContributor.id)
 			response.body.should.have
 				.property('firstName')
-				.eql(StringUtils.capitalizeFirstLetter(horseContributor.firstName.trim().toLowerCase()))
+				.eql(StringUtils.capitalizeFirstLetter(horseContributor.firstName.trim()))
 			response.body.should.have
 				.property('lastName')
-				.eql(StringUtils.capitalizeFirstLetter(horseContributor.lastName.trim().toLowerCase()))
+				.eql(StringUtils.capitalizeFirstLetter(horseContributor.lastName.trim()))
 			response.body.should.have.property('email').eql(horseContributor.email)
 			response.body.should.have.property('createdAt')
 			response.body.should.have.property('updatedAt')

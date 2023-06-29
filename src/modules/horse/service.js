@@ -1,3 +1,4 @@
+import { Op } from 'sequelize'
 import db from '@/database'
 import { Horse } from '@/modules/horse/model'
 import { BaseService } from '@/core/BaseService'
@@ -18,7 +19,19 @@ export class HorseService extends BaseService {
 		if (!pension) {
 			throw createError(422, i18next.t('horse_422_inexistingPension'))
 		}
-		return await super.create(data, options)
+		const horsemen = await db.models.User.findAll({
+			where: {
+				id: {
+					[Op.in]: data.horsemen,
+				},
+			},
+		})
+		if (horsemen.length !== data.horsemen.length) {
+			throw createError(422, i18next.t('horse_422_inexistingHorseman'))
+		}
+		const horse = await super.create(data)
+		await horse.setHorsemen(horsemen)
+		return await this.findOrFail(horse.id, options)
 	}
 
 	async update(instance, data) {
@@ -30,6 +43,19 @@ export class HorseService extends BaseService {
 		if (!pension) {
 			throw createError(422, i18next.t('horse_422_inexistingPension'))
 		}
+
+		const horsemen = await db.models.User.findAll({
+			where: {
+				id: {
+					[Op.in]: data.horsemen,
+				},
+			},
+		})
+		if (horsemen.length !== data.horsemen.length) {
+			throw createError(422, i18next.t('horse_422_inexistingHorseman'))
+		}
+		instance.setHorsemen(horsemen)
+
 		return await super.update(instance, data)
 	}
 }

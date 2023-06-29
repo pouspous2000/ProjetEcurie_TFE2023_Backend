@@ -156,6 +156,7 @@ describe('Horse module', function () {
 		it('with role admin', async function () {
 			const pension = ArrayUtils.getRandomElement(pensions)
 			const horse = await db.models.Horse.create(HorseFactory.create(testHorseOwner1.id, pension.id))
+			horse.setHorsemen([testHorseOwner1.id, testHorseOwner2.id])
 			const response = await chai
 				.request(app)
 				.get(`${routePrefix}/${horse.id}`)
@@ -180,6 +181,17 @@ describe('Horse module', function () {
 				name: pension.name,
 				monthlyPrice: pension.monthlyPrice,
 				description: pension.description,
+			})
+			response.body.horsemen.should.have.length(2)
+			response.body.horsemen[0].should.eql({
+				email: testHorseOwner1.email,
+				userId: testHorseOwner1.id,
+				firstName: testHorseOwner1Contact.firstName,
+				lastName: testHorseOwner1Contact.lastName,
+				phone: testHorseOwner1Contact.phone,
+				mobile: testHorseOwner1Contact.mobile,
+				address: testHorseOwner1Contact.address,
+				invoicingAddress: testHorseOwner1Contact.invoicingAddress,
 			})
 		})
 
@@ -301,16 +313,17 @@ describe('Horse module', function () {
 			})
 		})
 	})
-
 	describe('create', async function () {
 		describe('create with valid data', async function () {
 			it('with role admin', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				horseData.horsemen = [testHorseOwner1.id]
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
 					.set('Authorization', `Bearer ${testAdminUser.token}`)
 					.send(horseData)
+
 				response.should.have.status(201)
 				response.body.should.have.property('id')
 				response.body.should.have.property('name').eql(horseData.name)
@@ -332,10 +345,21 @@ describe('Horse module', function () {
 					monthlyPrice: pensions[0].monthlyPrice,
 					description: pensions[0].description,
 				})
+				response.body.horsemen[0].should.eql({
+					email: testHorseOwner1.email,
+					userId: testHorseOwner1.id,
+					firstName: testHorseOwner1Contact.firstName,
+					lastName: testHorseOwner1Contact.lastName,
+					phone: testHorseOwner1Contact.phone,
+					mobile: testHorseOwner1Contact.mobile,
+					address: testHorseOwner1Contact.address,
+					invoicingAddress: testHorseOwner1Contact.invoicingAddress,
+				})
 			})
 
 			it('with role employee', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				horseData.horsemen = [testHorseOwner1.id]
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -346,6 +370,7 @@ describe('Horse module', function () {
 
 			it('with role employee - not owner', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				horseData.horsemen = [testHorseOwner1.id]
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -356,6 +381,7 @@ describe('Horse module', function () {
 
 			it('with role employee - owner', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				horseData.horsemen = [testHorseOwner1.id]
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -374,7 +400,9 @@ describe('Horse module', function () {
 					.set('Authorization', `Bearer ${testAdminUser.token}`)
 					.send(data)
 				response.should.have.status(422)
-				response.body.errors.map(error => error.path).should.eql(['ownerId', 'pensionId', 'name', 'comment'])
+				response.body.errors
+					.map(error => error.path)
+					.should.eql(['ownerId', 'pensionId', 'name', 'horsemen', 'comment'])
 			})
 		})
 
@@ -393,16 +421,17 @@ describe('Horse module', function () {
 	describe('update', async function () {
 		// we do not care about the request etc as it is the same as create
 		it('with role admin', async function () {
-			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
+			const horse = await db.models.Horse.create({
+				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				horsemen: [testHorseOwner1.id],
+			})
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
+				horsemen: [testHorseOwner2.id],
 			}
-
 			const response = await chai
 				.request(app)
 				.put(`${routePrefix}/${horse.id}`)
@@ -430,17 +459,30 @@ describe('Horse module', function () {
 				monthlyPrice: pensions[1].monthlyPrice,
 				description: pensions[1].description,
 			})
+			response.body.horsemen[0].should.eql({
+				email: testHorseOwner2.email,
+				userId: testHorseOwner2.id,
+				firstName: testHorseOwner2Contact.firstName,
+				lastName: testHorseOwner2Contact.lastName,
+				phone: testHorseOwner2Contact.phone,
+				mobile: testHorseOwner2Contact.mobile,
+				address: testHorseOwner2Contact.address,
+				invoicingAddress: testHorseOwner2Contact.invoicingAddress,
+			})
 		})
 
 		it('with role employee', async function () {
-			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
+			const horse = await db.models.Horse.create({
+				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				horsemen: [testHorseOwner1.id],
+			})
+
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
+				horsemen: [testHorseOwner1.id],
 			}
 
 			const response = await chai
@@ -453,14 +495,17 @@ describe('Horse module', function () {
 		})
 
 		it('with role client - not owner', async function () {
-			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
+			const horse = await db.models.Horse.create({
+				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				horsemen: [testHorseOwner1.id],
+			})
+
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
+				horsemen: [testHorseOwner1.id],
 			}
 
 			const response = await chai
@@ -474,14 +519,17 @@ describe('Horse module', function () {
 		})
 
 		it('with role client - owner with unauthorized owner change', async function () {
-			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
+			const horse = await db.models.Horse.create({
+				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				horsemen: [testHorseOwner1.id],
+			})
+
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
+				horsemen: [testHorseOwner1.id],
 			}
 			const response = await chai
 				.request(app)
@@ -494,14 +542,17 @@ describe('Horse module', function () {
 		})
 
 		it('with role client - owner and allowed change', async function () {
-			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
+			const horse = await db.models.Horse.create({
+				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				horsemen: [testHorseOwner1.id],
+			})
+
 			const data = {
-				ownerId: horse.ownerId,
+				ownerId: testHorseOwner1.id,
 				pensionId: pensions[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
+				horsemen: [testHorseOwner1.id],
 			}
 			const response = await chai
 				.request(app)

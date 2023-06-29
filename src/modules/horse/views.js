@@ -8,14 +8,6 @@ export class HorseView {
 	}
 
 	show(horse) {
-		const pensionView = !horse.pension
-			? null
-			: {
-					name: horse.pension.name,
-					monthlyPrice: horse.pension.monthlyPrice,
-					description: horse.pension.description,
-					// eslint-disable-next-line no-mixed-spaces-and-tabs
-			  }
 		return {
 			id: horse.id,
 			name: horse.name,
@@ -32,7 +24,8 @@ export class HorseView {
 				address: horse.owner.contact.address,
 				invoicingAddress: horse.owner.contact.invoicingAddress,
 			},
-			pension: pensionView,
+			pension: this._getPensionView(horse),
+			horsemen: this._getHorsemenView(horse),
 		}
 	}
 
@@ -42,5 +35,34 @@ export class HorseView {
 
 	update(horse) {
 		return this.show(horse)
+	}
+
+	_getPensionView(horse) {
+		if (horse.pension) {
+			return {
+				name: horse.pension.name,
+				monthlyPrice: horse.pension.monthlyPrice,
+				description: horse.pension.description,
+			}
+		}
+		return null
+	}
+
+	_getHorsemenView(horse) {
+		if (horse.horsemen.length) {
+			return horse.horsemen.map(horseman => {
+				return {
+					email: horseman.email,
+					userId: horseman.contact.userId,
+					firstName: horseman.contact.firstName,
+					lastName: horseman.contact.lastName,
+					phone: horseman.contact.phone,
+					mobile: horseman.contact.mobile,
+					address: horseman.contact.address,
+					invoicingAddress: horseman.contact.invoicingAddress,
+				}
+			})
+		}
+		return []
 	}
 }

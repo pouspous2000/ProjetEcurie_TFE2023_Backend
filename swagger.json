@@ -2596,6 +2596,38 @@
               "type": "string"
             }
           }
+        },
+        "horsemen": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "integer"
+              },
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "mobile": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "invoicingAddress": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },

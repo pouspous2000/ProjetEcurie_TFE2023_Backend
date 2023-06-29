@@ -19,6 +19,19 @@ export class HorseValidator {
 			body('name').exists().withMessage(i18next.t('horse_request_validation_name_exists')),
 			body('name').isLength({ min: 1, max: 255 }).withMessage(i18next.t('horse_request_validation_name_length')),
 			body('comment').exists().withMessage(i18next.t('horse_request_validation_comment_exists')),
+			body('horsemen').exists().withMessage(i18next.t('horse_request_validation_horsemen_exists')),
+			body('horsemen').custom(horsemen => {
+				if (!Array.isArray(horsemen)) {
+					throw new Error(i18next.t('horse_request_validation_horsemen_isArray'))
+				}
+				horsemen.forEach(horseman => {
+					if (!Number.isInteger(horseman) || horseman <= 0) {
+						throw new Error(i18next.t('horse_request_validation_horsemen_horseman_isPositiveInteger'))
+					}
+					return true
+				})
+				return true
+			}),
 		]
 	}
 }

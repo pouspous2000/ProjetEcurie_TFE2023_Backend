@@ -49,6 +49,15 @@ export class HorseController extends BaseController {
 					model: Pension,
 					as: 'pension',
 				},
+				{
+					model: User,
+					as: 'horsemen',
+					attributes: ['email'],
+					include: {
+						model: Contact,
+						as: 'contact',
+					},
+				},
 			],
 		}
 	}
