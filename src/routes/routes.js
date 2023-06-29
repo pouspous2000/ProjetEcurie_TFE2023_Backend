@@ -13,7 +13,10 @@ import HorseContributorRouter from '@/modules/horse-contributor/routes'
 import AdditiveRouter from '@/modules/additive/routes'
 import HorseRouter from '@/modules/horse/routes'
 
-import { PensionFactory } from '@/modules/pension/factory'
+import db from '@/database'
+import { User } from '@/modules/authentication/model'
+import { Contact } from '@/modules/contact/model'
+import { Pension } from '@/modules/pension/model'
 
 const router = Router()
 
@@ -30,13 +33,32 @@ router.use(HorseRouter)
 
 // eslint-disable-next-line no-unused-vars
 router.post(`/debug`, async function (request, response) {
-	const machin = PensionFactory.create()
-	const bidule = PensionFactory.bulkCreate(10)
-	console.log(bidule.length)
-	console.log(machin)
-	return response.status(200).json({
-		data: PensionFactory.create(),
-	})
+	const res = await db.models.Horse.create(
+		{
+			ownerId: 1,
+			pensionId: 1,
+			name: 'patapouf',
+			comment: 'some comment',
+		},
+		{
+			include: [
+				{
+					model: User,
+					as: 'owner',
+					attributes: ['email'],
+					include: {
+						model: Contact,
+						as: 'contact',
+					},
+				},
+				{
+					model: Pension,
+					as: 'pension',
+				},
+			],
+		}
+	)
+	return response.status(200).json(res) // ca ne fonctionne pas donc je pense que je dois faire une query en plus
 })
 
 router.use('/docs', swaggerUi.serve)

@@ -44,13 +44,16 @@ export class BaseController {
 		}
 	}
 
-	async create(request, response, next) {
+	async create(request, response, next, options = {}) {
 		try {
 			const data = request.body
 			if (this._policy && this._policy.create) {
 				await this._policy.create(request, data)
 			}
-			const instance = await this._service.create(data)
+			let instance = await this._service.create(data)
+			if (Object.keys(options).length !== 0) {
+				instance = await this._service.findOrFail(instance.id, options)
+			}
 			return response.status(201).json(this._view && this._view.create ? this._view.create(instance) : instance)
 		} catch (error) {
 			return next(error)
@@ -61,12 +64,14 @@ export class BaseController {
 		try {
 			const { id } = request.params
 			const data = request.body
-			let instance = await this._service.findOrFail(id, options)
+			let instance = await this._service.findOrFail(id)
 			if (this._policy && this._policy.update) {
 				await this._policy.update(request, instance, data)
 			}
-
-			instance = await this._service.update(instance, data, options)
+			instance = await this._service.update(instance, data)
+			if (Object.keys(options).length !== 0) {
+				instance = await this._service.findOrFail(instance.id, options)
+			}
 			return response.status(200).json(this._view && this._view.update ? this._view.update(instance) : instance)
 		} catch (error) {
 			return next(error)

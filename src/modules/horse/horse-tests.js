@@ -12,6 +12,7 @@ import { ArrayUtils } from '@/utils/ArrayUtils'
 import { HorseFactory } from '@/modules/horse/factory'
 import { PensionFactory } from '@/modules/pension/factory'
 import i18next from '../../../i18n'
+import { ContactFactory } from '@/modules/contact/factory'
 
 chai.should()
 chai.use(chaiHttp)
@@ -21,10 +22,12 @@ const routePrefix = '/horses'
 describe('Horse module', function () {
 	let testAdminUser, testEmployeeUser, testClientUser
 	let testHorseOwner1, testHorseOwner2
+	let testHorseOwner1Contact, testHorseOwner2Contact
 	let pensions = []
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
+		await db.models.Contact.destroy({ truncate: { cascade: true } })
 		await db.models.Horse.destroy({ truncate: { cascade: true } })
 		await db.models.Pension.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
@@ -44,6 +47,10 @@ describe('Horse module', function () {
 		testHorseOwner1 = await db.models.User.create(UserFactory.create(roleClient.id, true))
 		testHorseOwner2 = await db.models.User.create(UserFactory.create(roleClient.id, true))
 
+		// create horse owner contacts
+		testHorseOwner1Contact = await db.models.Contact.create(ContactFactory.create(testHorseOwner1.id))
+		testHorseOwner2Contact = await db.models.Contact.create(ContactFactory.create(testHorseOwner2.id))
+
 		// create pensions
 		for (let i = 0; i < 5; i++) {
 			pensions.push(await db.models.Pension.create(PensionFactory.create()))
@@ -60,6 +67,7 @@ describe('Horse module', function () {
 		testAdminUser = testEmployeeUser = testClientUser = undefined
 		roleAdmin = roleEmployee = roleClient = undefined
 		testHorseOwner1 = testHorseOwner2 = undefined
+		testHorseOwner1Contact = testHorseOwner2Contact = undefined
 		pensions = []
 	})
 
@@ -80,6 +88,7 @@ describe('Horse module', function () {
 				.request(app)
 				.get(`${routePrefix}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
 			response.should.have.status(200)
 			response.body.should.have.length(horses.length)
 		})
@@ -145,20 +154,33 @@ describe('Horse module', function () {
 
 	describe('show', async function () {
 		it('with role admin', async function () {
-			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
+			const pension = ArrayUtils.getRandomElement(pensions)
+			const horse = await db.models.Horse.create(HorseFactory.create(testHorseOwner1.id, pension.id))
 			const response = await chai
 				.request(app)
 				.get(`${routePrefix}/${horse.id}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 			response.should.have.status(200)
 			response.body.should.have.property('id').eql(horse.id)
-			response.body.should.have.property('ownerId').eql(horse.ownerId)
-			response.body.should.have.property('pensionId').eql(horse.pensionId)
+			response.body.should.have.property('name').eql(horse.name)
 			response.body.should.have.property('comment').eql(horse.comment)
 			response.body.should.have.property('createdAt')
 			response.body.should.have.property('updatedAt')
+			response.body.should.have.property('owner').eql({
+				email: testHorseOwner1.email,
+				userId: testHorseOwner1.id,
+				firstName: testHorseOwner1Contact.firstName,
+				lastName: testHorseOwner1Contact.lastName,
+				phone: testHorseOwner1Contact.phone,
+				mobile: testHorseOwner1Contact.mobile,
+				address: testHorseOwner1Contact.address,
+				invoicingAddress: testHorseOwner1Contact.invoicingAddress,
+			})
+			response.body.should.have.property('pension').eql({
+				name: pension.name,
+				monthlyPrice: pension.monthlyPrice,
+				description: pension.description,
+			})
 		})
 
 		it('with role employee', async function () {
@@ -274,6 +296,7 @@ describe('Horse module', function () {
 					.request(app)
 					.get(`${routePrefix}/${horse.id}`)
 					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
 				response.should.have.status(200)
 			})
 		})
@@ -290,11 +313,25 @@ describe('Horse module', function () {
 					.send(horseData)
 				response.should.have.status(201)
 				response.body.should.have.property('id')
-				response.body.should.have.property('ownerId').eql(horseData.ownerId)
-				response.body.should.have.property('pensionId').eql(horseData.pensionId)
+				response.body.should.have.property('name').eql(horseData.name)
 				response.body.should.have.property('comment').eql(horseData.comment)
 				response.body.should.have.property('createdAt')
 				response.body.should.have.property('updatedAt')
+				response.body.should.have.property('owner').eql({
+					email: testHorseOwner1.email,
+					userId: testHorseOwner1.id,
+					firstName: testHorseOwner1Contact.firstName,
+					lastName: testHorseOwner1Contact.lastName,
+					phone: testHorseOwner1Contact.phone,
+					mobile: testHorseOwner1Contact.mobile,
+					address: testHorseOwner1Contact.address,
+					invoicingAddress: testHorseOwner1Contact.invoicingAddress,
+				})
+				response.body.should.have.property('pension').eql({
+					name: pensions[0].name,
+					monthlyPrice: pensions[0].monthlyPrice,
+					description: pensions[0].description,
+				})
 			})
 
 			it('with role employee', async function () {
@@ -374,11 +411,25 @@ describe('Horse module', function () {
 
 			response.should.have.status(200)
 			response.body.should.have.property('id').eql(horse.id)
-			response.body.should.have.property('ownerId').eql(data.ownerId)
-			response.body.should.have.property('pensionId').eql(data.pensionId)
+			response.body.should.have.property('name').eql(data.name)
 			response.body.should.have.property('comment').eql(data.comment)
 			response.body.should.have.property('createdAt')
 			response.body.should.have.property('updatedAt')
+			response.body.should.have.property('owner').eql({
+				email: testHorseOwner2.email,
+				userId: testHorseOwner2.id,
+				firstName: testHorseOwner2Contact.firstName,
+				lastName: testHorseOwner2Contact.lastName,
+				phone: testHorseOwner2Contact.phone,
+				mobile: testHorseOwner2Contact.mobile,
+				address: testHorseOwner2Contact.address,
+				invoicingAddress: testHorseOwner2Contact.invoicingAddress,
+			})
+			response.body.should.have.property('pension').eql({
+				name: pensions[1].name,
+				monthlyPrice: pensions[1].monthlyPrice,
+				description: pensions[1].description,
+			})
 		})
 
 		it('with role employee', async function () {

@@ -9,7 +9,7 @@ export class HorseService extends BaseService {
 		super(Horse.getModelName(), 'horse_404')
 	}
 
-	async create(data) {
+	async create(data, options = {}) {
 		const owner = await db.models.User.findByPk(data.ownerId)
 		if (!owner) {
 			throw createError(422, i18next.t('horse_422_inexistingOwner'))
@@ -18,7 +18,7 @@ export class HorseService extends BaseService {
 		if (!pension) {
 			throw createError(422, i18next.t('horse_422_inexistingPension'))
 		}
-		return await super.create(data)
+		return await super.create(data, options)
 	}
 
 	async update(instance, data) {

@@ -2112,7 +2112,8 @@
                 "ownerId",
                 "pensionId",
                 "name",
-                "comment"
+                "comment",
+                "horsemen"
               ],
               "properties": {
                 "ownerId": {
@@ -2126,6 +2127,12 @@
                 },
                 "comment": {
                   "type": "string"
+                },
+                "horsemen": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
                 }
               }
             }
@@ -2533,12 +2540,6 @@
         "id": {
           "type": "integer"
         },
-        "ownerId": {
-          "type": "integer"
-        },
-        "pensionId": {
-          "type": "integer"
-        },
         "name": {
           "type": "string"
         },
@@ -2552,6 +2553,49 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "owner": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string"
+            },
+            "userId": {
+              "type": "integer"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            },
+            "address": {
+              "type": "string"
+            },
+            "invoicingAddress": {
+              "type": "string"
+            }
+          }
+        },
+        "pension": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "monthlyPrice": {
+              "type": "number"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
         }
       }
     },
