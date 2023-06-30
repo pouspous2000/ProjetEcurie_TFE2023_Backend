@@ -19,6 +19,12 @@ export class Horse extends Model {
 			otherKey: 'userId',
 			as: 'horsemen',
 		})
+		Horse.belongsToMany(models.Pension, {
+			through: models.PensionData,
+			foreignKey: 'horseId',
+			otherKey: 'pensionId',
+			as: 'horsePensionDatas',
+		})
 	}
 }
 

@@ -14,6 +14,12 @@ export class Pension extends Model {
 
 	static associate(models) {
 		Pension.hasMany(models.Horse, { foreignKey: 'pensionId', as: 'horses' })
+		Pension.belongsToMany(models.Horse, {
+			through: models.PensionData,
+			foreignKey: 'pensionId',
+			otherKey: 'horseId',
+			as: 'horsePensionDatas',
+		})
 	}
 }
 
