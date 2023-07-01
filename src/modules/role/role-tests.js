@@ -16,6 +16,7 @@ describe('Role Module', function () {
 	let testAdmin, testEmployee, testClient
 
 	beforeEach(async function () {
+		await db.models.PensionData.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
