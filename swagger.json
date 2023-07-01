@@ -1977,6 +1977,12 @@
                 },
                 "comment": {
                   "type": "string"
+                },
+                "horsemen": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
                 }
               }
             }

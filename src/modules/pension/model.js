@@ -68,6 +68,7 @@ export default function (sequelize) {
 			sequelize,
 			modelName: Pension.getModelName(),
 			tableName: Pension.getTable(),
+			paranoid: true,
 		}
 	)
 

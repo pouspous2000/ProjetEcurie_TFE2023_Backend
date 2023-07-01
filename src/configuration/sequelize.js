@@ -13,6 +13,7 @@ const defaultConfig = {
 
 export const DEV = {
 	...defaultConfig,
+	logQueryParameters: true,
 }
 
 export const TEST = {

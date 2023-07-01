@@ -29,6 +29,10 @@ export const upPension = async (queryInterface, Sequelize) =>
 			allowNull: false,
 			type: Sequelize.DATE,
 		},
+		deletedAt: {
+			allowNull: true,
+			type: Sequelize.DATE,
+		},
 	})
 
 export const downPension = async queryInterface => queryInterface.dropTable(Pension.getTable())

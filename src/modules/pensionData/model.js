@@ -43,8 +43,6 @@ export default function (sequelize) {
 				type: DataTypes.TEXT,
 				allowNull: true,
 			},
-			timestamps: true,
-			updatedAt: false,
 			deletedAt: {
 				type: DataTypes.DATE,
 				allowNull: true,
@@ -54,6 +52,8 @@ export default function (sequelize) {
 			sequelize,
 			modelName: PensionData.getModelName(),
 			tableName: PensionData.getTable(),
+			timestamps: true,
+			updatedAt: false,
 		}
 	)
 

@@ -2,6 +2,7 @@ import { Op } from 'sequelize'
 import { Horse } from '@/modules/horse/model'
 import { User } from '@/modules/authentication/model'
 import { Pension } from '@/modules/pension/model'
+import { PensionData } from '@/modules/pensionData/model'
 import { HorseFactory } from '@/modules/horse/factory'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 
@@ -39,6 +40,34 @@ export const upHorse = async queryInterface => {
 		)
 	}
 	await queryInterface.bulkInsert(Horse.getTable(), horseObjects)
+
+	const horses = await queryInterface.rawSelect(
+		Horse.getTable(),
+		{
+			where: {
+				id: {
+					[Op.ne]: 0,
+				},
+			},
+			plain: false,
+		},
+		['id']
+	)
+
+	const pensionDataObjects = []
+	horses.forEach(horse => {
+		const pension = pensions.find(pension => pension.id === horse.pensionId)
+		pensionDataObjects.push({
+			horseId: horse.id,
+			pensionId: horse.pensionId,
+			name: pension.name,
+			monthlyPrice: pension.monthlyPrice,
+			description: pension.description,
+			createdAt: new Date(),
+			deletedAt: null,
+		})
+	})
+	await queryInterface.bulkInsert(PensionData.getTable(), pensionDataObjects)
 }
 
 export const downHorse = async queryInterface => {

@@ -27,9 +27,10 @@ describe('Horse module', function () {
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
+		await db.models.PensionData.destroy({ truncate: { cascade: true } })
 		await db.models.Contact.destroy({ truncate: { cascade: true } })
 		await db.models.Horse.destroy({ truncate: { cascade: true } })
-		await db.models.Pension.destroy({ truncate: { cascade: true } })
+		await db.models.Pension.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 

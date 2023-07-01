@@ -43,7 +43,7 @@ export class UserFactory extends BaseFactory {
 	}
 
 	static createCecile(roleId) {
-		this.uniqueConstraints.email.push('cecile.bonnet@gail.com')
+		this.uniqueConstraints.email.push('cecile.bonnet@gmail.com')
 
 		let confirmationCode = 'confirmation'
 		let i = 1
@@ -55,7 +55,7 @@ export class UserFactory extends BaseFactory {
 
 		return {
 			roleId: roleId,
-			email: 'cecile.bonnet@gail.com',
+			email: 'cecile.bonnet@gmail.com',
 			password: 'password',
 			status: 'ACTIVE',
 			confirmationCode: confirmationCode,
