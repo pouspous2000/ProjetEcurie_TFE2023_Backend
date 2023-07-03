@@ -1,7 +1,7 @@
 import db from '@/database'
 import { Pension } from '@/modules/pension/model'
 import { BaseService } from '@/core/BaseService'
-import { PensionDataService } from '@/modules/pensionData/service'
+import { PensionDataService } from '@/modules/pension-data/service'
 
 export class PensionService extends BaseService {
 	constructor() {

@@ -21,8 +21,8 @@ describe('Additive module', function () {
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
-		await db.models.PensionData.destroy({ truncate: { cascade: true } })
-		await db.models.Additive.destroy({ truncate: { cascade: true } })
+		await db.models.AdditiveHorse.destroy({ truncate: { cascade: true } })
+		await db.models.Additive.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
@@ -131,6 +131,8 @@ describe('Additive module', function () {
 				.delete(`${routePrefix}/${additive.id}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 			response.should.have.status(204)
+			const deletedAdditive = await db.models.Additive.findByPk(additive.id, { paranoid: false })
+			deletedAdditive.should.have.property('deletedAt').not.to.be.null
 		})
 
 		it('delete with role employee', async function () {

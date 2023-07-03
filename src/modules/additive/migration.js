@@ -25,6 +25,10 @@ export const upAdditive = async (queryInterface, Sequelize) =>
 			allowNull: false,
 			type: Sequelize.DATE,
 		},
+		deletedAt: {
+			allowNull: true,
+			type: Sequelize.DATE,
+		},
 	})
 
 export const downAdditive = async queryInterface => queryInterface.dropTable(Additive.getTable())

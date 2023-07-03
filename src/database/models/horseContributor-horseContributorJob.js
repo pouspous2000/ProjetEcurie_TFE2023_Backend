@@ -40,4 +40,6 @@ export default function (sequelize) {
 			tableName: HorseContributorHorseContributorJob.getTable(),
 		}
 	)
+
+	return HorseContributorHorseContributorJob
 }

@@ -7,7 +7,7 @@ import { PensionLocales } from '@/modules/pension/locales'
 import { HorseContributorLocales } from '@/modules/horse-contributor/locales'
 import { AdditiveLocales } from '@/modules/additive/locales'
 import { HorseLocales } from '@/modules/horse/locales'
-import { PensionDataLocales } from '@/modules/pensionData/locales'
+import { PensionDataLocales } from '@/modules/pension-data/locales'
 
 export class LocalUtils {
 	static allLocales = [

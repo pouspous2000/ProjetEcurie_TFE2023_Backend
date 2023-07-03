@@ -4,7 +4,7 @@ import { Horse } from '@/modules/horse/model'
 import { BaseService } from '@/core/BaseService'
 import createError from 'http-errors'
 import i18next from '../../../i18n'
-import { PensionDataService } from '@/modules/pensionData/service'
+import { PensionDataService } from '@/modules/pension-data/service'
 
 export class HorseService extends BaseService {
 	constructor() {

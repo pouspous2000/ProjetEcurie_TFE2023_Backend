@@ -11,6 +11,15 @@ export class Additive extends Model {
 	static getModelName() {
 		return 'Additive'
 	}
+
+	static associate(models) {
+		Additive.belongsToMany(models.Horse, {
+			through: models.AdditiveHorse,
+			foreignKey: 'additiveId',
+			otherKey: 'horseId',
+			as: 'horses',
+		})
+	}
 }
 
 export default function (sequelize) {
@@ -50,6 +59,7 @@ export default function (sequelize) {
 			sequelize,
 			modelName: Additive.getModelName(),
 			tableName: Additive.getTable(),
+			paranoid: true,
 		}
 	)
 

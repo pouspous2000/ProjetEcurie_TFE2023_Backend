@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize'
-import { PensionData } from '@/modules/pensionData/model'
+import { PensionData } from '@/modules/pension-data/model'
 import { Pension } from '@/modules/pension/model'
 import { Horse } from '@/modules/horse/model'
 

@@ -38,4 +38,6 @@ export default function (sequelize) {
 			tableName: HorseUser.getTable(),
 		}
 	)
+
+	return HorseUser
 }

@@ -19,7 +19,8 @@ describe('Pension module', function () {
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
-		await db.models.Pension.destroy({ truncate: { cascade: true } })
+		await db.models.PensionData.destroy({ truncate: { cascade: true } })
+		await db.models.Pension.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
@@ -130,6 +131,8 @@ describe('Pension module', function () {
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 
 			response.should.have.status(204)
+			const deletedPension = await db.models.Pension.findByPk(pension.id, { paranoid: false })
+			deletedPension.should.have.property('deletedAt').not.to.be.null
 		})
 
 		it('delete with role employee', async function () {

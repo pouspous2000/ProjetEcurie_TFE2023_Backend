@@ -13,7 +13,8 @@ import HorseContributorHorseContributorJobModel from '@/database/models/horseCon
 import AdditiveModel from '@/modules/additive/model'
 import HorseModel from '@/modules/horse/model'
 import HorseUserModel from '@/database/models/horse-user'
-import PensionDataModel from '@/modules/pensionData/model'
+import PensionDataModel from '@/modules/pension-data/model'
+import AdditiveHorseModel from '@/modules/additive-data/model'
 
 const sequelize = new Sequelize(configs[process.env.NODE_ENV])
 
@@ -31,6 +32,7 @@ const modelDefiners = [
 	HorseModel,
 	HorseUserModel,
 	PensionDataModel,
+	AdditiveHorseModel,
 ]
 
 // eslint-disable-next-line no-restricted-syntax
