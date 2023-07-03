@@ -301,7 +301,7 @@ describe('Horse module', function () {
 				response.should.have.status(404)
 			})
 
-			it('horse is not deleted when pension is deleted', async function () {
+			it('horse is not deleted when pension is (soft) deleted', async function () {
 				const horse = await db.models.Horse.create(HorseFactory.create(testHorseOwner1.id, pensions[0].id))
 				await pensions[0].destroy()
 

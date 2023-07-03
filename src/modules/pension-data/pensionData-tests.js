@@ -234,4 +234,39 @@ describe('PensionData module', async function () {
 			pensionDataDeleted.should.have.property('description').eql(pension.description)
 		})
 	})
+
+	describe('owner test', async function () {
+		it('pensionData are deleted when owner is deleted', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const data = {
+				...HorseFactory.create(testClientUser.id, pension.id),
+				horsemen: [testClientUser.id],
+			}
+
+			const horseCreateResponse = await chai
+				.request(app)
+				.post('/horses')
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send(data)
+
+			const pensionData = await db.models.PensionData.findOne({
+				where: {
+					[Op.and]: [
+						{ horseId: horseCreateResponse.body.id },
+						{ pensionId: pension.id },
+						{ deletedAt: null },
+					],
+				},
+			})
+
+			pensionData.should.have.property('name').eql(pension.name)
+			pensionData.should.have.property('monthlyPrice').eql(pension.monthlyPrice)
+			pensionData.should.have.property('description').eql(pension.description)
+
+			await testClientUser.destroy()
+
+			const pensionDatas = await db.models.PensionData.findAll({ paranoid: false })
+			pensionDatas.should.have.length(0)
+		})
+	})
 })

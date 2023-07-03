@@ -17,8 +17,8 @@ export const upPensionData = (queryInterface, Sequelize) =>
 				model: Horse.getTable(),
 				field: 'id',
 			},
-			onDelete: 'NO ACTION',
-			onUpdate: 'NO ACTION',
+			onDelete: 'CASCADE',
+			onUpdate: 'CASCADE',
 		},
 		pensionId: {
 			type: DataTypes.INTEGER,
@@ -27,8 +27,8 @@ export const upPensionData = (queryInterface, Sequelize) =>
 				model: Pension.getTable(),
 				field: 'id',
 			},
-			onDelete: 'NO ACTION',
-			onUpdate: 'NO ACTION',
+			onDelete: 'CASCADE',
+			onUpdate: 'CASCADE',
 		},
 		name: {
 			type: DataTypes.STRING,

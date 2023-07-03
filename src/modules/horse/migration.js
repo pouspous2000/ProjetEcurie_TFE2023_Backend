@@ -27,7 +27,7 @@ export const upHorse = async (queryInterface, Sequelize) =>
 				model: Pension.getTable(),
 				field: 'id',
 			},
-			onDelete: 'SET NULL',
+			onDelete: 'CASCADE',
 			onUpdate: 'CASCADE',
 		},
 		name: {
