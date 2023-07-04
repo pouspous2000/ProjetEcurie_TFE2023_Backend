@@ -56,6 +56,7 @@ describe('PensionData module', async function () {
 			const data = {
 				...HorseFactory.create(testClientUser.id, pension.id),
 				horsemen: [testClientUser.id],
+				additives: [],
 			}
 			const response = await chai
 				.request(app)
@@ -111,6 +112,7 @@ describe('PensionData module', async function () {
 			const data = {
 				...HorseFactory.create(testClientUser.id, pension1.id),
 				horsemen: [testClientUser.id],
+				additives: [],
 			}
 
 			const response1 = await chai
@@ -160,6 +162,7 @@ describe('PensionData module', async function () {
 			const horseData = {
 				...HorseFactory.create(testClientUser.id, pension.id),
 				horsemen: [testClientUser.id],
+				additives: [],
 			}
 			const response1 = await chai
 				.request(app)
@@ -207,6 +210,7 @@ describe('PensionData module', async function () {
 			const horseData = {
 				...HorseFactory.create(testClientUser.id, pension.id),
 				horsemen: [testClientUser.id],
+				additives: [],
 			}
 			const response1 = await chai
 				.request(app)
@@ -241,6 +245,7 @@ describe('PensionData module', async function () {
 			const data = {
 				...HorseFactory.create(testClientUser.id, pension.id),
 				horsemen: [testClientUser.id],
+				additives: [],
 			}
 
 			const horseCreateResponse = await chai

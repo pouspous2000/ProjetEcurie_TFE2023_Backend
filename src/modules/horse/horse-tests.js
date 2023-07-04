@@ -319,6 +319,7 @@ describe('Horse module', function () {
 			it('with role admin', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
 				horseData.horsemen = [testHorseOwner1.id]
+				horseData.additives = []
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -361,6 +362,7 @@ describe('Horse module', function () {
 			it('with role employee', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
 				horseData.horsemen = [testHorseOwner1.id]
+				horseData.additives = []
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -372,6 +374,7 @@ describe('Horse module', function () {
 			it('with role employee - not owner', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
 				horseData.horsemen = [testHorseOwner1.id]
+				horseData.additives = []
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -383,6 +386,7 @@ describe('Horse module', function () {
 			it('with role employee - owner', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
 				horseData.horsemen = [testHorseOwner1.id]
+				horseData.additives = []
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -403,7 +407,7 @@ describe('Horse module', function () {
 				response.should.have.status(422)
 				response.body.errors
 					.map(error => error.path)
-					.should.eql(['ownerId', 'pensionId', 'name', 'horsemen', 'comment'])
+					.should.eql(['ownerId', 'pensionId', 'name', 'horsemen', 'additives', 'comment'])
 			})
 		})
 
@@ -425,6 +429,7 @@ describe('Horse module', function () {
 			const horse = await db.models.Horse.create({
 				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			})
 			const data = {
 				ownerId: testHorseOwner2.id,
@@ -432,6 +437,7 @@ describe('Horse module', function () {
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner2.id],
+				additives: [],
 			}
 			const response = await chai
 				.request(app)
@@ -476,6 +482,7 @@ describe('Horse module', function () {
 			const horse = await db.models.Horse.create({
 				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			})
 
 			const data = {
@@ -484,6 +491,7 @@ describe('Horse module', function () {
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			}
 
 			const response = await chai
@@ -499,6 +507,7 @@ describe('Horse module', function () {
 			const horse = await db.models.Horse.create({
 				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			})
 
 			const data = {
@@ -507,6 +516,7 @@ describe('Horse module', function () {
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			}
 
 			const response = await chai
@@ -523,6 +533,7 @@ describe('Horse module', function () {
 			const horse = await db.models.Horse.create({
 				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			})
 
 			const data = {
@@ -531,6 +542,7 @@ describe('Horse module', function () {
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			}
 			const response = await chai
 				.request(app)
@@ -546,6 +558,7 @@ describe('Horse module', function () {
 			const horse = await db.models.Horse.create({
 				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			})
 
 			const data = {
@@ -554,6 +567,7 @@ describe('Horse module', function () {
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
+				additives: [],
 			}
 			const response = await chai
 				.request(app)

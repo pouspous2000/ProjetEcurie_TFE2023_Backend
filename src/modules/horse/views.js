@@ -26,6 +26,7 @@ export class HorseView {
 			},
 			pension: this._getPensionView(horse),
 			horsemen: this._getHorsemenView(horse),
+			additives: this._getAdditivesView(horse),
 		}
 	}
 
@@ -60,6 +61,19 @@ export class HorseView {
 					mobile: horseman.contact.mobile,
 					address: horseman.contact.address,
 					invoicingAddress: horseman.contact.invoicingAddress,
+				}
+			})
+		}
+		return []
+	}
+
+	_getAdditivesView(horse) {
+		if (horse.additives.length) {
+			return horse.additives.map(additive => {
+				return {
+					id: additive.id,
+					name: additive.name,
+					price: additive.price,
 				}
 			})
 		}

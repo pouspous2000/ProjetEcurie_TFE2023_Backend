@@ -8,6 +8,7 @@ import { HorseContributorLocales } from '@/modules/horse-contributor/locales'
 import { AdditiveLocales } from '@/modules/additive/locales'
 import { HorseLocales } from '@/modules/horse/locales'
 import { PensionDataLocales } from '@/modules/pension-data/locales'
+import { AdditiveDataLocales } from '@/modules/additive-data/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -40,6 +41,7 @@ export class LocalUtils {
 		AdditiveLocales,
 		HorseLocales,
 		PensionDataLocales,
+		AdditiveDataLocales,
 	]
 
 	static getLocales() {

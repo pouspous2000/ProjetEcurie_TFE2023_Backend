@@ -17,8 +17,8 @@ export const upAdditiveHorse = (queryInterface, Sequelize) =>
 				model: Additive.getTable(),
 				field: 'id',
 			},
-			onDelete: 'NO ACTION',
-			onUpdate: 'NO ACTION',
+			onDelete: 'CASCADE',
+			onUpdate: 'CASCADE',
 		},
 		horseId: {
 			type: DataTypes.INTEGER,
@@ -27,8 +27,8 @@ export const upAdditiveHorse = (queryInterface, Sequelize) =>
 				model: Horse.getTable(),
 				field: 'id',
 			},
-			onDelete: 'NO ACTION',
-			onUpdate: 'NO ACTION',
+			onDelete: 'CASCADE',
+			onUpdate: 'CASCADE',
 		},
 		name: {
 			type: DataTypes.STRING,
@@ -41,10 +41,6 @@ export const upAdditiveHorse = (queryInterface, Sequelize) =>
 		createdAt: {
 			type: Sequelize.DATE,
 			allowNull: false,
-		},
-		deletedAt: {
-			type: Sequelize.DATE,
-			allowNull: true,
 		},
 	})
 

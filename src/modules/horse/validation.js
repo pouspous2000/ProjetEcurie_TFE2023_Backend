@@ -32,6 +32,19 @@ export class HorseValidator {
 				})
 				return true
 			}),
+			body('additives').exists().withMessage(i18next.t('horse_request_validation_additives_exists')),
+			body('additives').custom(additives => {
+				if (!Array.isArray(additives)) {
+					throw new Error(i18next.t('horse_request_validation_additives_isArray'))
+				}
+				additives.forEach(additive => {
+					if (!Number.isInteger(additive) || additive <= 0) {
+						throw new Error(i18next.t('horse_request_validation_additives_isPositiveInteger'))
+					}
+					return true
+				})
+				return true
+			}),
 		]
 	}
 }

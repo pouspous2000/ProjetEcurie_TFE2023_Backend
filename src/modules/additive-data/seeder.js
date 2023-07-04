@@ -31,7 +31,6 @@ export const upAdditiveHorse = async queryInterface => {
 			name: additive.name,
 			price: additive.price,
 			createdAt: new Date(),
-			deletedAt: null,
 		}
 	})
 

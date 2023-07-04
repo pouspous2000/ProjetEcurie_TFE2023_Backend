@@ -18,7 +18,7 @@ export class AdditiveFactory extends BaseFactory {
 
 		return {
 			name: name,
-			price: faker.commerce.price({ min: -100, max: 300, dec: 2 }),
+			price: faker.commerce.price({ min: 100, max: 300 }),
 			...this._create(),
 		}
 	}

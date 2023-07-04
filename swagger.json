@@ -1983,6 +1983,12 @@
                   "items": {
                     "type": "integer"
                   }
+                },
+                "additives": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
                 }
               }
             }
@@ -2135,6 +2141,12 @@
                   "type": "string"
                 },
                 "horsemen": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                "additives": {
                   "type": "array",
                   "items": {
                     "type": "integer"
@@ -2631,6 +2643,23 @@
               },
               "invoicingAddress": {
                 "type": "string"
+              }
+            }
+          }
+        },
+        "additives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "price": {
+                "type": "number"
               }
             }
           }
