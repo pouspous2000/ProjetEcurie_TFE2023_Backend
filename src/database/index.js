@@ -15,6 +15,7 @@ import HorseModel from '@/modules/horse/model'
 import HorseUserModel from '@/database/models/horse-user'
 import PensionDataModel from '@/modules/pension-data/model'
 import AdditiveHorseModel from '@/modules/additive-data/model'
+import TaskModel from '@/modules/task/model'
 
 const sequelize = new Sequelize(configs[process.env.NODE_ENV])
 
@@ -32,6 +33,7 @@ const modelDefiners = [
 	HorseModel,
 	HorseUserModel,
 	PensionDataModel,
+	TaskModel,
 	AdditiveHorseModel,
 ]
 

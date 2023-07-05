@@ -46,6 +46,8 @@ export class User extends Model {
 			otherKey: 'horseId',
 			as: 'rideHorses',
 		})
+		User.hasMany(models.Task, { foreignKey: 'creatorId', as: 'taskOwn' })
+		User.hasMany(models.Task, { foreignKey: 'employeeId', as: 'taskOther' })
 	}
 }
 
