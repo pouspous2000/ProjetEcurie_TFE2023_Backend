@@ -236,4 +236,35 @@ describe('Task module', function () {
 			response.body.should.have.property('message').eql(i18next.t('task_unauthorized'))
 		})
 	})
+
+	describe('delete', async function () {
+		it('with role admin', async function () {
+			const task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testEmployeeUser1.id))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${task.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(204)
+		})
+
+		it('with role employee', async function () {
+			const task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testEmployeeUser1.id))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${task.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+
+		it('with role client', async function () {
+			const task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testEmployeeUser1.id))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${task.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+	})
 })

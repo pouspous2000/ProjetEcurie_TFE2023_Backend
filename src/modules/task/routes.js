@@ -18,5 +18,6 @@ taskRouter.get(
 )
 
 taskRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.show)
+taskRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
 
 export default taskRouter
