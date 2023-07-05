@@ -33,4 +33,12 @@ export class TaskView {
 			updatedAt: task.updatedAt,
 		}
 	}
+
+	create(task) {
+		return this.show(task)
+	}
+
+	update(task) {
+		return this.show(task)
+	}
 }

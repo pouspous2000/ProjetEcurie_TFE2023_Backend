@@ -2249,6 +2249,81 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create new task [ADMIN]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "employeeId",
+                "name",
+                "description",
+                "startingAt",
+                "endingAt"
+              ],
+              "properties": {
+                "employeeId": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "startingAt": {
+                  "type": "string"
+                },
+                "endingAt": {
+                  "type": "string"
+                },
+                "remark": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Task"
+        ],
+        "description": "Create new task"
       }
     },
     "/tasks/{id}": {

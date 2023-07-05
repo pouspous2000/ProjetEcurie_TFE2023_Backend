@@ -27,7 +27,27 @@ export const TaskLocales = {
 		task_sql_validation_endingAt_isAfterStartingAt: "La tâch ne peut pas se terminer avant d'avoir commencé",
 
 		//validation(request)
-		task_request_validation_name_exists: 'tmp',
+		//query parameters
+		task_request_validation_query_employeeId_isInt: 'Vous devez renseigner un employé valide',
+		task_request_validation_query_creatorId_isInt: 'Vous devez renseigner un créateur valide',
+		task_request_validation_query_startingAt_isDate:
+			'Vous devez renseigner une date de début valide ISO format de YYYY-MM-DDTHH:MM:SSZ',
+		task_request_validation_query_status_isIn: 'Vous devez renseigner un status valide',
+		//body request
+		task_request_validation_employeeId_exists: 'Vous devez renseigner un employé',
+		task_request_validation_employeeId_isInt: 'Vous devez renseigner un employé valide',
+		task_request_validation_name_exists: 'Vous devez renseigner un nom',
+		task_request_validation_name_isLength: 'Le nom de la tâche doit contenir entre 1 et 255 caractères',
+		task_request_validation_description_exists: 'Vous devez renseigner une description',
+		task_request_validation_description_isLength: 'Vous devez renseigner une description',
+		task_request_validation_startingAt_exists: 'Vous devez renseigner une date de début',
+		task_request_validation_startingAt_isDate:
+			'Vous devez renseigner une date de début valid au format ISO YYYY-MM-DDTHH:MM:SSZ',
+		task_request_validation_endingAt_exists: 'Vous devez renseigner une date de fin',
+		task_request_validation_endingAt_isDate:
+			'Vous devez renseigner une date de début valid au format ISO YYYY-MM-DDTHH:MM:SSZ',
+		task_request_validation_endingAt_isAfterStartingAt:
+			'La date de fin ne peut pas être antérieur à la date de début',
 	},
 	en: {},
 	nl: {},

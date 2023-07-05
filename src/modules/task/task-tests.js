@@ -10,6 +10,7 @@ import { ContactFactory } from '@/modules/contact/factory'
 
 import i18next from '../../../i18n'
 import { TaskFactory } from '@/modules/task/factory'
+import { StringUtils } from '@/utils/StringUtils'
 
 chai.should()
 chai.use(chaiHttp)
@@ -265,6 +266,112 @@ describe('Task module', function () {
 				.set('Authorization', `Bearer ${testClientUser.token}`)
 			response.should.have.status(401)
 			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+	})
+
+	describe('create', function () {
+		describe('create with valid data', async function () {
+			it('with role admin', async function () {
+				const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id)
+				delete data['status']
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(201)
+				response.body.should.have.property('id')
+				response.body.should.have
+					.property('name')
+					.eql(StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim()))
+				response.body.should.have.property('employee').eql({
+					userId: testEmployeeUser1.id,
+					firstName: testEmployeeContact1.firstName,
+					lastName: testEmployeeContact1.lastName,
+					phone: testEmployeeContact1.phone,
+					mobile: testEmployeeContact1.mobile,
+				})
+				response.body.should.have.property('creator').eql({
+					userId: testAdminUser.id,
+					firstName: testAdminContact.firstName,
+					lastName: testAdminContact.lastName,
+					phone: testAdminContact.phone,
+					mobile: testAdminContact.mobile,
+				})
+				new Date(response.body.startingAt).getTime().should.eql(new Date(data.startingAt).getTime())
+				new Date(response.body.endingAt).getTime().should.eql(new Date(data.endingAt).getTime())
+				response.body.should.have.property('remark').eql(data.remark)
+				response.body.should.have.property('status').eql('PENDING')
+				response.body.should.have.property('createdAt')
+				response.body.should.have.property('updatedAt')
+			})
+
+			it('with role employee', async function () {
+				const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id)
+				delete data['status']
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+
+			it('with role client', async function () {
+				const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id)
+				delete data['status']
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testClientUser.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('create invalid - middleware', async function () {
+			it('with role admin', async function () {
+				const data = {}
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.errors
+					.map(error => error.path)
+					.should.eql(['employeeId', 'name', 'description', 'startingAt', 'endingAt'])
+			})
+		})
+
+		describe('create invalid - sql', async function () {
+			it('with role admin', async function () {
+				try {
+					await db.models.Task.create({})
+				} catch (error) {
+					error.errors
+						.map(err => err.path)
+						.should.eql([
+							'creatorId',
+							'employeeId',
+							'name',
+							'description',
+							'startingAt',
+							'endingAt',
+							'status',
+						])
+				}
+			})
 		})
 	})
 })
