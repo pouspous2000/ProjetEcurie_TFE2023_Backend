@@ -35,6 +35,9 @@
     },
     {
       "name": "Debug"
+    },
+    {
+      "name": "Task"
     }
   ],
   "securityDefinitions": {
@@ -2195,6 +2198,102 @@
         "description": "Update horse"
       }
     },
+    "/tasks": {
+      "get": {
+        "summary": "List all tasks (result depending of role) [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "employeeId",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "creatorId",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "startingAt",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "tags": [
+          "Task"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TaskList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "summary": "Get task by id [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "task id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Task"
+        ],
+        "description": "Get task by id"
+      }
+    },
     "/debug": {
       "post": {
         "summary": "Debug",
@@ -2670,6 +2769,85 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Horse"
+      }
+    },
+    "Task": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "creator": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "integer"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            }
+          }
+        },
+        "employee": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "integer"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            }
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "startingAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endingAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TaskList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Task"
       }
     }
   }

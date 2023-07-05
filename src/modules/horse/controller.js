@@ -10,12 +10,12 @@ import { Additive } from '@/modules/additive/model'
 export class HorseController extends BaseController {
 	constructor() {
 		super(new HorseService(), new HorsePolicy(), new HorseView())
+		this._getRelationOptions = this._getRelationOptions.bind(this)
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
 		this.delete = this.delete.bind(this)
 		this.create = this.create.bind(this)
 		this.update = this.update.bind(this)
-		this._getRelationOptions = this._getRelationOptions.bind(this)
 	}
 
 	async index(request, response, next) {

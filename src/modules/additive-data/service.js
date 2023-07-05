@@ -10,7 +10,6 @@ export class AdditiveDataService {
 				horseId: horse.id,
 				name: additive.name,
 				price: additive.price,
-				deletedAt: null,
 			}))
 		)
 	}

@@ -3,7 +3,8 @@ import { ArrayUtils } from '@/utils/ArrayUtils'
 
 export class TaskFactory extends BaseFactory {
 	static todoNb = 1
-	static create(creatorId, employeeId, status = 'PENDING') {
+
+	static create(creatorId, employeeId, status = undefined) {
 		const dataStatus = status
 			? status
 			: ArrayUtils.getRandomElement(['PENDING', 'CONFIRMED', 'IN PROGRESS', 'COMPLETED', 'BLOCKED', 'CANCELLED'])

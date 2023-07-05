@@ -39,10 +39,6 @@ export default function (sequelize) {
 				type: DataTypes.DECIMAL,
 				allowNull: false,
 			},
-			deletedAt: {
-				type: DataTypes.DATE,
-				allowNull: true,
-			},
 		},
 		{
 			sequelize,

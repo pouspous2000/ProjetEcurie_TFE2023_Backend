@@ -3,6 +3,18 @@ export const TaskLocales = {
 		//errors
 		task_404: 'Tâche introuvable',
 		task_unauthorized: "Vous n'avez pas les permissions requises pour cette tâche",
+		task_unauthorized_employee_updateStatus:
+			'Vous ne pouvez changer le status que vers les etats suivants : Confirmé, En cours, Terminé, Bloqué',
+		task_unauthorized_employee_updateField:
+			'Vous ne pouvez changer que le status de la tâche ainsi que ses remarques éventuellemes',
+
+		// model (enum)
+		task_status_enum_PENDING: 'En attente de confirmation',
+		task_status_enum_CONFIRMED: 'Confirmé',
+		task_status_enum_IN_PROGRESS: 'En cours',
+		task_status_enum_COMPLETED: 'Terminé',
+		task_status_enum_BLOCKED: 'Bloqué',
+		task_status_enum_CANCELLED: 'Annulé',
 
 		//validation(sql)
 		task_sql_validation_creatorId_isInt: 'Vous devez renseigner un createur valide',

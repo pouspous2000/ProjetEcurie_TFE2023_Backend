@@ -72,7 +72,7 @@ export default function (sequelize) {
 					},
 				},
 				set(value) {
-					this.setDataValue('name', value.trim())
+					this.setDataValue('description', value.trim())
 				},
 			},
 			startingAt: {
@@ -101,7 +101,7 @@ export default function (sequelize) {
 				type: DataTypes.TEXT,
 				allowNull: true,
 				set(value) {
-					this.setDataValue('remark', value.trim())
+					this.setDataValue('remark', (value = value === null ? null : value.trim()))
 				},
 			},
 			status: {
