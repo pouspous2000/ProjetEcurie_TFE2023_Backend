@@ -270,4 +270,35 @@ describe('Lesson module', function () {
 			response.should.have.status(404)
 		})
 	})
+
+	describe('delete', async function () {
+		it('with role admin', async function () {
+			const lesson = await db.models.Lesson.create(LessonFactory.create(testEmployeeUser1.id, testClientUser1.id))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${lesson.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(204)
+		})
+
+		it('with role employee', async function () {
+			const lesson = await db.models.Lesson.create(LessonFactory.create(testEmployeeUser1.id, testClientUser1.id))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${lesson.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+
+		it('with role client', async function () {
+			const lesson = await db.models.Lesson.create(LessonFactory.create(testEmployeeUser1.id, testClientUser1.id))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${lesson.id}`)
+				.set('Authorization', `Bearer ${testClientUser1.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+	})
 })

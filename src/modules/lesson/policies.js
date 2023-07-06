@@ -29,4 +29,13 @@ export class LessonPolicy {
 				return lesson
 		}
 	}
+
+	async delete(request, lesson) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return lesson
+			default:
+				throw createError(401, i18next.t('lesson_unauthorized'))
+		}
+	}
 }

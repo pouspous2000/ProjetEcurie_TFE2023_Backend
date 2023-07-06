@@ -17,5 +17,6 @@ lessonRouter.get(
 	controller.index
 )
 lessonRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.show)
+lessonRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
 
 export default lessonRouter

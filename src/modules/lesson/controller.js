@@ -11,6 +11,7 @@ export class LessonController extends BaseController {
 		super(new LessonService(), new LessonPolicy(), new LessonView())
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
+		this.delete = this.delete.bind(this)
 	}
 
 	async index(request, response, next) {
