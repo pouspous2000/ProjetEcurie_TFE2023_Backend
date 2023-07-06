@@ -57,8 +57,8 @@ export class TaskValidator {
 				})
 				.toDate(),
 			body('endingAt')
-				.custom((value, { request }) => {
-					const startingAt = new Date(request.body.startingAt)
+				.custom((value, { req }) => {
+					const startingAt = new Date(req.body.startingAt)
 					const endingAt = new Date(value)
 					if (endingAt > startingAt) {
 						return true
@@ -66,6 +66,19 @@ export class TaskValidator {
 					throw new Error(i18next.t('task_request_validation_endingAt_isAfterStartingAt'))
 				})
 				.toDate(),
+		]
+	}
+
+	static update() {
+		return [
+			...this.create(),
+			body('creatorId').exists().withMessage(i18next.t('task_request_validation_creatorId_exists')),
+			body('creatorId').isInt({ min: 1 }).withMessage(i18next.t('task_request_validation_creatorId_isInt')),
+			body('remark').exists().withMessage(i18next.t('task_request_validation_remark_exists')),
+			body('status').exists().withMessage(i18next.t('task_request_validation_status_exists')),
+			body('status')
+				.isIn(['PENDING', 'CONFIRMED', 'IN PROGRESS', 'COMPLETED', 'BLOCKED', 'CANCELLED'])
+				.withMessage(i18next.t('task_request_validation_query_status_isIn')),
 		]
 	}
 }

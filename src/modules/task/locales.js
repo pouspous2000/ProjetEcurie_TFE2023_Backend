@@ -3,10 +3,18 @@ export const TaskLocales = {
 		//errors
 		task_404: 'Tâche introuvable',
 		task_unauthorized: "Vous n'avez pas les permissions requises pour cette tâche",
-		task_unauthorized_employee_updateStatus:
-			'Vous ne pouvez changer le status que vers les etats suivants : Confirmé, En cours, Terminé, Bloqué',
 		task_unauthorized_employee_updateField:
-			'Vous ne pouvez changer que le status de la tâche ainsi que ses remarques éventuellemes',
+			'Vous ne pouvez changer que le status de la tâche ainsi que ses remarques éventuelles',
+		task_401_update_admin_status: 'Le créateur de la tâche ne peut changer le status que vers annulé',
+		task_401_update_admin_field_when_status: 'Le créateur de la tâche ne peut pas changer la tâche avec ce status',
+		task_422_update_completedOrCancelled: 'Vous ne pouvez pas modifier une tâche terminée ou annulée',
+		task_422_update_employee_fromPending_toConfirmed:
+			'Vous ne pouvez le status de "en attente de confirmation" que vers "confirmé"',
+		task_422_update_employee_fromConfirmed_toInProgressOrBlocked:
+			'Si le status est confirmé vous ne pouvez passer que à en cours ou bloqué',
+		task_422_update_employee_fromInProgress_toCompletedOrBlocked:
+			'Si le status est en cours on ne peut passer que à complété ou bloqué',
+		task_422_update_employee_fromBlocked_toInProgress: 'Si le status est bloqué on ne peut aller que vers en cours',
 
 		// model (enum)
 		task_status_enum_PENDING: 'En attente de confirmation',
@@ -48,6 +56,10 @@ export const TaskLocales = {
 			'Vous devez renseigner une date de début valid au format ISO YYYY-MM-DDTHH:MM:SSZ',
 		task_request_validation_endingAt_isAfterStartingAt:
 			'La date de fin ne peut pas être antérieur à la date de début',
+		task_request_validation_remark_exists: 'Vous devez renseigner le champs remarque',
+		task_request_validation_status_exists: 'Vous devez renseigner le champs status',
+		task_request_validation_creatorId_exists: 'Vous devez renseigner un créateur',
+		task_request_validation_creatorId_isInt: 'Vous devez renseigner un créateur valide',
 	},
 	en: {},
 	nl: {},

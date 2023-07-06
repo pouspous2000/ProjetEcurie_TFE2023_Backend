@@ -236,6 +236,14 @@ describe('Task module', function () {
 			response.should.have.status(401)
 			response.body.should.have.property('message').eql(i18next.t('task_unauthorized'))
 		})
+
+		it('with role admin - 404', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(404)
+		})
 	})
 
 	describe('delete', async function () {
@@ -372,6 +380,186 @@ describe('Task module', function () {
 						])
 				}
 			})
+		})
+	})
+
+	describe('update', function () {
+		describe('with role admin', async function () {
+			it('status change not to cancelled - not allowed', async function () {
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'COMPLETED')
+				)
+				const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'IN PROGRESS')
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${task.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(401)
+				response.body.should.have.property('message').eql(i18next.t('task_401_update_admin_status'))
+			})
+
+			it('any field change when status is in [CONFIRMED, IN PROGRESS, BLOCKED]', async function () {
+				const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'CONFIRMED')
+				const task = await db.models.Task.create(data)
+				data.name = 'updatedName'
+
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${task.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(401)
+				response.body.should.have.property('message').eql(i18next.t('task_401_update_admin_field_when_status'))
+			})
+
+			it('allowed changes when status is pending', async function () {
+				const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'PENDING')
+				const task = await db.models.Task.create(data)
+				data.name = 'updatedName'
+
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${task.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				// we do not care about the response itself
+				response.should.have.status(200)
+				response.body.should.have
+					.property('name')
+					.eql(StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim()))
+			})
+		})
+
+		describe('with role employee', async function () {
+			describe('not allowed - on other employee task', async function () {
+				it('', async function () {
+					const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'COMPLETED')
+					const task = await db.models.Task.create(data)
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${task.id}`)
+						.set('Authorization', `Bearer ${testEmployeeUser2.token}`)
+						.send(data)
+
+					response.should.have.status(401)
+					response.body.should.have.property('message').eql(i18next.t('task_unauthorized'))
+				})
+			})
+			describe('not allowed : status machine state', async function () {
+				it('from PENDING to other than CONFIRMED', async function () {
+					const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'PENDING')
+					const task = await db.models.Task.create(data)
+					data.name = StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim())
+					data.status = 'CANCELLED'
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${task.id}`)
+						.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+						.send(data)
+
+					response.should.have.status(422)
+					response.body.should.have
+						.property('message')
+						.eql(i18next.t('task_422_update_employee_fromPending_toConfirmed'))
+				})
+
+				it('from CONFIRMED to other than IN PROGRESS | BLOCKED', async function () {
+					const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'CONFIRMED')
+					const task = await db.models.Task.create(data)
+					data.name = StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim())
+					data.status = 'PENDING'
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${task.id}`)
+						.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+						.send(data)
+
+					response.should.have.status(422)
+					response.body.should.have
+						.property('message')
+						.eql(i18next.t('task_422_update_employee_fromConfirmed_toInProgressOrBlocked'))
+				})
+
+				it('from IN PROGRESS to other than COMPLETED | BLOCKED', async function () {
+					const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'IN PROGRESS')
+					const task = await db.models.Task.create(data)
+					data.name = StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim())
+					data.status = 'PENDING'
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${task.id}`)
+						.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+						.send(data)
+					response.should.have.status(422)
+					response.body.should.have
+						.property('message')
+						.eql(i18next.t('task_422_update_employee_fromInProgress_toCompletedOrBlocked'))
+				})
+
+				it('from BLOCKED to other than IN PROGRESS', async function () {
+					const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'BLOCKED')
+					const task = await db.models.Task.create(data)
+					data.name = StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim())
+					data.status = 'PENDING'
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${task.id}`)
+						.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+						.send(data)
+					response.should.have.status(422)
+					response.body.should.have
+						.property('message')
+						.eql(i18next.t('task_422_update_employee_fromBlocked_toInProgress'))
+				})
+			})
+			describe('not allowed - not allowed fields', async function () {
+				it('name change but does not matter', async function () {
+					const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'BLOCKED')
+					const task = await db.models.Task.create(data)
+					data.name = StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim()) + 'Updated'
+
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${task.id}`)
+						.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+						.send(data)
+					response.should.have.status(401)
+					response.body.should.have
+						.property('message')
+						.eql(i18next.t('task_unauthorized_employee_updateField'))
+				})
+			})
+
+			describe('allowed', async function () {
+				it('status and task name', async function () {
+					const data = TaskFactory.create(testAdminUser.id, testEmployeeUser1.id, 'PENDING')
+					const task = await db.models.Task.create(data)
+					data.status = 'CONFIRMED'
+					data.remark = 'some allowed remark'
+					data.name = StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim())
+
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${task.id}`)
+						.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+						.send(data)
+
+					response.should.have.status(200)
+				})
+			})
+		})
+
+		it('with role client', async function () {
+			const task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testEmployeeUser1.id))
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${task.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+				.send({})
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
 		})
 	})
 })

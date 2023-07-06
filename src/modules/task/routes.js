@@ -20,5 +20,12 @@ taskRouter.get(
 taskRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.show)
 taskRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
 taskRouter.post(`/${prefix}`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.create)
+taskRouter.put(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(TaskValidator.update()),
+	controller.update
+)
 
 export default taskRouter
