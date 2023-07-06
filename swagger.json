@@ -38,6 +38,9 @@
     },
     {
       "name": "Task"
+    },
+    {
+      "name": "Lesson"
     }
   ],
   "securityDefinitions": {
@@ -2498,6 +2501,102 @@
         "description": "Update task"
       }
     },
+    "/lessons": {
+      "get": {
+        "summary": "List all lessons (result depending of role) [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "creatorId",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "startingAt",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "tags": [
+          "Lesson"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LessonList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/lessons/{id}": {
+      "get": {
+        "summary": "Get lesson by id [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "lesson id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Lesson"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Lesson"
+        ],
+        "description": "Get lesson by id"
+      }
+    },
     "/debug": {
       "post": {
         "summary": "Debug",
@@ -3052,6 +3151,79 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Task"
+      }
+    },
+    "Lesson": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "creator": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "integer"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            }
+          }
+        },
+        "client": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "integer"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            }
+          }
+        },
+        "startingAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endingAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "LessonList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Lesson"
       }
     }
   }

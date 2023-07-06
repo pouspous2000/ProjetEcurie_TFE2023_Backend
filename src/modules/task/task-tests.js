@@ -24,6 +24,7 @@ describe('Task module', function () {
 	let testAdminContact, testEmployeeContact1, testEmployeeContact2, testClientContact
 
 	beforeEach(async function () {
+		await db.models.Task.destroy({ truncate: { cascade: true } })
 		await db.models.Contact.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
