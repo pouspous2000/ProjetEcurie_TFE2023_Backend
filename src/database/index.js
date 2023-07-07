@@ -18,6 +18,7 @@ import AdditiveHorseModel from '@/modules/additive-data/model'
 import TaskModel from '@/modules/task/model'
 import LessonModel from '@/modules/lesson/model'
 import EventModel from '@/modules/event/model'
+import EventUserModel from '@/database/models/event-user'
 
 const sequelize = new Sequelize(configs[process.env.NODE_ENV])
 
@@ -39,6 +40,7 @@ const modelDefiners = [
 	AdditiveHorseModel,
 	LessonModel,
 	EventModel,
+	EventUserModel,
 ]
 
 // eslint-disable-next-line no-restricted-syntax
