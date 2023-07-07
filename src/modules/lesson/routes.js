@@ -26,4 +26,12 @@ lessonRouter.post(
 	controller.create
 )
 
+lessonRouter.put(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(LessonValidator.update()),
+	controller.update
+)
+
 export default lessonRouter

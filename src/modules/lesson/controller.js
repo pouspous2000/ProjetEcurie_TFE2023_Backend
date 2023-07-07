@@ -35,6 +35,10 @@ export class LessonController extends BaseController {
 		return await super.create(request, response, next, this._getRelationOptions())
 	}
 
+	async update(request, response, next) {
+		return await super.update(request, response, next, this._getRelationOptions())
+	}
+
 	_getRelationOptions() {
 		return {
 			include: [

@@ -398,4 +398,138 @@ describe('Lesson module', function () {
 			})
 		})
 	})
+
+	describe('update', async function () {
+		describe('with role admin', async function () {
+			it('allowed - change startingAt and endingAt when status is confirmed', async function () {
+				const lesson = await db.models.Lesson.create(
+					LessonFactory.create(testEmployeeUser1.id, testClientUser1.id, 'CONFIRMED')
+				)
+				const data = {
+					startingAt: lesson.startingAt,
+					endingAt: lesson.endingAt,
+					status: 'DONE',
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${lesson.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(200)
+			})
+
+			describe('not allowed', async function () {
+				it('any change when status is other than confirmed', async function () {
+					const lesson = await db.models.Lesson.create(
+						LessonFactory.create(testEmployeeUser1.id, testClientUser1.id, 'DONE')
+					)
+					const data = {
+						startingAt: lesson.startingAt,
+						endingAt: lesson.endingAt,
+						status: 'CANCELLED',
+					}
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${lesson.id}`)
+						.set('Authorization', `Bearer ${testAdminUser.token}`)
+						.send(data)
+					response.should.have.status(422)
+					response.body.should.have.property('message').eql(i18next.t('lesson_422_update_completed'))
+				})
+			})
+
+			it('update creator', async function () {
+				const lesson = await db.models.Lesson.create(
+					LessonFactory.create(testEmployeeUser1.id, testClientUser1.id, 'CONFIRMED')
+				)
+				const data = {
+					creatorId: testAdminUser.id,
+					startingAt: lesson.startingAt,
+					endingAt: lesson.endingAt,
+					status: 'DONE',
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${lesson.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('lesson_422_creatorId_change'))
+			})
+
+			it('update client', async function () {
+				const lesson = await db.models.Lesson.create(
+					LessonFactory.create(testEmployeeUser1.id, testClientUser1.id, 'CONFIRMED')
+				)
+				const data = {
+					clientId: testClientUser2.id,
+					startingAt: lesson.startingAt,
+					endingAt: lesson.endingAt,
+					status: 'DONE',
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${lesson.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('lesson_422_clientId_change'))
+			})
+		})
+
+		describe('with role employee', async function () {
+			it('own lesson and allowed change - confer status', async function () {
+				const lesson = await db.models.Lesson.create(
+					LessonFactory.create(testEmployeeUser1.id, testClientUser1.id, 'CONFIRMED')
+				)
+				const data = {
+					startingAt: lesson.startingAt,
+					endingAt: lesson.endingAt,
+					status: 'DONE',
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${lesson.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+					.send(data)
+				response.should.have.status(200)
+			})
+
+			it('other employee lesson', async function () {
+				const lesson = await db.models.Lesson.create(
+					LessonFactory.create(testEmployeeUser1.id, testClientUser1.id, 'CONFIRMED')
+				)
+				const data = {
+					startingAt: lesson.startingAt,
+					endingAt: lesson.endingAt,
+					status: 'DONE',
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${lesson.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser2.token}`)
+					.send(data)
+				response.should.have.status(401)
+				response.body.should.have.property('message').eql(i18next.t('lesson_unauthorized'))
+			})
+		})
+
+		it('with role client', async function () {
+			const lesson = await db.models.Lesson.create(
+				LessonFactory.create(testEmployeeUser1.id, testClientUser1.id, 'CONFIRMED')
+			)
+			const data = {
+				startingAt: lesson.startingAt,
+				endingAt: lesson.endingAt,
+				status: 'DONE',
+			}
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${lesson.id}`)
+				.set('Authorization', `Bearer ${testClientUser1.token}`)
+				.send(data)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+	})
 })

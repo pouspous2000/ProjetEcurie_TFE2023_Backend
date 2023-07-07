@@ -4,6 +4,13 @@ export const LessonLocales = {
 		lesson_404: 'Leçon trouvable',
 		lesson_unauthorized: "Vous n'avez pas les permissions requises pour cette leçon",
 		lesson_422_inexisting_client: "Le client renseigné n'existe pas",
+		lesson_422_inexisting_creator: "Le créateur n'existe pas",
+		lesson_422_update_completed:
+			'Impossible de modifier une leçon lorsque cette dernière est annulée ou complétée ou notée comme absente',
+		lesson_422_creatorId_change: "Impossible de changer le créateur d'une leçon",
+		lesson_422_clientId_change: "Impossible de changer le client d'une leçon",
+		lesson_422_status_change:
+			"Impossible de changer le status d'une leçon quand cette dernière est annulée ou complétée ou notée comme absente",
 
 		// validation (sql)
 		lesson_sql_validation_creatorId_isInt: 'Vous devez renseigner un créateur valide',
@@ -32,6 +39,8 @@ export const LessonLocales = {
 			'Vous devez renseigner une date de fin au format ISO YYYY-MM-DDTHH:MM:SSZ',
 		lesson_request_validation_endingAt_isAfterStartingAt:
 			'La date de fin ne peut pas être antérieure à la date de début',
+		lesson_request_validation_status_exists: 'Vous devez renseigner le status de la leçon',
+		lesson_request_validation_query_status_isIn: 'Vous devez renseigner un status existant pour la leçon',
 	},
 	en: {},
 	nl: {},

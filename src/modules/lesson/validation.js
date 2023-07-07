@@ -33,6 +33,22 @@ export class LessonValidator {
 			body('clientId').exists().withMessage(i18next.t('lesson_request_validation_clientId_exists')),
 			body('clientId').isInt({ min: 1 }).withMessage(i18next.t('lesson_request_validation_clientId_isInt')),
 			body('startingAt').exists().withMessage(i18next.t('lesson_request_validation_startingAt_exists')),
+			...this._createUpdateCommon(),
+		]
+	}
+
+	static update() {
+		return [
+			...this._createUpdateCommon(),
+			body('status').exists().withMessage(i18next.t('lesson_request_validation_status_exists')),
+			body('status')
+				.isIn(['CONFIRMED', 'DONE', 'CANCELLED', 'ABSENCE'])
+				.withMessage(i18next.t('lesson_request_validation_query_status_isIn')),
+		]
+	}
+
+	static _createUpdateCommon() {
+		return [
 			body('startingAt')
 				.custom(value => {
 					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
