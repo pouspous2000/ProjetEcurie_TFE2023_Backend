@@ -11,6 +11,7 @@ import { PensionDataLocales } from '@/modules/pension-data/locales'
 import { AdditiveDataLocales } from '@/modules/additive-data/locales'
 import { TaskLocales } from '@/modules/task/locales'
 import { LessonLocales } from '@/modules/lesson/locales'
+import { EventLocales } from '@/modules/event/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -46,6 +47,7 @@ export class LocalUtils {
 		TaskLocales,
 		AdditiveDataLocales,
 		LessonLocales,
+		EventLocales,
 	]
 
 	static getLocales() {
