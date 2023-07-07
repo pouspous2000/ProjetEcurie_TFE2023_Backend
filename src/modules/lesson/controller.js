@@ -9,9 +9,13 @@ import { Contact } from '@/modules/contact/model'
 export class LessonController extends BaseController {
 	constructor() {
 		super(new LessonService(), new LessonPolicy(), new LessonView())
+		this._getIndexWhereClause = this._getIndexWhereClause.bind(this)
+		this._getRelationOptions = this._getRelationOptions.bind(this)
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
 		this.delete = this.delete.bind(this)
+		this.create = this.create.bind(this)
+		this.update = this.update.bind(this)
 	}
 
 	async index(request, response, next) {
@@ -24,6 +28,11 @@ export class LessonController extends BaseController {
 
 	async show(request, response, next) {
 		return await super.show(request, response, next, this._getRelationOptions())
+	}
+
+	async create(request, response, next) {
+		request.body.creatorId = request.user.id
+		return await super.create(request, response, next, this._getRelationOptions())
 	}
 
 	_getRelationOptions() {

@@ -31,4 +31,12 @@ export class LessonView {
 			updatedAt: lesson.endingAt,
 		}
 	}
+
+	create(lesson) {
+		return this.show(lesson)
+	}
+
+	update(lesson) {
+		return this.show(lesson)
+	}
 }

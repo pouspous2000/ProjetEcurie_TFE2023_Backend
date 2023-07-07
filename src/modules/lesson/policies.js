@@ -34,8 +34,27 @@ export class LessonPolicy {
 		switch (request.user.roleCategory) {
 			case 'ADMIN':
 				return lesson
+			case 'EMPLOYEE':
+				if (lesson.creatorId !== request.user.id) {
+					throw createError(401, i18next.t('lesson_unauthorized'))
+				}
+				return lesson
 			default:
 				throw createError(401, i18next.t('lesson_unauthorized'))
+		}
+	}
+
+	async create(request, data) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return data
+			case 'EMPLOYEE':
+				if (data.creatorId !== request.user.id) {
+					throw createError(401, i18next.t('lesson_unauthorized'))
+				}
+				return data
+			case 'CLIENT':
+				throw createError(401, i18next.t('task_unauthorized'))
 		}
 	}
 }

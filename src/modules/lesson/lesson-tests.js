@@ -281,14 +281,23 @@ describe('Lesson module', function () {
 			response.should.have.status(204)
 		})
 
-		it('with role employee', async function () {
+		it('with role employee - own lesson', async function () {
 			const lesson = await db.models.Lesson.create(LessonFactory.create(testEmployeeUser1.id, testClientUser1.id))
 			const response = await chai
 				.request(app)
 				.delete(`${routePrefix}/${lesson.id}`)
 				.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+			response.should.have.status(204)
+		})
+
+		it("with role employee - other employee's lesson", async function () {
+			const lesson = await db.models.Lesson.create(LessonFactory.create(testEmployeeUser1.id, testClientUser1.id))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${lesson.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser2.token}`)
 			response.should.have.status(401)
-			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+			response.body.should.have.property('message').eql(i18next.t('lesson_unauthorized'))
 		})
 
 		it('with role client', async function () {
@@ -299,6 +308,94 @@ describe('Lesson module', function () {
 				.set('Authorization', `Bearer ${testClientUser1.token}`)
 			response.should.have.status(401)
 			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+	})
+
+	describe('create', async function () {
+		describe('create with valid data', async function () {
+			it('with role admin', async function () {
+				const data = LessonFactory.create(testAdminUser.id, testClientUser1.id)
+				delete data['status']
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(201)
+				response.body.should.have.property('id')
+				response.body.should.have.property('creator').eql({
+					userId: testAdminUser.id,
+					firstName: testAdminContact.firstName,
+					lastName: testAdminContact.lastName,
+					phone: testAdminContact.phone,
+					mobile: testAdminContact.mobile,
+				})
+				response.body.should.have.property('client').eql({
+					userId: testClientUser1.id,
+					firstName: testClientContact1.firstName,
+					lastName: testClientContact1.lastName,
+					phone: testClientContact1.phone,
+					mobile: testClientContact1.mobile,
+				})
+				new Date(response.body.startingAt).getTime().should.eql(new Date(data.startingAt).getTime())
+				new Date(response.body.endingAt).getTime().should.eql(new Date(data.endingAt).getTime())
+				response.body.should.have.property('status').eql('CONFIRMED')
+				response.body.should.have.property('createdAt')
+				response.body.should.have.property('updatedAt')
+			})
+
+			it('with role employee', async function () {
+				const data = LessonFactory.create(testEmployeeUser2.id, testClientUser2.id)
+				delete data['status']
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testEmployeeUser2.token}`)
+					.send(data)
+
+				response.should.have.status(201)
+			})
+
+			it('with role client', async function () {
+				const data = LessonFactory.create(testEmployeeUser2.id, testClientUser2.id)
+				delete data['status']
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testClientUser2.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('create invalid - middleware', async function () {
+			it('with role admin but does not matter', async function () {
+				const data = {}
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['clientId', 'startingAt', 'endingAt'])
+			})
+		})
+
+		describe('create invalid - sql', async function () {
+			it('with role admin but does not matter', async function () {
+				try {
+					await db.models.Lesson.create({})
+				} catch (error) {
+					error.errors
+						.map(err => err.path)
+						.should.eql(['creatorId', 'clientId', 'startingAt', 'endingAt', 'status'])
+				}
+			})
 		})
 	})
 })
