@@ -13,6 +13,12 @@ export class Event extends Model {
 
 	static associate(models) {
 		Event.belongsTo(models.User, { foreignKey: 'creatorId', as: 'creator' })
+		Event.belongsToMany(models.User, {
+			through: models.EventUser,
+			foreignKey: 'eventId',
+			otherKey: 'userId',
+			as: 'participants',
+		})
 	}
 }
 

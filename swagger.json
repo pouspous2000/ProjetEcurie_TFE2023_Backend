@@ -41,6 +41,9 @@
     },
     {
       "name": "Lesson"
+    },
+    {
+      "name": "Event"
     }
   ],
   "securityDefinitions": {
@@ -2770,6 +2773,105 @@
         "description": "Update lesson"
       }
     },
+    "/events": {
+      "get": {
+        "summary": "List all events",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "creatorId",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "startingAt",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "endingAt",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "participants",
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "required": false
+          }
+        ],
+        "tags": [
+          "Event"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EventList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/events/{id}": {
+      "get": {
+        "summary": "Get event by id",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "event id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Event"
+        ],
+        "description": "Get event by id"
+      }
+    },
     "/debug": {
       "post": {
         "summary": "Debug",
@@ -3397,6 +3499,88 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Lesson"
+      }
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "creator": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "integer"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            }
+          }
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "integer"
+              },
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "mobile": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "startingAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endingAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "EventList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Event"
       }
     }
   }

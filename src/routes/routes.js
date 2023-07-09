@@ -14,11 +14,12 @@ import AdditiveRouter from '@/modules/additive/routes'
 import HorseRouter from '@/modules/horse/routes'
 import TaskRouter from '@/modules/task/routes'
 import LessonRouter from '@/modules/lesson/routes'
+import EventRouter from '@/modules/event/routes'
 
 import db from '@/database'
 import { User } from '@/modules/authentication/model'
 import { Contact } from '@/modules/contact/model'
-import { Pension } from '@/modules/pension/model'
+import { Op } from 'sequelize'
 
 const router = Router()
 
@@ -34,35 +35,37 @@ router.use(AdditiveRouter)
 router.use(HorseRouter)
 router.use(TaskRouter)
 router.use(LessonRouter)
+router.use(EventRouter)
 
 // eslint-disable-next-line no-unused-vars
 router.post(`/debug`, async function (request, response) {
-	const res = await db.models.Horse.create(
-		{
-			ownerId: 1,
-			pensionId: 1,
-			name: 'patapouf',
-			comment: 'some comment',
+	const result = await db.models.Event.findAll({
+		include: [
+			{
+				model: User,
+				as: 'creator',
+				attributes: ['email'],
+				include: {
+					model: Contact,
+					as: 'contact',
+				},
+			},
+			{
+				model: User,
+				as: 'participants',
+				attributes: ['email'],
+				include: {
+					model: Contact,
+					as: 'contact',
+				},
+			},
+		],
+		where: {
+			[Op.and]: [{ creatorId: 4 }, { '$participants.contact.userId$': { [Op.in]: [17] } }],
 		},
-		{
-			include: [
-				{
-					model: User,
-					as: 'owner',
-					attributes: ['email'],
-					include: {
-						model: Contact,
-						as: 'contact',
-					},
-				},
-				{
-					model: Pension,
-					as: 'pension',
-				},
-			],
-		}
-	)
-	return response.status(200).json(res) // ca ne fonctionne pas donc je pense que je dois faire une query en plus
+	})
+
+	return response.status(200).json(result)
 })
 
 router.use('/docs', swaggerUi.serve)
