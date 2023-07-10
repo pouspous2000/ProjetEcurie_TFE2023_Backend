@@ -444,4 +444,97 @@ describe('Event module', function () {
 			})
 		})
 	})
+
+	describe('update', async function () {
+		it('with role admin', async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const data = Eventfactory.create(testEmployeeUser1.id)
+			delete data['creatorId']
+
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send(data)
+
+			response.should.have.status(200)
+			response.body.should.have.property('id').eql(event.id)
+			response.body.should.have
+				.property('name')
+				.eql(StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim()))
+			response.body.should.have.property('description').eql(data.description.trim())
+			response.body.should.have.property('creator').eql({
+				userId: testEmployeeUser1.id,
+				firstName: testEmployeeContact1.firstName,
+				lastName: testEmployeeContact1.lastName,
+				phone: testEmployeeContact1.phone,
+				mobile: testEmployeeContact1.mobile,
+			})
+			response.body.participants[0].should.eql({
+				email: testClientUser1.email,
+				userId: testClientUser1.id,
+				firstName: testClientContact1.firstName,
+				lastName: testClientContact1.lastName,
+				phone: testClientContact1.phone,
+				mobile: testClientContact1.mobile,
+				address: testClientContact1.address,
+			})
+			new Date(response.body.startingAt).getTime().should.eql(new Date(data.startingAt).getTime())
+			new Date(response.body.endingAt).getTime().should.eql(new Date(data.endingAt).getTime())
+			response.body.should.have.property('createdAt')
+			response.body.should.have.property('updatedAt')
+		})
+
+		it('with role employee - own event', async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const data = Eventfactory.create(testEmployeeUser1.id)
+			delete data['creatorId']
+
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+				.send(data)
+
+			response.should.have.status(200)
+		})
+
+		it("with role employee - other employee's event", async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const data = Eventfactory.create(testEmployeeUser1.id)
+			delete data['creatorId']
+
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser2.token}`)
+				.send(data)
+
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('event_unauthorized'))
+		})
+
+		it('with role client', async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const data = Eventfactory.create(testEmployeeUser1.id)
+			delete data['creatorId']
+
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testClientUser1.token}`)
+				.send(data)
+
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+	})
 })

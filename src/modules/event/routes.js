@@ -20,4 +20,12 @@ eventRouter.post(
 	controller.create
 )
 
+eventRouter.put(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(EventValidator.update()),
+	controller.update
+)
+
 export default eventRouter

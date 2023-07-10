@@ -55,6 +55,29 @@ export class EventValidator {
 
 	static create() {
 		return [
+			...this._createUpdateCommon(),
+			body('participants').exists().withMessage(i18next.t('event_request_validation_participants_exists')),
+			body('participants').custom(participants => {
+				if (!Array.isArray(participants)) {
+					throw new Error(i18next.t('event_request_validation_participants_isArray'))
+				}
+				participants.forEach(participant => {
+					if (!Number.isInteger(participant) || participant <= 0) {
+						throw new Error(i18next.t('event_request_validation_participants_isPositiveInteger'))
+					}
+					return true
+				})
+				return true
+			}),
+		]
+	}
+
+	static update() {
+		return [...this._createUpdateCommon()]
+	}
+
+	static _createUpdateCommon() {
+		return [
 			body('name').exists().withMessage(i18next.t('event_request_validation_name_exists')),
 			body('name')
 				.isLength({ min: 1, max: 255 })
@@ -94,19 +117,6 @@ export class EventValidator {
 					throw new Error(i18next.t('event_request_validation_endingAt_isAfterStartingAt'))
 				})
 				.toDate(),
-			body('participants').exists().withMessage(i18next.t('event_request_validation_participants_exists')),
-			body('participants').custom(participants => {
-				if (!Array.isArray(participants)) {
-					throw new Error(i18next.t('event_request_validation_participants_isArray'))
-				}
-				participants.forEach(participant => {
-					if (!Number.isInteger(participant) || participant <= 0) {
-						throw new Error(i18next.t('event_request_validation_participants_isPositiveInteger'))
-					}
-					return true
-				})
-				return true
-			}),
 		]
 	}
 }

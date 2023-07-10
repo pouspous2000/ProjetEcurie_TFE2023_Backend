@@ -15,6 +15,7 @@ export class EventController extends BaseController {
 		this.show = this.show.bind(this)
 		this.delete = this.delete.bind(this)
 		this.create = this.create.bind(this)
+		this.update = this.update.bind(this)
 	}
 
 	async index(request, response, next) {
@@ -33,6 +34,10 @@ export class EventController extends BaseController {
 	async create(request, response, next) {
 		request.body.creatorId = request.user.id
 		return await super.create(request, response, next, this._getRelationOptions())
+	}
+
+	async update(request, response, next) {
+		return await super.update(request, response, next, this._getRelationOptions())
 	}
 
 	_getRelationOptions() {

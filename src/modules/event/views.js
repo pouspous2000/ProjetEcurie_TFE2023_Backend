@@ -31,6 +31,10 @@ export class EventView {
 		return this.show(event)
 	}
 
+	update(event) {
+		return this.show(event)
+	}
+
 	_getParticipantView(event) {
 		return event.participants.map(participant => {
 			return {
