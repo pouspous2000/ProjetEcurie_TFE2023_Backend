@@ -13,6 +13,12 @@ export class Competition extends Model {
 
 	static associate(models) {
 		Competition.belongsTo(models.User, { foreignKey: 'creatorId', as: 'creator' })
+		Competition.belongsToMany(models.User, {
+			through: models.CompetitionUser,
+			foreignKey: 'competitionId',
+			otherKey: 'userId',
+			as: 'participants',
+		})
 	}
 }
 
