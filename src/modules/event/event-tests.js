@@ -343,4 +343,105 @@ describe('Event module', function () {
 			response.should.have.status(404)
 		})
 	})
+
+	describe('create', async function () {
+		describe('with valid data', async function () {
+			it('with role admin', async function () {
+				const data = Eventfactory.create(testEmployeeUser1.id)
+				delete data['creatorId']
+				data.participants = [testClientUser1.id]
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(201)
+				response.body.should.have.property('id')
+				response.body.should.have
+					.property('name')
+					.eql(StringUtils.capitalizeFirstLetter(data.name.toLowerCase().trim()))
+				response.body.should.have.property('description').eql(data.description.trim())
+				response.body.should.have.property('creator').eql({
+					userId: testAdminUser.id,
+					firstName: testAdminContact.firstName,
+					lastName: testAdminContact.lastName,
+					phone: testAdminContact.phone,
+					mobile: testAdminContact.mobile,
+				})
+				response.body.participants[0].should.eql({
+					email: testClientUser1.email,
+					userId: testClientUser1.id,
+					firstName: testClientContact1.firstName,
+					lastName: testClientContact1.lastName,
+					phone: testClientContact1.phone,
+					mobile: testClientContact1.mobile,
+					address: testClientContact1.address,
+				})
+				new Date(response.body.startingAt).getTime().should.eql(new Date(data.startingAt).getTime())
+				new Date(response.body.endingAt).getTime().should.eql(new Date(data.endingAt).getTime())
+				response.body.should.have.property('createdAt')
+				response.body.should.have.property('updatedAt')
+			})
+
+			it('with role employee', async function () {
+				const data = Eventfactory.create(testEmployeeUser1.id)
+				delete data['creatorId']
+				data.participants = [testClientUser1.id]
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+					.send(data)
+
+				response.should.have.status(201)
+			})
+
+			it('with role client', async function () {
+				const data = Eventfactory.create(testEmployeeUser1.id)
+				delete data['creatorId']
+				data.participants = [testClientUser1.id]
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testClientUser1.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('invalid data - middleware', async function () {
+			it('with role admin but does not matter', async function () {
+				const data = {}
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(422)
+				response.body.errors
+					.map(error => error.path)
+					.should.eql(['name', 'description', 'participants', 'startingAt', 'endingAt'])
+			})
+		})
+
+		describe('invalid data - sql', async function () {
+			it('null values', async function () {
+				try {
+					await db.models.Event.create({})
+				} catch (error) {
+					error.errors
+						.map(err => err.path)
+						.should.eql(['creatorId', 'name', 'description', 'startingAt', 'endingAt'])
+				}
+			})
+		})
+	})
 })

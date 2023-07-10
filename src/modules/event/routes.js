@@ -12,5 +12,12 @@ const prefix = 'events'
 eventRouter.get(`/${prefix}`, isAuthenticated, validate(EventValidator.index()), controller.index)
 eventRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
 eventRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.delete)
+eventRouter.post(
+	`/${prefix}`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(EventValidator.create()),
+	controller.create
+)
 
 export default eventRouter
