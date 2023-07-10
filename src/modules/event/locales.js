@@ -4,6 +4,8 @@ export const EventLocales = {
 		event_404: 'Evénement introuvable',
 		event_unauthorized: "Vous n'avez pas les permissions requises pour cet événement",
 		event_422_inexistingParticipant: "Un ou plusieurs participants n'existent pas",
+		event_422_creatorSubscription: "En temps que créateur de l'événement vous ne pouvez pas vous y inscrire",
+		event_422_subscriptionOnPastEvent: 'Impossible de changer son inscription sur un événement passé',
 
 		//validation(sql)
 		event_sql_validation_creatorId_isInt: 'Vous devez renseigner un créateur valide',

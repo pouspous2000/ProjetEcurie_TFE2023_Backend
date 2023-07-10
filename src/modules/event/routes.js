@@ -28,4 +28,6 @@ eventRouter.put(
 	controller.update
 )
 
+eventRouter.post(`/${prefix}/:id`, isAuthenticated, controller.subscribe)
+
 export default eventRouter

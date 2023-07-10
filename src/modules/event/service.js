@@ -3,6 +3,7 @@ import createError from 'http-errors'
 import { BaseService } from '@/core/BaseService'
 import { Event } from '@/modules/event/model'
 import db from '@/database'
+import i18next from 'i18next'
 
 export class EventService extends BaseService {
 	constructor() {
@@ -30,6 +31,22 @@ export class EventService extends BaseService {
 		} catch (error) {
 			await transaction.rollback()
 			throw error
+		}
+	}
+
+	async subscribe(event, userId) {
+		if (event.creatorId === userId) {
+			throw createError(422, i18next.t('event_422_creatorSubscription'))
+		}
+
+		if (new Date() > event.endingAt) {
+			throw createError(422, i18next.t('event_422_subscriptionOnPastEvent'))
+		}
+
+		if (!(await event.hasParticipant(userId))) {
+			await event.addParticipant(userId)
+		} else {
+			await event.removeParticipant(userId)
 		}
 	}
 }

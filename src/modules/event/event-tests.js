@@ -537,4 +537,74 @@ describe('Event module', function () {
 			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
 		})
 	})
+
+	describe('subscription', async function () {
+		describe('allowed', async function () {
+			it('subscribe', async function () {
+				const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+				await event.setParticipants([testClientUser1.id])
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/${event.id}`)
+					.set('Authorization', `Bearer ${testClientUser2.token}`)
+					.send({})
+
+				response.should.have.status(200)
+				response.body.participants.should.have.length(2)
+			})
+
+			it('unsubscribe', async function () {
+				const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+				await event.setParticipants([testClientUser1.id])
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/${event.id}`)
+					.set('Authorization', `Bearer ${testClientUser1.token}`)
+					.send({})
+
+				response.should.have.status(200)
+				response.body.participants.should.have.length(0)
+			})
+		})
+
+		describe('not allowed', async function () {
+			it('creator subscription', async function () {
+				const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+				await event.setParticipants([testClientUser1.id])
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/${event.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+					.send({})
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('event_422_creatorSubscription'))
+			})
+
+			it('(un)subscription on past event', async function () {
+				const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+				await event.setParticipants([testClientUser1.id])
+
+				const now = new Date()
+				await event
+					.set({
+						startingAt: now,
+						endingAt: new Date(now.getTime() + 1),
+					})
+					.save()
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/${event.id}`)
+					.set('Authorization', `Bearer ${testClientUser2.token}`)
+					.send({})
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('event_422_subscriptionOnPastEvent'))
+			})
+		})
+	})
 })

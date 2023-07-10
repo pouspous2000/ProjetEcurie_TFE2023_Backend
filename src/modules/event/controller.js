@@ -16,6 +16,7 @@ export class EventController extends BaseController {
 		this.delete = this.delete.bind(this)
 		this.create = this.create.bind(this)
 		this.update = this.update.bind(this)
+		this.subscribe = this.subscribe.bind(this)
 	}
 
 	async index(request, response, next) {
@@ -38,6 +39,20 @@ export class EventController extends BaseController {
 
 	async update(request, response, next) {
 		return await super.update(request, response, next, this._getRelationOptions())
+	}
+
+	async subscribe(request, response, next) {
+		try {
+			const { id } = request.params
+			const userId = request.user.id
+			let event = await this._service.findOrFail(id)
+			await this._service.subscribe(event, userId)
+			return response
+				.status(200)
+				.json(this._view.show(await this._service.findOrFail(event.id, this._getRelationOptions())))
+		} catch (error) {
+			return next(error)
+		}
 	}
 
 	_getRelationOptions() {
