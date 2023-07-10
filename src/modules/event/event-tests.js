@@ -287,4 +287,60 @@ describe('Event module', function () {
 			response.body.should.have.property('message').eql(i18next.t('event_404'))
 		})
 	})
+
+	describe('delete', async function () {
+		it('with role admin', async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(204)
+		})
+
+		it('with role employee - own event', async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+			response.should.have.status(204)
+		})
+
+		it("with role employee - other employee's event", async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser2.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('event_unauthorized'))
+		})
+
+		it('with role client', async function () {
+			const event = await db.models.Event.create(Eventfactory.create(testEmployeeUser1.id))
+			await event.setParticipants([testClientUser1.id])
+
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${event.id}`)
+				.set('Authorization', `Bearer ${testClientUser1.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+
+		it('with role admin - 404', async function () {
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(404)
+		})
+	})
 })

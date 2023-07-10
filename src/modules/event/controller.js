@@ -13,6 +13,7 @@ export class EventController extends BaseController {
 		this._getRelationOptions = this._getRelationOptions.bind(this)
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
+		this.delete = this.delete.bind(this)
 	}
 
 	async index(request, response, next) {
