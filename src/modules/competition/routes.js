@@ -12,5 +12,12 @@ const prefix = 'competitions'
 competitionRouter.get(`/${prefix}`, isAuthenticated, validate(CompetitionValidator.index()), controller.index)
 competitionRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
 competitionRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.delete)
+competitionRouter.post(
+	`/${prefix}`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(CompetitionValidator.create()),
+	controller.create
+)
 
 export default competitionRouter
