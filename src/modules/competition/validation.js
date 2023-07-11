@@ -76,6 +76,10 @@ export class CompetitionValidator {
 		]
 	}
 
+	static update() {
+		return [...this._createUpdateCommon()]
+	}
+
 	static _createUpdateCommon() {
 		return [
 			body('name').exists().withMessage(i18next.t('competition_request_validation_name_exists')),

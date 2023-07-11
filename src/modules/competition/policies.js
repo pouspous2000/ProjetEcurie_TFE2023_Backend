@@ -39,4 +39,19 @@ export class CompetitionPolicy {
 				throw createError(401, i18next.t('competition_unauthorized'))
 		}
 	}
+
+	async update(request, competition) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return competition
+			case 'EMPLOYEE':
+				if (competition.creatorId !== request.user.id) {
+					throw createError(401, i18next.t('competition_unauthorized'))
+				}
+				return competition
+			case 'CLIENT':
+				// this should not be called (role middleware)
+				throw createError(401, i18next.t('competition_unauthorized'))
+		}
+	}
 }

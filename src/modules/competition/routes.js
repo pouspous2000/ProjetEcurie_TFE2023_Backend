@@ -4,6 +4,7 @@ import hasRoleCategory from '@/middlewares/has-role-category'
 import validate from '@/middlewares/validate'
 import { CompetitionController } from '@/modules/competition/controller'
 import { CompetitionValidator } from '@/modules/competition/validation'
+import { EventValidator } from '@/modules/event/validation'
 
 const competitionRouter = Router()
 const controller = new CompetitionController()
@@ -18,6 +19,13 @@ competitionRouter.post(
 	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
 	validate(CompetitionValidator.create()),
 	controller.create
+)
+competitionRouter.put(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(EventValidator.update()),
+	controller.update
 )
 
 export default competitionRouter
