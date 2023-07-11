@@ -35,6 +35,10 @@ export class CompetitionView {
 		return this.show(competition)
 	}
 
+	subscribe(competition) {
+		return this.show(competition)
+	}
+
 	_getParticipantView(event) {
 		return event.participants.map(participant => {
 			return {

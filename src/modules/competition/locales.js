@@ -6,7 +6,7 @@ export const CompetitionLocales = {
 		competition_422_inexistingParticipant: "Un ou plusieurs participants n'existent pas",
 		competition_422_creatorSubscription:
 			'En temps que créateur de de la compétition vous ne pouvez pas vous y inscrire',
-		competition_422_subscriptionOnPastEvent:
+		competition_422_subscriptionOnPastCompetition:
 			'Impossible de changer son inscription sur une compétition passée (terminée)',
 
 		//validation(sql)

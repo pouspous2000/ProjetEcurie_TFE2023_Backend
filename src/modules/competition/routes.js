@@ -28,4 +28,6 @@ competitionRouter.put(
 	controller.update
 )
 
+competitionRouter.post(`/${prefix}/:id`, isAuthenticated, controller.subscribe)
+
 export default competitionRouter

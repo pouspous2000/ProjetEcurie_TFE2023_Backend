@@ -3,6 +3,7 @@ import createError from 'http-errors'
 import { BaseService } from '@/core/BaseService'
 import { Competition } from '@/modules/competition/model'
 import db from '@/database'
+import i18next from '../../../i18n'
 
 export class CompetitionService extends BaseService {
 	constructor() {
@@ -30,6 +31,22 @@ export class CompetitionService extends BaseService {
 		} catch (error) {
 			await transaction.rollback()
 			throw error
+		}
+	}
+
+	async subscribe(competition, userId) {
+		if (competition.creatorId === userId) {
+			throw createError(422, i18next.t('competition_422_creatorSubscription'))
+		}
+
+		if (new Date() > competition.endingAt) {
+			throw createError(422, i18next.t('competition_422_subscriptionOnPastCompetition'))
+		}
+
+		if (!(await competition.hasParticipant(userId))) {
+			await competition.addParticipant(userId)
+		} else {
+			await competition.removeParticipant(userId)
 		}
 	}
 }
