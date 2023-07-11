@@ -287,4 +287,56 @@ describe('Competition module', function () {
 			response.body.should.have.property('message').eql(i18next.t('competition_404'))
 		})
 	})
+
+	describe('delete', async function () {
+		it('with role admin', async function () {
+			const competition = await db.models.Competition.create(CompetitionFactory.create(testEmployeeUser1.id))
+			await competition.setParticipants([testClientUser1.id])
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${competition.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(204)
+		})
+
+		it('with role employee - own competition', async function () {
+			const competition = await db.models.Competition.create(CompetitionFactory.create(testEmployeeUser1.id))
+			await competition.setParticipants([testClientUser1.id])
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${competition.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser1.token}`)
+			response.should.have.status(204)
+		})
+
+		it("with role employee - other employee's competition", async function () {
+			const competition = await db.models.Competition.create(CompetitionFactory.create(testEmployeeUser1.id))
+			await competition.setParticipants([testClientUser1.id])
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${competition.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser2.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('competition_unauthorized'))
+		})
+
+		it('with role client', async function () {
+			const competition = await db.models.Competition.create(CompetitionFactory.create(testEmployeeUser1.id))
+			await competition.setParticipants([testClientUser1.id])
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${competition.id}`)
+				.set('Authorization', `Bearer ${testClientUser1.token}`)
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+
+		it('with role admin - 404', async function () {
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(404)
+		})
+	})
 })

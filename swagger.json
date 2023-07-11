@@ -3207,6 +3207,44 @@
           "Competition"
         ],
         "description": "Get competition by id"
+      },
+      "delete": {
+        "summary": "Delete competition by id [ADMIN, EMPLOYEE]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "competition id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Competition"
+        ],
+        "description": "Delete competition by id"
       }
     },
     "/debug": {
