@@ -18,4 +18,12 @@ export class RideView {
 			deletedAt: ride.deletedAt,
 		}
 	}
+
+	create(ride) {
+		return this.show(ride)
+	}
+
+	update(ride) {
+		return this.show(ride)
+	}
 }

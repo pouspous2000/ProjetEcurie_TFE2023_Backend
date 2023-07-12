@@ -19,4 +19,13 @@ rideRouter.post(
 	validate(RideValidator.create()),
 	controller.create
 )
+
+rideRouter.put(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(RideValidator.update()),
+	controller.update
+)
+
 export default rideRouter

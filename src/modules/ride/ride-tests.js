@@ -256,4 +256,88 @@ describe('Ride module', function () {
 			})
 		})
 	})
+
+	describe('update', async function () {
+		describe('with valid data', async function () {
+			it('with role admin', async function () {
+				const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+				const data = {
+					name: 'Updated',
+					period: 'WEEKEND',
+					price: 123.45,
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${ride.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(200)
+				response.body.should.have.property('id').eql(ride.id)
+				response.body.should.have
+					.property('name')
+					.eql(StringUtils.capitalizeFirstLetter(data.name.trim().toLowerCase()))
+				response.body.should.have.property('period').eql(data.period)
+				response.body.should.have.property('price').eql(data.price)
+				response.body.should.have.property('createdAt')
+				response.body.should.have.property('updatedAt')
+				response.body.should.have.property('deletedAt').eql(null)
+			})
+
+			it('with role employee', async function () {
+				const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+				const data = {
+					name: 'Updated',
+					period: 'WEEKEND',
+					price: 123.45,
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${ride.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+
+			it('with role client', async function () {
+				const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+				const data = {
+					name: 'Updated',
+					period: 'WEEKEND',
+					price: 123.45,
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${ride.id}`)
+					.set('Authorization', `Bearer ${testClientUser.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+		describe('404', async function () {
+			it('with role admin', async function () {
+				const data = {
+					name: 'Updated',
+					period: 'WEEKEND',
+					price: 123.45,
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${1}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(404)
+				response.body.should.have.property('message').eql(i18next.t('ride_404'))
+			})
+		})
+	})
 })

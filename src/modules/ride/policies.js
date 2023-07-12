@@ -37,4 +37,17 @@ export class RidePolicy {
 				throw createError(401, i18next.t('ride_unauthorized'))
 		}
 	}
+
+	async update(request, ride) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return ride
+			case 'EMPLOYEE':
+				// this code should not be called - see middleware role
+				throw createError(401, i18next.t('ride_unauthorized'))
+			case 'CLIENT':
+				// this code should not be called - see middleware role
+				throw createError(401, i18next.t('ride_unauthorized'))
+		}
+	}
 }

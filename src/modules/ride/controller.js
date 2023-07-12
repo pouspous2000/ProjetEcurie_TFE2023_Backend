@@ -10,5 +10,6 @@ export class RideController extends BaseController {
 		this.show = this.show.bind(this)
 		this.delete = this.delete.bind(this)
 		this.create = this.create.bind(this)
+		this.update = this.update.bind(this)
 	}
 }
