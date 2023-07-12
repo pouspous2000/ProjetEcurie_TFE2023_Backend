@@ -9,8 +9,8 @@ const additiveRouter = Router()
 const controller = new AdditiveController()
 
 const prefix = 'additives'
-additiveRouter.get(`/${prefix}`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.index)
-additiveRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.show)
+additiveRouter.get(`/${prefix}`, isAuthenticated, controller.index)
+additiveRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
 additiveRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
 additiveRouter.post(
 	`/${prefix}`,

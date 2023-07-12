@@ -47,6 +47,9 @@
     },
     {
       "name": "Competition"
+    },
+    {
+      "name": "Ride"
     }
   ],
   "securityDefinitions": {
@@ -3444,6 +3447,77 @@
         "description": "(Un)Subscribe to a competition"
       }
     },
+    "/rides": {
+      "get": {
+        "summary": "List all rides",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [],
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RideList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/rides/{id}": {
+      "get": {
+        "summary": "Get ride by id",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "ride id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Ride"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Ride"
+        ],
+        "description": "Get ride by id"
+      }
+    },
     "/debug": {
       "post": {
         "summary": "Debug",
@@ -4235,6 +4309,38 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Competition"
+      }
+    },
+    "Ride": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "RideList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Ride"
       }
     }
   }
