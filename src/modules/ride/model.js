@@ -10,6 +10,15 @@ export class Ride extends Model {
 	static getModelName() {
 		return 'Ride'
 	}
+
+	static associate(models) {
+		Ride.belongsToMany(models.Horse, {
+			through: models.HorseRide,
+			foreignKey: 'rideId',
+			otherKey: 'horseId',
+			as: 'horses',
+		})
+	}
 }
 
 export default function (sequelize) {
@@ -61,4 +70,6 @@ export default function (sequelize) {
 			paranoid: true,
 		}
 	)
+
+	return Ride
 }
