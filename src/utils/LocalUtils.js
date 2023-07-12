@@ -13,6 +13,7 @@ import { TaskLocales } from '@/modules/task/locales'
 import { LessonLocales } from '@/modules/lesson/locales'
 import { EventLocales } from '@/modules/event/locales'
 import { CompetitionLocales } from '@/modules/competition/locales'
+import { RideLocales } from '@/modules/ride/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -50,6 +51,7 @@ export class LocalUtils {
 		LessonLocales,
 		EventLocales,
 		CompetitionLocales,
+		RideLocales,
 	]
 
 	static getLocales() {
