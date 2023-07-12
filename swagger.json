@@ -1344,7 +1344,7 @@
         "description": "Get pension by id"
       },
       "delete": {
-        "summary": "Delete contact by id  [ADMIN]",
+        "summary": "Delete pension by id  [ADMIN]",
         "security": [
           {
             "bearer": []
@@ -3516,6 +3516,44 @@
           "Ride"
         ],
         "description": "Get ride by id"
+      },
+      "delete": {
+        "summary": "Delete ride by id  [ADMIN]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "ride id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Ride"
+        ],
+        "description": "Delete ride by id"
       }
     },
     "/debug": {

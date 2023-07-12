@@ -124,4 +124,50 @@ describe('Ride module', function () {
 			response.body.should.have.property('message').eql(i18next.t('ride_404'))
 		})
 	})
+
+	describe('delete', async function () {
+		it('with role admin', async function () {
+			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${ride.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+			response.should.have.status(204)
+			const deletedPension = await db.models.Ride.findByPk(ride.id, { paranoid: false })
+			deletedPension.should.have.property('deletedAt').not.to.be.null
+		})
+
+		it('with role employee', async function () {
+			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${ride.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+
+		it('with role client', async function () {
+			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${ride.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+
+			response.should.have.status(401)
+			response.body.should.have.property('message').eql(i18next.t('authentication_role_incorrectRolePermission'))
+		})
+
+		it('with role admin - 404', async function () {
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('ride_404'))
+		})
+	})
 })

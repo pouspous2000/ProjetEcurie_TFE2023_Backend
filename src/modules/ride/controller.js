@@ -8,5 +8,6 @@ export class RideController extends BaseController {
 		super(new RideService(), new RidePolicy(), new RideView())
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
+		this.delete = this.delete.bind(this)
 	}
 }
