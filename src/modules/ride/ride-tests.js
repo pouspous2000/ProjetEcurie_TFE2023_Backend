@@ -170,4 +170,90 @@ describe('Ride module', function () {
 			response.body.should.have.property('message').eql(i18next.t('ride_404'))
 		})
 	})
+
+	describe('create', async function () {
+		describe('with valid data', async function () {
+			it('with role admin', async function () {
+				const data = RideFactory.create('WORKINGDAYS')
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(201)
+				response.body.should.have.property('id')
+				response.body.should.have
+					.property('name')
+					.eql(StringUtils.capitalizeFirstLetter(data.name.trim().toLowerCase()))
+				response.body.should.have.property('period').eql(data.period)
+				response.body.should.have.property('price').eql(data.price)
+				response.body.should.have.property('createdAt')
+				response.body.should.have.property('updatedAt')
+				response.body.should.have.property('deletedAt').eql(null)
+			})
+
+			it('with role employee', async function () {
+				const data = RideFactory.create('WORKINGDAYS')
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send(data)
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+
+			it('with role client', async function () {
+				const data = RideFactory.create('WORKINGDAYS')
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testClientUser.token}`)
+					.send(data)
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('invalid', async function () {
+			describe('middleware', async function () {
+				it('all', async function () {
+					const response = await chai
+						.request(app)
+						.post(`${routePrefix}`)
+						.set('Authorization', `Bearer ${testAdminUser.token}`)
+						.send({})
+					response.should.have.status(422)
+					response.body.errors.map(error => error.path).should.eql(['name', 'period', 'price'])
+				})
+			})
+
+			describe('sql', async function () {
+				it('null values', async function () {
+					const data = {}
+					try {
+						await db.models.Ride.create(data)
+					} catch (error) {
+						error.errors.map(err => err.path).should.eql(['price', 'period', 'name'])
+					}
+				})
+
+				it('duplicate name entry', async function () {
+					const data = RideFactory.create('WORKINGDAYS')
+					await db.models.Ride.create(data)
+					const response = await chai
+						.request(app)
+						.post(`${routePrefix}`)
+						.set('Authorization', `Bearer ${testAdminUser.token}`)
+						.send(data)
+					response.should.have.status(422)
+					response.body.errors.map(error => error.path).should.eql(['name'])
+				})
+			})
+		})
+	})
 })
