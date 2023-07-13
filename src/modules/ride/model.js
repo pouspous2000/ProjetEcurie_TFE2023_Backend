@@ -13,7 +13,7 @@ export class Ride extends Model {
 
 	static associate(models) {
 		Ride.belongsToMany(models.Horse, {
-			through: models.HorseRide,
+			through: models.RideData,
 			foreignKey: 'rideId',
 			otherKey: 'horseId',
 			as: 'horses',

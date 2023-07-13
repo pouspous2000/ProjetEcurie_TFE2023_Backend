@@ -1,10 +1,10 @@
 import { Op } from 'sequelize'
 import { Horse } from '@/modules/horse/model'
-import { HorseRide } from '@/modules/ride-data/model'
+import { RideData } from '@/modules/ride-data/model'
 import { Ride } from '@/modules/ride/model'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 
-export const upHorseRide = async queryInterface => {
+export const upRideData = async queryInterface => {
 	const horses = await queryInterface.rawSelect(
 		Horse.getTable(),
 		{
@@ -23,14 +23,8 @@ export const upHorseRide = async queryInterface => {
 		['id']
 	)
 
-	const horseRideObjs = horses.map(horse => {
+	const rideDataObjs = horses.map(horse => {
 		const ride = ArrayUtils.getRandomElement(rides)
-		const durationInMinutes = Math.floor(Math.random() * (120 - 10 + 1) + 10)
-		const todayTs = new Date().getTime()
-		const fiveDaysInMs = 5 * 24 * 3600 * 1000
-		const fiveDaysTs = todayTs + fiveDaysInMs
-		const dataStartingAt = new Date(Math.floor(Math.random() * (fiveDaysTs - todayTs + 1)) + todayTs)
-		const dataEndingAt = new Date(dataStartingAt.getTime() + durationInMinutes * 60 * 1000) // duration in min ... in ms
 
 		return {
 			horseId: horse.id,
@@ -38,16 +32,13 @@ export const upHorseRide = async queryInterface => {
 			name: ride.name,
 			period: ride.period,
 			price: ride.price,
-			startingAt: ride.period === 'DAY' ? dataStartingAt : null,
-			endingAt: ride.period === 'DAY' ? dataEndingAt : null,
 			createdAt: new Date(),
-			updatedAt: new Date(),
 			deletedAt: null,
 		}
 	})
-	await queryInterface.bulkInsert(HorseRide.getTable(), horseRideObjs)
+	await queryInterface.bulkInsert(RideData.getTable(), rideDataObjs)
 }
 
-export const downHorseRide = async queryInterface => {
-	await queryInterface.bulkDelete(HorseRide.getTable(), null, {})
+export const downRideData = async queryInterface => {
+	await queryInterface.bulkDelete(RideData.getTable(), null, {})
 }

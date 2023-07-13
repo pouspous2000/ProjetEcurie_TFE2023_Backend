@@ -22,7 +22,7 @@ import EventUserModel from '@/database/models/event-user'
 import CompetitionModel from '@/modules/competition/model'
 import CompetitionUserModel from '@/database/models/competition-user'
 import RideModel from '@/modules/ride/model'
-import HorseRideModel from '@/modules/ride-data/model'
+import RideDataModel from '@/modules/ride-data/model'
 
 const sequelize = new Sequelize(configs[process.env.NODE_ENV])
 
@@ -48,7 +48,7 @@ const modelDefiners = [
 	CompetitionModel,
 	CompetitionUserModel,
 	RideModel,
-	HorseRideModel,
+	RideDataModel,
 ]
 
 // eslint-disable-next-line no-restricted-syntax

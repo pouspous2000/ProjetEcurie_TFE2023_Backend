@@ -1,4 +1,4 @@
-import { upHorseRide, downHorseRide } from '@/modules/ride-data/seeder'
+import { upRideData, downRideData } from '@/modules/ride-data/seeder'
 
-export const up = upHorseRide
-export const down = downHorseRide
+export const up = upRideData
+export const down = downRideData

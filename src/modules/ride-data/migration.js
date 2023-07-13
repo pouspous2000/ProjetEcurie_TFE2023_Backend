@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize'
-import { HorseRide } from '@/modules/ride-data/model'
+import { RideData } from '@/modules/ride-data/model'
 import { Horse } from '@/modules/horse/model'
 import { Ride } from '@/modules/ride/model'
 
-export const upHorseRide = (queryInterface, Sequelize) =>
-	queryInterface.createTable(HorseRide.getTable(), {
+export const upRideData = (queryInterface, Sequelize) =>
+	queryInterface.createTable(RideData.getTable(), {
 		id: {
 			type: DataTypes.INTEGER,
 			autoIncrement: true,
@@ -43,19 +43,7 @@ export const upHorseRide = (queryInterface, Sequelize) =>
 			type: DataTypes.DECIMAL,
 			allowNull: false,
 		},
-		startingAt: {
-			type: DataTypes.DATE,
-			allowNull: true,
-		},
-		endingAt: {
-			type: DataTypes.DATE,
-			allowNull: true,
-		},
 		createdAt: {
-			allowNull: false,
-			type: Sequelize.DATE,
-		},
-		updatedAt: {
 			allowNull: false,
 			type: Sequelize.DATE,
 		},
@@ -65,4 +53,4 @@ export const upHorseRide = (queryInterface, Sequelize) =>
 		},
 	})
 
-export const downHorseRide = queryInterface => queryInterface.dropTable(HorseRide.getTable())
+export const downRideData = queryInterface => queryInterface.dropTable(RideData.getTable())

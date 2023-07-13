@@ -1,23 +1,22 @@
 import { DataTypes, Model } from 'sequelize'
-import i18next from '../../../i18n'
 
-export class HorseRide extends Model {
+export class RideData extends Model {
 	static getTable() {
-		return 'horse_rides'
+		return 'ride_datas'
 	}
 
 	static getModelName() {
-		return 'HorseRide'
+		return 'RideData'
 	}
 
 	static associate(models) {
-		HorseRide.belongsTo(models.Horse, { foreignKey: 'horseId' })
-		HorseRide.belongsTo(models.Ride, { foreignKey: 'rideId' })
+		RideData.belongsTo(models.Horse, { foreignKey: 'horseId' })
+		RideData.belongsTo(models.Ride, { foreignKey: 'rideId' })
 	}
 }
 
 export default function (sequelize) {
-	HorseRide.init(
+	RideData.init(
 		{
 			id: {
 				type: DataTypes.INTEGER,
@@ -45,28 +44,6 @@ export default function (sequelize) {
 				type: DataTypes.DECIMAL,
 				allowNull: false,
 			},
-			startingAt: {
-				type: DataTypes.DATE,
-				allowNull: true,
-				validate: {
-					isAfterNow(value) {
-						if (value && value < new Date()) {
-							throw new Error(i18next.t('rideData_sql_validation_startingAt_isAfterNow'))
-						}
-					},
-				},
-			},
-			endingAt: {
-				type: DataTypes.DATE,
-				allowNull: true,
-				validate: {
-					isAfterStartingAt(value) {
-						if (value && value < this.startingAt) {
-							throw new Error(i18next.t('rideData_sql_validation_endingAt_isAfterStartingAt'))
-						}
-					},
-				},
-			},
 			deletedAt: {
 				type: DataTypes.DATE,
 				allowNull: true,
@@ -74,12 +51,12 @@ export default function (sequelize) {
 		},
 		{
 			sequelize,
-			modelName: HorseRide.getModelName(),
-			tableName: HorseRide.getTable(),
+			modelName: RideData.getModelName(),
+			tableName: RideData.getTable(),
 			timestamps: true,
 			updatedAt: false,
 		}
 	)
 
-	return HorseRide
+	return RideData
 }

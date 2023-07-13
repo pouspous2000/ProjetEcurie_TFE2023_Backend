@@ -32,7 +32,7 @@ export class Horse extends Model {
 			as: 'additives',
 		})
 		Horse.belongsToMany(models.Ride, {
-			through: models.HorseRide,
+			through: models.RideData,
 			foreignKey: 'horseId',
 			otherKey: 'rideId',
 			as: 'rides',

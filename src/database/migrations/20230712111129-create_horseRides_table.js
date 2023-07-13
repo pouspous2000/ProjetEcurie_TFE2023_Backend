@@ -1,4 +1,4 @@
-import { upHorseRide, downHorseRide } from '@/modules/ride-data/migration'
+import { upRideData, downRideData } from '@/modules/ride-data/migration'
 
-export const up = upHorseRide
-export const down = downHorseRide
+export const up = upRideData
+export const down = downRideData
