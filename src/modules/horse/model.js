@@ -13,6 +13,7 @@ export class Horse extends Model {
 	static associate(models) {
 		Horse.belongsTo(models.User, { foreignKey: 'ownerId', as: 'owner' })
 		Horse.belongsTo(models.Pension, { foreignKey: 'pensionId', as: 'pension' })
+		Horse.belongsTo(models.Ride, { foreignKey: 'rideId', as: 'ride' })
 		Horse.belongsToMany(models.User, {
 			through: models.HorseUser,
 			foreignKey: 'horseId',
@@ -35,7 +36,7 @@ export class Horse extends Model {
 			through: models.RideData,
 			foreignKey: 'horseId',
 			otherKey: 'rideId',
-			as: 'rides',
+			as: 'horseRideDatas',
 		})
 	}
 }
@@ -71,6 +72,19 @@ export default function (sequelize) {
 					min: {
 						args: [1],
 						msg: i18next.t('horse_sql_validation_pensionId_min'),
+					},
+				},
+			},
+			rideId: {
+				type: DataTypes.INTEGER,
+				allowNull: true,
+				validate: {
+					isInt: {
+						msg: i18next.t('horse_sql_validation_rideId_isInt'),
+					},
+					min: {
+						args: [1],
+						msg: i18next.t('horse_sql_validation_rideId_min'),
 					},
 				},
 			},

@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize'
 import { Horse } from '@/modules/horse/model'
 import { User } from '@/modules/authentication/model'
 import { Pension } from '@/modules/pension/model'
+import { Ride } from '@/modules/ride/model'
 
 export const upHorse = async (queryInterface, Sequelize) =>
 	queryInterface.createTable(Horse.getTable(), {
@@ -25,6 +26,16 @@ export const upHorse = async (queryInterface, Sequelize) =>
 			allowNull: true,
 			references: {
 				model: Pension.getTable(),
+				field: 'id',
+			},
+			onDelete: 'CASCADE',
+			onUpdate: 'CASCADE',
+		},
+		rideId: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			references: {
+				model: Ride.getTable(),
 				field: 'id',
 			},
 			onDelete: 'CASCADE',

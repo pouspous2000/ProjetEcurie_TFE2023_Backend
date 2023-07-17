@@ -16,7 +16,7 @@ export class Ride extends Model {
 			through: models.RideData,
 			foreignKey: 'rideId',
 			otherKey: 'horseId',
-			as: 'horses',
+			as: 'horseRideDatas',
 		})
 	}
 }

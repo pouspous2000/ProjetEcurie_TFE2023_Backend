@@ -27,7 +27,7 @@ export class PensionService extends BaseService {
 		try {
 			await this._pensionDataService.updatePensionDataAfterPensionDelete(instance)
 			const pension = await super.delete(instance)
-			transaction.commit()
+			await transaction.commit()
 			return pension
 		} catch (error) {
 			await transaction.rollback()

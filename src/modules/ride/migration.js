@@ -1,5 +1,5 @@
-import { Ride } from '@/modules/ride/model'
 import { DataTypes } from 'sequelize'
+import { Ride } from '@/modules/ride/model'
 
 export const upRide = async (queryInterface, Sequelize) =>
 	queryInterface.createTable(Ride.getTable(), {
@@ -36,4 +36,4 @@ export const upRide = async (queryInterface, Sequelize) =>
 		},
 	})
 
-export const downRide = async queryInterface => queryInterface.dropTable(Ride.getTable())
+export const downRide = async queryInterface => queryInterface.dropTable(Ride.getTable(), { cascade: true })

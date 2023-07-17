@@ -1,3 +1,4 @@
+import { Op } from 'sequelize'
 import { describe, it, beforeEach, afterEach } from 'mocha'
 import chaiHttp from 'chai-http'
 import chai from 'chai'
@@ -7,23 +8,22 @@ import db from '@/database'
 import { RoleFactory } from '@/modules/role/factory'
 import { UserFactory } from '@/modules/authentication/factory'
 import { ContactFactory } from '@/modules/contact/factory'
-import { PensionFactory } from '@/modules/pension/factory'
-import { HorseFactory } from '@/modules/horse/factory'
 import { RideFactory } from '@/modules/ride/factory'
-import { Op } from 'sequelize'
+import { HorseFactory } from '@/modules/horse/factory'
+import { PensionFactory } from '@/modules/pension/factory'
 
 chai.should()
 chai.use(chaiHttp)
 
-describe('PensionData module', async function () {
+describe('RideData module', async function () {
 	let testAdminUser, testEmployeeUser, testClientUser
 	let testClientContact
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
 		await db.models.Horse.destroy({ truncate: { cascade: true } })
-		await db.models.Pension.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.Ride.destroy({ truncate: { cascade: true }, force: true })
+		await db.models.Pension.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
@@ -60,6 +60,7 @@ describe('PensionData module', async function () {
 				horsemen: [testClientUser.id],
 				additives: [],
 			}
+
 			const response = await chai
 				.request(app)
 				.post('/horses')
@@ -105,22 +106,24 @@ describe('PensionData module', async function () {
 				invoicingAddress: testClientContact.invoicingAddress,
 			})
 
-			const pensionData = await db.models.PensionData.findOne({
+			const rideData = await db.models.RideData.findOne({
 				where: {
-					[Op.and]: [{ horseId: response.body.id }, { pensionId: pension.id }, { deletedAt: null }],
+					[Op.and]: [{ horseId: response.body.id }, { rideId: ride.id }, { deletedAt: null }],
 				},
 			})
 
-			pensionData.should.have.property('name').eql(pension.name)
-			pensionData.should.have.property('monthlyPrice').eql(pension.monthlyPrice)
-			pensionData.should.have.property('description').eql(pension.description)
+			rideData.should.have.property('price').eql(ride.price)
+			rideData.should.have.property('period').eql(ride.period)
+			rideData.should.have.property('name').eql(ride.name)
 		})
+
 		it('update horse', async function () {
-			const pension1 = await db.models.Pension.create(PensionFactory.create())
-			const pension2 = await db.models.Pension.create(PensionFactory.create())
-			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+			const ride1 = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+			const ride2 = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+			const pension = await db.models.Pension.create(PensionFactory.create())
+
 			const data = {
-				...HorseFactory.create(testClientUser.id, pension1.id, ride.id),
+				...HorseFactory.create(testClientUser.id, pension.id, ride1.id),
 				horsemen: [testClientUser.id],
 				additives: [],
 			}
@@ -131,7 +134,7 @@ describe('PensionData module', async function () {
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(data)
 
-			data.pensionId = pension2.id
+			data.rideId = ride2.id
 
 			const response = await chai
 				.request(app)
@@ -139,120 +142,106 @@ describe('PensionData module', async function () {
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(data)
 
-			const pensionDataDeleted = await db.models.PensionData.findOne({
+			const rideDataDeleted = await db.models.RideData.findOne({
 				where: {
-					[Op.and]: [
-						{ horseId: response1.body.id },
-						{ pensionId: pension1.id },
-						{ deletedAt: { [Op.ne]: null } },
-					],
+					[Op.and]: [{ horseId: response1.body.id }, { rideId: ride1.id }, { deletedAt: { [Op.ne]: null } }],
 				},
 			})
 
-			pensionDataDeleted.should.have.property('name').eql(pension1.name)
-			pensionDataDeleted.should.have.property('monthlyPrice').eql(pension1.monthlyPrice)
-			pensionDataDeleted.should.have.property('description').eql(pension1.description)
+			rideDataDeleted.should.have.property('price').eql(ride1.price)
+			rideDataDeleted.should.have.property('period').eql(ride1.period)
+			rideDataDeleted.should.have.property('name').eql(ride1.name)
 
-			const currentPensionData = await db.models.PensionData.findOne({
+			const currentRideData = await db.models.RideData.findOne({
 				where: {
-					[Op.and]: [{ horseId: response.body.id }, { pensionId: pension2.id }, { deletedAt: null }],
+					[Op.and]: [{ horseId: response.body.id }, { rideId: ride2.id }, { deletedAt: null }],
 				},
 			})
 
-			currentPensionData.should.have.property('name').eql(pension2.name)
-			currentPensionData.should.have.property('monthlyPrice').eql(pension2.monthlyPrice)
-			currentPensionData.should.have.property('description').eql(pension2.description)
+			currentRideData.should.have.property('price').eql(ride2.price)
+			currentRideData.should.have.property('period').eql(ride2.period)
+			currentRideData.should.have.property('name').eql(ride2.name)
 		})
 	})
 
-	describe('pension tests', async function () {
-		it('update pension', async function () {
-			const pensionData = PensionFactory.create()
-			const pension = await db.models.Pension.create(pensionData)
-			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+	describe('ride tests', async function () {
+		it('update ride', async function () {
+			const rideData = RideFactory.create('WORKINGDAYS')
+			const ride = await db.models.Ride.create(rideData)
+			const pension = await db.models.Pension.create(PensionFactory.create())
 			const horseData = {
 				...HorseFactory.create(testClientUser.id, pension.id, ride.id),
 				horsemen: [testClientUser.id],
 				additives: [],
 			}
+
 			const response1 = await chai
 				.request(app)
 				.post('/horses')
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(horseData)
 
-			const updatedPensionData = {
-				...pensionData,
-			}
-			updatedPensionData.monthlyPrice = Number(pensionData.monthlyPrice) + 20
+			const updatedRideData = { ...rideData }
+			updatedRideData.price = 200
 
 			const response2 = await chai
 				.request(app)
-				.put(`/pensions/${pension.id}`)
+				.put(`/rides/${ride.id}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
-				.send(updatedPensionData)
+				.send(updatedRideData)
 
-			const pensionDataDeleted = await db.models.PensionData.findOne({
+			const rideDataDeleted = await db.models.RideData.findOne({
 				where: {
-					[Op.and]: [
-						{ horseId: response1.body.id },
-						{ pensionId: pension.id },
-						{ deletedAt: { [Op.ne]: null } },
-					],
+					[Op.and]: [{ horseId: response1.body.id }, { rideId: ride.id }, { deletedAt: { [Op.ne]: null } }],
 				},
 			})
 
-			pensionDataDeleted.should.have.property('name').eql(pensionData.name)
-			pensionDataDeleted.should.have.property('monthlyPrice').eql(pensionData.monthlyPrice)
-			pensionDataDeleted.should.have.property('description').eql(pensionData.description)
+			rideDataDeleted.should.have.property('name').eql(ride.name)
+			rideDataDeleted.should.have.property('period').eql(ride.period)
+			rideDataDeleted.should.have.property('price').eql(ride.price)
 
-			const currentPensionData = await db.models.PensionData.findOne({
+			const currentRideData = await db.models.RideData.findOne({
 				where: {
-					[Op.and]: [{ horseId: response1.body.id }, { pensionId: pension.id }, { deletedAt: null }],
+					[Op.and]: [{ horseId: response1.body.id }, { deletedAt: null }],
 				},
 			})
 
-			currentPensionData.should.have.property('name').eql(response2.body.name)
-			Number(currentPensionData.monthlyPrice).should.eql(response2.body.monthlyPrice)
-			currentPensionData.should.have.property('description').eql(response2.body.description)
+			currentRideData.should.have.property('name').eql(response2.body.name)
+			currentRideData.should.have.property('period').eql(response2.body.period)
+			Number(currentRideData.price).should.eql(response2.body.price)
 		})
-		it('delete pension', async function () {
-			const pension = await db.models.Pension.create(PensionFactory.create())
+
+		it('delete ride', async function () {
 			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
+			const pension = await db.models.Pension.create(PensionFactory.create())
 			const horseData = {
 				...HorseFactory.create(testClientUser.id, pension.id, ride.id),
 				horsemen: [testClientUser.id],
 				additives: [],
 			}
+
 			const response1 = await chai
 				.request(app)
 				.post('/horses')
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(horseData)
 
-			await chai
-				.request(app)
-				.delete(`/pensions/${pension.id}`)
-				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			await chai.request(app).delete(`/rides/${ride.id}`).set('Authorization', `Bearer ${testAdminUser.token}`)
 
-			const pensionDataDeleted = await db.models.PensionData.findOne({
+			const rideDataDeleted = await db.models.RideData.findOne({
 				where: {
-					[Op.and]: [
-						{ horseId: response1.body.id },
-						{ pensionId: pension.id },
-						{ deletedAt: { [Op.ne]: null } },
-					],
+					[Op.and]: [{ horseId: response1.body.id }, { rideId: ride.id }, { deletedAt: { [Op.ne]: null } }],
 				},
 			})
 
-			pensionDataDeleted.should.have.property('name').eql(pension.name)
-			pensionDataDeleted.should.have.property('monthlyPrice').eql(pension.monthlyPrice)
-			pensionDataDeleted.should.have.property('description').eql(pension.description)
+			rideDataDeleted.should.have.property('name').eql(ride.name)
+			rideDataDeleted.should.have.property('period').eql(ride.period)
+			rideDataDeleted.price.should.eql(ride.price)
 		})
 	})
 
 	describe('owner test', async function () {
-		it('pensionData are deleted when owner is deleted', async function () {
+		it('rideData are deleted when owner is deleted', async function () {
 			const pension = await db.models.Pension.create(PensionFactory.create())
 			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
 			const data = {
@@ -267,24 +256,17 @@ describe('PensionData module', async function () {
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(data)
 
-			const pensionData = await db.models.PensionData.findOne({
+			const rideData = await db.models.RideData.findOne({
 				where: {
-					[Op.and]: [
-						{ horseId: horseCreateResponse.body.id },
-						{ pensionId: pension.id },
-						{ deletedAt: null },
-					],
+					[Op.and]: [{ horseId: horseCreateResponse.body.id }, { rideId: ride.id }, { deletedAt: null }],
 				},
 			})
 
-			pensionData.should.have.property('name').eql(pension.name)
-			pensionData.should.have.property('monthlyPrice').eql(pension.monthlyPrice)
-			pensionData.should.have.property('description').eql(pension.description)
-
+			rideData.should.have.property('name').eql(ride.name)
 			await testClientUser.destroy()
 
-			const pensionDatas = await db.models.PensionData.findAll({ paranoid: false })
-			pensionDatas.should.have.length(0)
+			const rideDatas = await db.models.RideData.findAll({ paranoid: false })
+			rideDatas.should.have.length(0)
 		})
 	})
 })

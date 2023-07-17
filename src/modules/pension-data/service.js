@@ -53,7 +53,7 @@ export class PensionDataService {
 		const updatedPensionDatas = pensionDatas.map(pensionData => {
 			return {
 				horseId: pensionData.horseId,
-				pensionId: pensionData.pensionId,
+				pensionId: pension.id,
 				name: pension.name,
 				monthlyPrice: pension.monthlyPrice,
 				description: pension.description,

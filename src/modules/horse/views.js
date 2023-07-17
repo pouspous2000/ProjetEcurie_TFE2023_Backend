@@ -25,6 +25,7 @@ export class HorseView {
 				invoicingAddress: horse.owner.contact.invoicingAddress,
 			},
 			pension: this._getPensionView(horse),
+			ride: this._getRideView(horse),
 			horsemen: this._getHorsemenView(horse),
 			additives: this._getAdditivesView(horse),
 		}
@@ -41,9 +42,22 @@ export class HorseView {
 	_getPensionView(horse) {
 		if (horse.pension) {
 			return {
+				id: horse.pension.id,
 				name: horse.pension.name,
 				monthlyPrice: horse.pension.monthlyPrice,
 				description: horse.pension.description,
+			}
+		}
+		return null
+	}
+
+	_getRideView(horse) {
+		if (horse.ride) {
+			return {
+				id: horse.ride.id,
+				name: horse.ride.name,
+				period: horse.ride.period,
+				price: horse.ride.price,
 			}
 		}
 		return null

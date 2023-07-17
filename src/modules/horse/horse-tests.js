@@ -11,8 +11,10 @@ import { UserFactory } from '@/modules/authentication/factory'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 import { HorseFactory } from '@/modules/horse/factory'
 import { PensionFactory } from '@/modules/pension/factory'
-import i18next from '../../../i18n'
 import { ContactFactory } from '@/modules/contact/factory'
+import { RideFactory } from '@/modules/ride/factory'
+
+import i18next from '../../../i18n'
 
 chai.should()
 chai.use(chaiHttp)
@@ -24,13 +26,14 @@ describe('Horse module', function () {
 	let testHorseOwner1, testHorseOwner2
 	let testHorseOwner1Contact, testHorseOwner2Contact
 	let pensions = []
+	let rides = []
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
-		await db.models.PensionData.destroy({ truncate: { cascade: true } })
 		await db.models.Contact.destroy({ truncate: { cascade: true } })
 		await db.models.Horse.destroy({ truncate: { cascade: true } })
 		await db.models.Pension.destroy({ truncate: { cascade: true }, force: true })
+		await db.models.Ride.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
@@ -57,6 +60,12 @@ describe('Horse module', function () {
 			pensions.push(await db.models.Pension.create(PensionFactory.create()))
 		}
 
+		// create rides
+		const rideObjs = RideFactory.createAll()
+		for (let i = 0; i < rideObjs.length; i++) {
+			rides.push(await db.models.Ride.create(rideObjs[i]))
+		}
+
 		testAdminUser.token = testAdminUser.generateToken()
 		testEmployeeUser.token = testEmployeeUser.generateToken()
 		testClientUser.token = testClientUser.generateToken()
@@ -70,21 +79,16 @@ describe('Horse module', function () {
 		testHorseOwner1 = testHorseOwner2 = undefined
 		testHorseOwner1Contact = testHorseOwner2Contact = undefined
 		pensions = []
+		rides = []
 	})
 
 	describe('index', async function () {
 		it('index with role admin', async function () {
-			const horses = [
-				await db.models.Horse.create(
-					HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-				),
-				await db.models.Horse.create(
-					HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-				),
-				await db.models.Horse.create(
-					HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id)
-				),
-			]
+			const horses = await db.models.Horse.bulkCreate([
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id),
+			])
 			const response = await chai
 				.request(app)
 				.get(`${routePrefix}`)
@@ -95,17 +99,11 @@ describe('Horse module', function () {
 		})
 
 		it('index with role employee', async function () {
-			const horses = [
-				await db.models.Horse.create(
-					HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-				),
-				await db.models.Horse.create(
-					HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-				),
-				await db.models.Horse.create(
-					HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id)
-				),
-			]
+			const horses = await db.models.Horse.bulkCreate([
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id),
+			])
 			const response = await chai
 				.request(app)
 				.get(`${routePrefix}`)
@@ -115,16 +113,11 @@ describe('Horse module', function () {
 		})
 
 		it('index with role client who is no owner', async function () {
-			await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
-			await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
-			await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id)
-			)
-
+			await db.models.Horse.bulkCreate([
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id),
+			])
 			const response = await chai
 				.request(app)
 				.get(`${routePrefix}`)
@@ -134,15 +127,11 @@ describe('Horse module', function () {
 		})
 
 		it('index with role client who is owner of multiple horses', async function () {
-			await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
-			await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
-			)
-			await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id)
-			)
+			await db.models.Horse.bulkCreate([
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				HorseFactory.create(testHorseOwner2.id, ArrayUtils.getRandomElement(pensions).id),
+			])
 
 			const response = await chai
 				.request(app)
@@ -156,12 +145,14 @@ describe('Horse module', function () {
 	describe('show', async function () {
 		it('with role admin', async function () {
 			const pension = ArrayUtils.getRandomElement(pensions)
-			const horse = await db.models.Horse.create(HorseFactory.create(testHorseOwner1.id, pension.id))
+			const ride = ArrayUtils.getRandomElement(rides)
+			const horse = await db.models.Horse.create(HorseFactory.create(testHorseOwner1.id, pension.id, ride.id))
 			horse.setHorsemen([testHorseOwner1.id, testHorseOwner2.id])
 			const response = await chai
 				.request(app)
 				.get(`${routePrefix}/${horse.id}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
 			response.should.have.status(200)
 			response.body.should.have.property('id').eql(horse.id)
 			response.body.should.have.property('name').eql(horse.name)
@@ -179,12 +170,19 @@ describe('Horse module', function () {
 				invoicingAddress: testHorseOwner1Contact.invoicingAddress,
 			})
 			response.body.should.have.property('pension').eql({
+				id: pension.id,
 				name: pension.name,
 				monthlyPrice: pension.monthlyPrice,
 				description: pension.description,
 			})
+			response.body.should.have.property('ride').eql({
+				id: ride.id,
+				name: ride.name,
+				period: ride.period,
+				price: ride.price,
+			})
 			response.body.horsemen.should.have.length(2)
-			response.body.horsemen[0].should.eql({
+			response.body.horsemen.should.deep.include({
 				email: testHorseOwner1.email,
 				userId: testHorseOwner1.id,
 				firstName: testHorseOwner1Contact.firstName,
@@ -198,7 +196,11 @@ describe('Horse module', function () {
 
 		it('with role employee', async function () {
 			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
+				HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				)
 			)
 			const response = await chai
 				.request(app)
@@ -209,7 +211,11 @@ describe('Horse module', function () {
 
 		it('with role client - no owner', async function () {
 			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
+				HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				)
 			)
 			const response = await chai
 				.request(app)
@@ -221,7 +227,11 @@ describe('Horse module', function () {
 
 		it('with role client - owner', async function () {
 			const horse = await db.models.Horse.create(
-				HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id)
+				HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				)
 			)
 			const response = await chai
 				.request(app)
@@ -312,12 +322,27 @@ describe('Horse module', function () {
 
 				response.should.have.status(200)
 			})
+
+			it('horse is not deleted when ride is (soft) deleted', async function () {
+				const horse = await db.models.Horse.create(
+					HorseFactory.create(testHorseOwner1.id, pensions[0].id, rides[0].id)
+				)
+				await rides[0].destroy()
+
+				const response = await chai
+					.request(app)
+					.get(`${routePrefix}/${horse.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+				response.should.have.status(200)
+			})
 		})
 	})
+
 	describe('create', async function () {
 		describe('create with valid data', async function () {
 			it('with role admin', async function () {
-				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id, rides[0].id)
 				horseData.horsemen = [testHorseOwner1.id]
 				horseData.additives = []
 				const response = await chai
@@ -343,11 +368,18 @@ describe('Horse module', function () {
 					invoicingAddress: testHorseOwner1Contact.invoicingAddress,
 				})
 				response.body.should.have.property('pension').eql({
+					id: pensions[0].id,
 					name: pensions[0].name,
 					monthlyPrice: pensions[0].monthlyPrice,
 					description: pensions[0].description,
 				})
-				response.body.horsemen[0].should.eql({
+				response.body.should.have.property('ride').eql({
+					id: rides[0].id,
+					name: rides[0].name,
+					period: rides[0].period,
+					price: rides[0].price,
+				})
+				response.body.horsemen.should.deep.include({
 					email: testHorseOwner1.email,
 					userId: testHorseOwner1.id,
 					firstName: testHorseOwner1Contact.firstName,
@@ -361,6 +393,7 @@ describe('Horse module', function () {
 
 			it('with role employee', async function () {
 				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				delete horseData['rideId']
 				horseData.horsemen = [testHorseOwner1.id]
 				horseData.additives = []
 				const response = await chai
@@ -372,7 +405,7 @@ describe('Horse module', function () {
 			})
 
 			it('with role employee - not owner', async function () {
-				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id, rides[0].id)
 				horseData.horsemen = [testHorseOwner1.id]
 				horseData.additives = []
 				const response = await chai
@@ -384,7 +417,7 @@ describe('Horse module', function () {
 			})
 
 			it('with role employee - owner', async function () {
-				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id)
+				const horseData = HorseFactory.create(testHorseOwner1.id, pensions[0].id, rides[0].id)
 				horseData.horsemen = [testHorseOwner1.id]
 				horseData.additives = []
 				const response = await chai
@@ -398,7 +431,7 @@ describe('Horse module', function () {
 
 		describe('create invalid - middleware', async function () {
 			it('with role admin but does not matter', async function () {
-				const data = {}
+				const data = { rideId: null }
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
@@ -407,7 +440,7 @@ describe('Horse module', function () {
 				response.should.have.status(422)
 				response.body.errors
 					.map(error => error.path)
-					.should.eql(['ownerId', 'pensionId', 'name', 'horsemen', 'additives', 'comment'])
+					.should.eql(['ownerId', 'pensionId', 'rideId', 'name', 'horsemen', 'additives', 'comment'])
 			})
 		})
 
@@ -427,13 +460,18 @@ describe('Horse module', function () {
 		// we do not care about the request etc as it is the same as create
 		it('with role admin', async function () {
 			const horse = await db.models.Horse.create({
-				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				...HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				),
 				horsemen: [testHorseOwner1.id],
 				additives: [],
 			})
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
+				rideId: rides[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner2.id],
@@ -462,9 +500,16 @@ describe('Horse module', function () {
 				invoicingAddress: testHorseOwner2Contact.invoicingAddress,
 			})
 			response.body.should.have.property('pension').eql({
+				id: pensions[1].id,
 				name: pensions[1].name,
 				monthlyPrice: pensions[1].monthlyPrice,
 				description: pensions[1].description,
+			})
+			response.body.should.have.property('ride').eql({
+				id: rides[1].id,
+				name: rides[1].name,
+				period: rides[1].period,
+				price: rides[1].price,
 			})
 			response.body.horsemen[0].should.eql({
 				email: testHorseOwner2.email,
@@ -480,7 +525,11 @@ describe('Horse module', function () {
 
 		it('with role employee', async function () {
 			const horse = await db.models.Horse.create({
-				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				...HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				),
 				horsemen: [testHorseOwner1.id],
 				additives: [],
 			})
@@ -488,6 +537,7 @@ describe('Horse module', function () {
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
+				rideId: rides[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
@@ -505,7 +555,11 @@ describe('Horse module', function () {
 
 		it('with role client - not owner', async function () {
 			const horse = await db.models.Horse.create({
-				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				...HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				),
 				horsemen: [testHorseOwner1.id],
 				additives: [],
 			})
@@ -513,6 +567,7 @@ describe('Horse module', function () {
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
+				rideId: rides[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
@@ -531,7 +586,11 @@ describe('Horse module', function () {
 
 		it('with role client - owner with unauthorized owner change', async function () {
 			const horse = await db.models.Horse.create({
-				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				...HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				),
 				horsemen: [testHorseOwner1.id],
 				additives: [],
 			})
@@ -539,6 +598,7 @@ describe('Horse module', function () {
 			const data = {
 				ownerId: testHorseOwner2.id,
 				pensionId: pensions[1].id,
+				rideId: rides[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
@@ -556,7 +616,11 @@ describe('Horse module', function () {
 
 		it('with role client - owner and allowed change', async function () {
 			const horse = await db.models.Horse.create({
-				...HorseFactory.create(testHorseOwner1.id, ArrayUtils.getRandomElement(pensions).id),
+				...HorseFactory.create(
+					testHorseOwner1.id,
+					ArrayUtils.getRandomElement(pensions).id,
+					ArrayUtils.getRandomElement(rides).id
+				),
 				horsemen: [testHorseOwner1.id],
 				additives: [],
 			})
@@ -564,6 +628,7 @@ describe('Horse module', function () {
 			const data = {
 				ownerId: testHorseOwner1.id,
 				pensionId: pensions[1].id,
+				rideId: rides[1].id,
 				name: 'updatedName',
 				comment: 'updatedComment',
 				horsemen: [testHorseOwner1.id],
