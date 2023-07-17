@@ -14,6 +14,7 @@ export class Task extends Model {
 	static associate(models) {
 		Task.belongsTo(models.User, { foreignKey: 'creatorId', as: 'creator' })
 		Task.belongsTo(models.User, { foreignKey: 'employeeId', as: 'employee' })
+		Task.hasMany(models.DailyRide, { foreignKey: 'taskId', as: 'dailyRides' })
 	}
 }
 

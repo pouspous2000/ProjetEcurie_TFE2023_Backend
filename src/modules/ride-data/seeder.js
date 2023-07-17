@@ -25,7 +25,9 @@ export const upRideData = async queryInterface => {
 
 	const rideDataObjs = horses.map(horse => {
 		const ride = ArrayUtils.getRandomElement(rides)
-
+		if (ride.period === 'DAY') {
+			return null
+		}
 		return {
 			horseId: horse.id,
 			rideId: ride.id,
@@ -36,7 +38,10 @@ export const upRideData = async queryInterface => {
 			deletedAt: null,
 		}
 	})
-	await queryInterface.bulkInsert(RideData.getTable(), rideDataObjs)
+	await queryInterface.bulkInsert(
+		RideData.getTable(),
+		rideDataObjs.filter(rideDataObj => rideDataObj !== null)
+	)
 }
 
 export const downRideData = async queryInterface => {
