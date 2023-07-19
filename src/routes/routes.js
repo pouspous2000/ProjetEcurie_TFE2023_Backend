@@ -17,6 +17,7 @@ import LessonRouter from '@/modules/lesson/routes'
 import EventRouter from '@/modules/event/routes'
 import CompetitionRouter from '@/modules/competition/routes'
 import RideRouter from '@/modules/ride/routes'
+import DailyRideRouter from '@/modules/daily-ride/routes'
 
 import db from '@/database'
 import { User } from '@/modules/authentication/model'
@@ -40,6 +41,7 @@ router.use(LessonRouter)
 router.use(EventRouter)
 router.use(CompetitionRouter)
 router.use(RideRouter)
+router.use(DailyRideRouter)
 
 // eslint-disable-next-line no-unused-vars
 router.post(`/debug`, async function (request, response) {
