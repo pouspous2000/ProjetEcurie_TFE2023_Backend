@@ -50,6 +50,9 @@
     },
     {
       "name": "Ride"
+    },
+    {
+      "name": "Eventable"
     }
   ],
   "securityDefinitions": {
@@ -3689,6 +3692,31 @@
           "Ride"
         ],
         "description": "Update ride"
+      }
+    },
+    "/eventables": {
+      "get": {
+        "summary": "List all eventables [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [],
+        "tags": [
+          "Eventable"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
       }
     },
     "/debug": {
