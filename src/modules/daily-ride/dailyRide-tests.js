@@ -7,10 +7,11 @@ import db from '@/database'
 import { RoleFactory } from '@/modules/role/factory'
 import { UserFactory } from '@/modules/authentication/factory'
 import { TaskFactory } from '@/modules/task/factory'
-
 import { RideFactory } from '@/modules/ride/factory'
 import { HorseFactory } from '@/modules/horse/factory'
 import { PensionFactory } from '@/modules/pension/factory'
+
+import i18next from '../../../i18n'
 
 chai.should()
 chai.use(chaiHttp)
@@ -191,6 +192,137 @@ describe('DailyRide module', async function () {
 
 			response.should.have.status(200)
 			response.body.should.have.length(dailyRidesUser1.length)
+		})
+	})
+
+	describe('show', async function () {
+		it('with role admin', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+			const ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+			const horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+			const task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING'))
+			const dailyRide = await db.models.DailyRide.create({
+				horseId: horse.id,
+				rideId: rideDay.id,
+				taskId: task.id,
+				name: rideDay.id,
+				period: rideDay.period,
+				price: rideDay.price,
+				createdAt: new Date(),
+				deletedAt: null,
+			})
+
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${dailyRide.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+			response.should.have.status(200)
+			response.body.should.have.property('id').eql(dailyRide.id)
+			response.body.should.have.property('name').eql(dailyRide.name)
+			response.body.should.have.property('period').eql(dailyRide.period)
+			response.body.should.have.property('price').eql(dailyRide.price)
+			response.body.should.have.property('horse').eql({
+				id: horse.id,
+				ownerId: horse.ownerId,
+				pensionId: horse.pensionId,
+				name: horse.name,
+				comment: horse.comment,
+			})
+			response.body.should.have.property('task').eql({
+				id: task.id,
+				name: task.name,
+				description: task.description,
+				remark: task.remark,
+				status: task.status,
+				startingAt: task.startingAt.toISOString(),
+				endingAt: task.endingAt.toISOString(),
+			})
+			response.body.should.have.property('createdAt')
+			response.body.should.have.property('deletedAt').eql(null)
+		})
+
+		it('with role employee', async function () {
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+			const ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+			const horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+			const task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING'))
+			const dailyRide = await db.models.DailyRide.create({
+				horseId: horse.id,
+				rideId: rideDay.id,
+				taskId: task.id,
+				name: rideDay.id,
+				period: rideDay.period,
+				price: rideDay.price,
+				createdAt: new Date(),
+				deletedAt: null,
+			})
+
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${dailyRide.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+
+			response.should.have.status(200)
+		})
+
+		describe('with role client', async function () {
+			it('own horse - allowed', async function () {
+				const pension = await db.models.Pension.create(PensionFactory.create())
+				const rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				const ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				const horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				const response = await chai
+					.request(app)
+					.get(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testClientUser1.token}`)
+
+				response.should.have.status(200)
+			})
+
+			it("other client's horse - not allowed", async function () {
+				const pension = await db.models.Pension.create(PensionFactory.create())
+				const rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				const ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				const horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				const response = await chai
+					.request(app)
+					.get(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testClientUser2.token}`)
+
+				response.should.have.status(401)
+				response.body.should.have.property('message').eql(i18next.t('dailyRide_unauthorized'))
+			})
 		})
 	})
 })
