@@ -324,5 +324,189 @@ describe('DailyRide module', async function () {
 				response.body.should.have.property('message').eql(i18next.t('dailyRide_unauthorized'))
 			})
 		})
+
+		it('with role admin - 404', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('dailyRide_404'))
+		})
+	})
+
+	describe('delete', async function () {
+		describe('permissions', async function () {
+			let pension, rideDay, ride, horse, task, dailyRide
+			beforeEach(async function () {
+				pension = await db.models.Pension.create(PensionFactory.create())
+				rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+				task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING'))
+				dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+			})
+			afterEach(function () {
+				pension = rideDay = ride = horse = task = dailyRide = undefined
+			})
+
+			it('with role admin', async function () {
+				const response = await chai
+					.request(app)
+					.delete(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+				response.should.have.status(204)
+
+				const updatedTask = await db.models.Task.findByPk(task.id)
+				updatedTask.should.have.property('status').eql('CANCELLED')
+				const updatedDailyRide = await db.models.DailyRide.findByPk(dailyRide.id, { paranoid: false })
+				updatedDailyRide.should.have.property('deletedAt').not.eql(null)
+			})
+
+			it('with role employee', async function () {
+				const response = await chai
+					.request(app)
+					.delete(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+				response.should.have.status(204)
+
+				const updatedTask = await db.models.Task.findByPk(task.id)
+				updatedTask.should.have.property('status').eql('CANCELLED')
+				const updatedDailyRide = await db.models.DailyRide.findByPk(dailyRide.id, { paranoid: false })
+				updatedDailyRide.should.have.property('deletedAt').not.eql(null)
+			})
+
+			describe('with role client', async function () {
+				it('own horse - allowed', async function () {
+					const response = await chai
+						.request(app)
+						.delete(`${routePrefix}/${dailyRide.id}`)
+						.set('Authorization', `Bearer ${testClientUser1.token}`)
+					response.should.have.status(204)
+
+					const updatedTask = await db.models.Task.findByPk(task.id)
+					updatedTask.should.have.property('status').eql('CANCELLED')
+					const updatedDailyRide = await db.models.DailyRide.findByPk(dailyRide.id, { paranoid: false })
+					updatedDailyRide.should.have.property('deletedAt').not.eql(null)
+				})
+
+				it("other client's horse", async function () {
+					const response = await chai
+						.request(app)
+						.delete(`${routePrefix}/${dailyRide.id}`)
+						.set('Authorization', `Bearer ${testClientUser2.token}`)
+					response.should.have.status(401)
+					response.body.should.have.property('message').eql(i18next.t('dailyRide_unauthorized'))
+				})
+			})
+		})
+		describe('task status with role admin', async function () {
+			let pension, rideDay, ride, horse
+			beforeEach(async function () {
+				pension = await db.models.Pension.create(PensionFactory.create())
+				rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+			})
+			afterEach(function () {
+				pension = rideDay = ride = horse = undefined
+			})
+
+			it("task status in ['IN PROGRESS', 'COMPLETED', 'BLOCKED']", async function () {
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'COMPLETED')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				const response = await chai
+					.request(app)
+					.delete(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('dailyRide_422_delete_when_status'))
+			})
+
+			it("task status in ['PENDING', 'CONFIRMED']", async function () {
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				const response = await chai
+					.request(app)
+					.delete(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+				response.should.have.status(204)
+
+				const updatedTask = await db.models.Task.findByPk(task.id)
+				updatedTask.should.have.property('status').eql('CANCELLED')
+				const updatedDailyRide = await db.models.DailyRide.findByPk(dailyRide.id, { paranoid: false })
+				updatedDailyRide.should.have.property('deletedAt').not.eql(null)
+			})
+
+			it('task status is CANCELLED', async function () {
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'CANCELLED')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				await chai
+					.request(app)
+					.delete(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+				const updatedTask = await db.models.Task.findByPk(task.id)
+				updatedTask.should.have.property('status').eql('CANCELLED')
+				const updatedDailyRide = await db.models.DailyRide.findByPk(dailyRide.id, { paranoid: false })
+				updatedDailyRide.should.have.property('deletedAt').not.eql(null)
+			})
+		})
+		it('with role admin - 404', async function () {
+			const response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('dailyRide_404'))
+		})
 	})
 })

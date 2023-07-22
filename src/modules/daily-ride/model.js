@@ -60,6 +60,7 @@ export default function (sequelize) {
 			tableName: DailyRide.getTable(),
 			timestamps: true,
 			updatedAt: false,
+			paranoid: true,
 		}
 	)
 

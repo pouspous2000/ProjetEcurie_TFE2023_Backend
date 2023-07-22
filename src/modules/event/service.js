@@ -19,7 +19,7 @@ export class EventService extends BaseService {
 			},
 		})
 		if (participants.length !== data.participants.length) {
-			throw createError('event_422_inexistingParticipant')
+			throw createError(422, i18next.t('event_422_inexistingParticipant'))
 		}
 		const transaction = await db.transaction()
 		try {

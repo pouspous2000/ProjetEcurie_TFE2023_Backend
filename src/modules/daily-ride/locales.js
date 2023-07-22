@@ -3,6 +3,8 @@ export const DailyRideLocales = {
 		dailyRide_404: 'Cette sortie journalière est introuvable',
 		dailyRide_unauthorized:
 			"Vous n'avez pas les permissions requises pour cette opération sur cette sortie journalière",
+		dailyRide_422_delete_when_status:
+			"Vous ne pouvez pas supprimer cette sortie journalière car elle est en cours d'exécution ou exécutée",
 
 		//validation(request)
 		//query parameters

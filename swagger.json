@@ -3788,6 +3788,44 @@
           "DailyRide"
         ],
         "description": "Get daily ride by id"
+      },
+      "delete": {
+        "summary": "Delete daily ride by id  [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "daily ride id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "DailyRide"
+        ],
+        "description": "Delete daily ride by id"
       }
     },
     "/debug": {

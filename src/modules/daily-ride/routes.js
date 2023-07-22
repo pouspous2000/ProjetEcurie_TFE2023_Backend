@@ -22,5 +22,11 @@ dailyRideRouter.get(
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
 	controller.show
 )
+dailyRideRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	controller.delete
+)
 
 export default dailyRideRouter
