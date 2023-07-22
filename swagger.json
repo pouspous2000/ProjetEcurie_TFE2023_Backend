@@ -3745,6 +3745,74 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create new daily ride [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "horseId",
+                "task"
+              ],
+              "properties": {
+                "horseId": {
+                  "type": "integer"
+                },
+                "task": {
+                  "type": "object",
+                  "properties": {
+                    "startingAt": {
+                      "type": "string"
+                    },
+                    "remark": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DailyRide"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "DailyRide"
+        ],
+        "description": "Create new daily ride"
       }
     },
     "/daily-rides/{id}": {

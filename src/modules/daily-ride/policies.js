@@ -1,8 +1,11 @@
 import createError from 'http-errors'
+import { HorseService } from '@/modules/horse/service'
 import i18next from '../../../i18n'
 
 export class DailyRidePolicy {
-	constructor() {}
+	constructor() {
+		this._horseService = new HorseService()
+	}
 
 	async index(request, dailyRides) {
 		switch (request.user.roleCategory) {
@@ -40,6 +43,22 @@ export class DailyRidePolicy {
 					throw createError(401, i18next.t('dailyRide_unauthorized'))
 				}
 				return dailyRide
+		}
+	}
+
+	async create(request, data) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return data
+			case 'EMPLOYEE':
+				return data
+			case 'CLIENT':
+				// eslint-disable-next-line no-case-declarations
+				const horse = await this._horseService.findOrFail(data.horseId)
+				if (horse.ownerId !== request.user.id) {
+					throw createError(401, i18next.t('dailyRide_unauthorized'))
+				}
+				return data
 		}
 	}
 }

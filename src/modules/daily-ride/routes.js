@@ -29,4 +29,12 @@ dailyRideRouter.delete(
 	controller.delete
 )
 
+dailyRideRouter.post(
+	`/${prefix}`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(DailyRideValidator.create()),
+	controller.create
+)
+
 export default dailyRideRouter

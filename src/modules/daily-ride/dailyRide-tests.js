@@ -509,4 +509,179 @@ describe('DailyRide module', async function () {
 			response.body.should.have.property('message').eql(i18next.t('dailyRide_404'))
 		})
 	})
+
+	describe('create', async function () {
+		describe('permissions', async function () {
+			let pension, rideDay, ride, horse, data
+			beforeEach(async function () {
+				pension = await db.models.Pension.create(PensionFactory.create())
+				rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+				data = {
+					horseId: horse.id,
+					task: {
+						startingAt: new Date(new Date().getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is a good remark ... isnt it ?',
+					},
+				}
+			})
+
+			afterEach(function () {
+				pension = rideDay = ride = horse = data = undefined
+			})
+
+			it('role admin', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(201)
+				response.body.should.have.property('id')
+				response.body.should.have.property('name').eql(rideDay.name)
+				response.body.should.have.property('period').eql(rideDay.period)
+				response.body.should.have.property('price').eql(rideDay.price)
+				response.body.should.have.property('horse').eql({
+					id: horse.id,
+					ownerId: horse.ownerId,
+					pensionId: horse.pensionId,
+					name: horse.name,
+					comment: horse.comment,
+				})
+				response.body.task.should.have.property('id')
+				response.body.task.name
+					.toLowerCase()
+					.should.eql(`${i18next.t('dailyRide')} ${horse.name}`.toLowerCase())
+				response.body.task.description
+					.toLowerCase()
+					.should.eql(`${i18next.t('dailyRide')} ${horse.name}`.toLowerCase())
+				response.body.task.should.have.property('status').eql('PENDING')
+				response.body.task.should.have.property('remark').eql(data.task.remark)
+				new Date(response.body.task.startingAt).getTime().should.eql(data.task.startingAt.getTime())
+				response.body.task.should.have.property('endingAt').should.not.eql(null)
+				response.body.should.have.property('createdAt')
+				response.body.should.have.property('deletedAt').eql(null)
+			})
+
+			it('role employee', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send(data)
+
+				response.should.have.status(201)
+			})
+
+			describe('role client', async function () {
+				it('own horse - allowed', async function () {
+					const response = await chai
+						.request(app)
+						.post(`${routePrefix}`)
+						.set('Authorization', `Bearer ${testClientUser1.token}`)
+						.send(data)
+
+					response.should.have.status(201)
+				})
+
+				it("other employee's horse - not allowed", async function () {
+					const response = await chai
+						.request(app)
+						.post(`${routePrefix}`)
+						.set('Authorization', `Bearer ${testClientUser2.token}`)
+						.send(data)
+
+					response.should.have.status(401)
+					response.body.should.have.property('message').eql(i18next.t('dailyRide_unauthorized'))
+				})
+			})
+		})
+
+		describe('middleware', async function () {
+			it('null mandatory values i.e horseId and task', async function () {
+				// we do not test every validation rule as it is non-sense
+				const data = {}
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['horseId', 'task', 'task.startingAt'])
+			})
+		})
+
+		describe('service - 422 errors', async function () {
+			let pension, ride, horse, rideDay
+
+			beforeEach(async function () {
+				pension = await db.models.Pension.create(PensionFactory.create())
+				ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+				rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+			})
+
+			afterEach(function () {
+				pension = ride = horse = rideDay = undefined
+			})
+
+			it('inexisting horse', async function () {
+				const data = {
+					horseId: horse.id + 1,
+					task: {
+						startingAt: new Date(new Date().getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is a good remark ... isnt it ?',
+					},
+				}
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('dailyRide_422_inexistingHorse'))
+			})
+
+			it('inexisting ride', async function () {
+				await rideDay.destroy()
+				const data = {
+					horseId: horse.id,
+					task: {
+						startingAt: new Date(new Date().getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is a good remark ... isnt it ?',
+					},
+				}
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('dailyRide_422_inexistingRideDay'))
+			})
+
+			it('inexisting admin user', async function () {
+				await testAdminUser.destroy()
+				const data = {
+					horseId: horse.id,
+					task: {
+						startingAt: new Date(new Date().getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is a good remark ... isnt it ?',
+					},
+				}
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send(data)
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('dailyRide_422_inexistingAdminUser'))
+			})
+		})
+	})
 })

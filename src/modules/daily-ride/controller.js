@@ -15,6 +15,7 @@ export class DailyRideController extends BaseController {
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
 		this.delete = this.delete.bind(this)
+		this.create = this.create.bind(this)
 	}
 
 	async index(request, response, next) {
@@ -31,6 +32,10 @@ export class DailyRideController extends BaseController {
 
 	async delete(request, response, next) {
 		return await super.delete(request, response, next, this._getRelationOptions())
+	}
+
+	async create(request, response, next) {
+		return await super.create(request, response, next, this._getRelationOptions())
 	}
 
 	_getRelationOptions() {

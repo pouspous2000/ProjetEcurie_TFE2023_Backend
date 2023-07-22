@@ -33,4 +33,8 @@ export class DailyRideView {
 			deletedAt: dailyRide.deletedAt,
 		}
 	}
+
+	create(dailyRide) {
+		return this.show(dailyRide)
+	}
 }
