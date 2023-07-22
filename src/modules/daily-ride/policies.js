@@ -61,4 +61,19 @@ export class DailyRidePolicy {
 				return data
 		}
 	}
+
+	async update(request, dailyRide) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return dailyRide
+			case 'EMPLOYEE':
+				return dailyRide
+			case 'CLIENT':
+				// eslint-disable-next-line no-case-declarations
+				if (dailyRide.horse.ownerId !== request.user.id) {
+					throw createError(401, i18next.t('dailyRide_unauthorized'))
+				}
+				return dailyRide
+		}
+	}
 }

@@ -68,6 +68,31 @@ export class DailyRideService extends BaseService {
 		}
 	}
 
+	async update(dailyRide, data) {
+		if (['IN PROGRESS', 'COMPLETED', 'BLOCKED'].includes(dailyRide.task.status)) {
+			throw createError(422, i18next.t('dailyRide_422_update_when_status'))
+		} else if (['PENDING', 'CONFIRMED'].includes(dailyRide.task.status)) {
+			if (new Date(data.task.startingAt).getTime() !== new Date(dailyRide.task.startingAt).getTime()) {
+				const adminUser = await this._getAdminUser()
+				await this._taskService.update(dailyRide.task, {
+					creatorId: adminUser.id,
+					employeeId: adminUser.id,
+					status: 'PENDING',
+					startingAt: data.task.startingAt,
+					endingAt: new Date(new Date(data.task.startingAt).getTime() + 60 * 60 * 1000), // 1 hour in ms
+					remark: data.task.remark,
+				})
+				return dailyRide
+			} else {
+				return await this._taskService.update(dailyRide.task, {
+					remark: data.task.remark,
+				})
+			}
+		} else {
+			throw createError(422, i18next.t('dailyRide_422_update_when_cancelled'))
+		}
+	}
+
 	async _getHorse(horseId) {
 		const horse = await db.models.Horse.findByPk(horseId)
 		if (!horse) {

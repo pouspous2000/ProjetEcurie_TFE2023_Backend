@@ -9,7 +9,10 @@ export const DailyRideLocales = {
 		dailyRide_422_inexistingHorse: 'Imposible de trouver le cheval auquel ajouter la sortie journalière',
 		dailyRide_422_inexistingAdminUser:
 			'Impossible de trouver un administrateur auquel affecter la tâche de sortie journalière',
-
+		dailyRide_422_update_when_status:
+			"Vous ne pouvez pas changer l'heure de sortie car cette dernière a déjà été traitée",
+		dailyRide_422_update_when_cancelled:
+			"Vous ne pouvez pas changer l'heure de sortie car cette dernière a été annulée",
 		dailyRide: 'Sortie journalière',
 
 		//validation(request)

@@ -37,4 +37,8 @@ export class DailyRideView {
 	create(dailyRide) {
 		return this.show(dailyRide)
 	}
+
+	update(dailyRide) {
+		return this.show(dailyRide)
+	}
 }

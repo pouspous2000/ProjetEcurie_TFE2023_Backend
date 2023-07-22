@@ -37,4 +37,12 @@ dailyRideRouter.post(
 	controller.create
 )
 
+dailyRideRouter.put(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(DailyRideValidator.update()),
+	controller.update
+)
+
 export default dailyRideRouter

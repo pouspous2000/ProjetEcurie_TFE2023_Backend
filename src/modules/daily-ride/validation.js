@@ -32,6 +32,16 @@ export class DailyRideValidator {
 		return [
 			body('horseId').exists().withMessage(i18next.t('dailyRide_request_validation_horseId_exists')),
 			body('horseId').isInt({ min: 1 }).withMessage(i18next.t('dailyRide_request_validation_horseId_isInt')),
+			...this._createUpdateCommon(),
+		]
+	}
+
+	static update() {
+		return [...this._createUpdateCommon()]
+	}
+
+	static _createUpdateCommon() {
+		return [
 			body('task')
 				.isObject()
 				.withMessage(i18next.t('dailyRide_request_validation_task_isObject'))

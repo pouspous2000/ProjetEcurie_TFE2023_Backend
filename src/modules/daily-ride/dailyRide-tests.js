@@ -684,4 +684,260 @@ describe('DailyRide module', async function () {
 			})
 		})
 	})
+
+	describe('update', async function () {
+		describe('permissions', async function () {
+			let pension, rideDay, ride, horse, dailyRide, task
+
+			beforeEach(async function () {
+				pension = await db.models.Pension.create(PensionFactory.create())
+				rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+				task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING'))
+				dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+			})
+
+			afterEach(function () {
+				pension = rideDay = ride = horse = dailyRide = task = undefined
+			})
+
+			it('role admin', async function () {
+				const data = {
+					task: {
+						startingAt: new Date(new Date(task.startingAt).getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is another good remark ... isnt it ?',
+					},
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				task = await db.models.Task.findByPk(task.id)
+				response.should.have.status(200)
+				response.body.should.have.property('id').eql(dailyRide.id)
+				response.body.should.have.property('name').eql(dailyRide.name)
+				response.body.should.have.property('period').eql(dailyRide.period)
+				response.body.should.have.property('price').eql(dailyRide.price)
+				response.body.should.have.property('horse').eql({
+					id: horse.id,
+					ownerId: horse.ownerId,
+					pensionId: horse.pensionId,
+					name: horse.name,
+					comment: horse.comment,
+				})
+				response.body.should.have.property('task').eql({
+					id: task.id,
+					name: task.name,
+					description: task.description,
+					remark: task.remark,
+					status: 'PENDING',
+					startingAt: task.startingAt.toISOString(),
+					endingAt: task.endingAt.toISOString(),
+				})
+				response.body.should.have.property('createdAt')
+				response.body.should.have.property('deletedAt').eql(null)
+			})
+
+			it('role employee', async function () {
+				const data = {
+					task: {
+						startingAt: new Date(new Date(task.startingAt).getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is another good remark ... isnt it ?',
+					},
+				}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send(data)
+				response.should.have.status(200)
+			})
+
+			describe('role client', async function () {
+				it('own horse - allowed', async function () {
+					const data = {
+						task: {
+							startingAt: new Date(new Date(task.startingAt).getTime() + 24 * 60 * 3600 * 1000),
+							remark: 'this is another good remark ... isnt it ?',
+						},
+					}
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${dailyRide.id}`)
+						.set('Authorization', `Bearer ${testClientUser1.token}`)
+						.send(data)
+					response.should.have.status(200)
+				})
+
+				it("other employee's horse - not allowed", async function () {
+					const data = {
+						task: {
+							startingAt: new Date(new Date(task.startingAt).getTime() + 24 * 60 * 3600 * 1000),
+							remark: 'this is another good remark ... isnt it ?',
+						},
+					}
+					const response = await chai
+						.request(app)
+						.put(`${routePrefix}/${dailyRide.id}`)
+						.set('Authorization', `Bearer ${testClientUser2.token}`)
+						.send(data)
+					response.should.have.status(401)
+					response.body.should.have.property('message').eql(i18next.t('dailyRide_unauthorized'))
+				})
+			})
+		})
+
+		describe('middleware', async function () {
+			it('null mandatory values task', async function () {
+				const pension = await db.models.Pension.create(PensionFactory.create())
+				const rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				const ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				const horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'PENDING')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+				const data = {}
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['task', 'task.startingAt'])
+			})
+		})
+
+		describe('service - 422 errors', async function () {
+			let pension, rideDay, ride, horse
+
+			beforeEach(async function () {
+				pension = await db.models.Pension.create(PensionFactory.create())
+				rideDay = await db.models.Ride.create(RideFactory.create('DAY'))
+				ride = await db.models.Ride.create(RideFactory.create('WEEKEND'))
+				horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+			})
+
+			afterEach(function () {
+				pension = rideDay = ride = horse = undefined
+			})
+
+			it('status in [IN PROGRESS, COMPLETED, BLOCKED]', async function () {
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'COMPLETED')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				const data = {
+					task: {
+						startingAt: new Date(new Date(task.startingAt).getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is another good remark ... isnt it ?',
+					},
+				}
+
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('dailyRide_422_update_when_status'))
+			})
+
+			it('status in [PENDING, CONFIRMED]', async function () {
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'CONFIRMED')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				const data = {
+					task: {
+						startingAt: new Date(new Date(task.startingAt).getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is another good remark ... isnt it ?',
+					},
+				}
+
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(200)
+			})
+
+			it('status cancelled', async function () {
+				const task = await db.models.Task.create(
+					TaskFactory.create(testAdminUser.id, testAdminUser.id, 'CANCELLED')
+				)
+				const dailyRide = await db.models.DailyRide.create({
+					horseId: horse.id,
+					rideId: rideDay.id,
+					taskId: task.id,
+					name: rideDay.id,
+					period: rideDay.period,
+					price: rideDay.price,
+					createdAt: new Date(),
+					deletedAt: null,
+				})
+
+				const data = {
+					task: {
+						startingAt: new Date(new Date(task.startingAt).getTime() + 24 * 60 * 3600 * 1000),
+						remark: 'this is another good remark ... isnt it ?',
+					},
+				}
+
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${dailyRide.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('dailyRide_422_update_when_cancelled'))
+			})
+		})
+	})
 })
