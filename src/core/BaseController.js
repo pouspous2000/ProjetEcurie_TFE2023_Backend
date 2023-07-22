@@ -64,7 +64,7 @@ export class BaseController {
 		try {
 			const { id } = request.params
 			const data = request.body
-			let instance = await this._service.findOrFail(id)
+			let instance = await this._service.findOrFail(id, options)
 			if (this._policy && this._policy.update) {
 				await this._policy.update(request, instance, data)
 			}

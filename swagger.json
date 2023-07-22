@@ -53,6 +53,9 @@
     },
     {
       "name": "Eventable"
+    },
+    {
+      "name": "DailyRide"
     }
   ],
   "securityDefinitions": {
@@ -3694,6 +3697,279 @@
         "description": "Update ride"
       }
     },
+    "/daily-rides": {
+      "get": {
+        "summary": "List all daily rides [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "horseId",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "horseName",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "taskStatus",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "taskStartingAt",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "tags": [
+          "DailyRide"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DailyRideList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new daily ride [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "horseId",
+                "task"
+              ],
+              "properties": {
+                "horseId": {
+                  "type": "integer"
+                },
+                "task": {
+                  "type": "object",
+                  "properties": {
+                    "startingAt": {
+                      "type": "string"
+                    },
+                    "remark": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DailyRide"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "DailyRide"
+        ],
+        "description": "Create new daily ride"
+      }
+    },
+    "/daily-rides/{id}": {
+      "get": {
+        "summary": "Get daily ride by id [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "daily ride id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DailyRide"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "DailyRide"
+        ],
+        "description": "Get daily ride by id"
+      },
+      "delete": {
+        "summary": "Delete daily ride by id  [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "daily ride id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "DailyRide"
+        ],
+        "description": "Delete daily ride by id"
+      },
+      "put": {
+        "summary": "Update daily ride [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "task"
+              ],
+              "properties": {
+                "task": {
+                  "type": "object",
+                  "properties": {
+                    "startingAt": {
+                      "type": "string"
+                    },
+                    "remark": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "daily ride id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DailyRide"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "DailyRide"
+        ],
+        "description": "Update daily ride (task)"
+      }
+    },
     "/eventables": {
       "get": {
         "summary": "List all eventables [ADMIN, EMPLOYEE, CLIENT]",
@@ -4542,6 +4818,87 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Ride"
+      }
+    },
+    "DailyRide": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "period": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "horse": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "ownerId": {
+              "type": "integer"
+            },
+            "pensionId": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "comment": {
+              "type": "string"
+            }
+          }
+        },
+        "task": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "startingAt": {
+              "type": "string"
+            },
+            "endingAt": {
+              "type": "string"
+            },
+            "remark": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "DailyRideList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/DailyRide"
       }
     }
   }
