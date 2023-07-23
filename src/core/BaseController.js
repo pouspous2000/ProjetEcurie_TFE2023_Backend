@@ -1,3 +1,5 @@
+import { matchedData } from 'express-validator'
+
 export class BaseController {
 	constructor(service, policy = undefined, view = undefined) {
 		this._service = service
@@ -44,9 +46,9 @@ export class BaseController {
 		}
 	}
 
-	async create(request, response, next, options = {}) {
+	async create(request, response, next, options = {}, additionalData = {}) {
 		try {
-			const data = request.body
+			const data = { ...matchedData(request), ...additionalData }
 			if (this._policy && this._policy.create) {
 				await this._policy.create(request, data)
 			}
@@ -60,10 +62,10 @@ export class BaseController {
 		}
 	}
 
-	async update(request, response, next, options = {}) {
+	async update(request, response, next, options = {}, additionalData = {}) {
 		try {
 			const { id } = request.params
-			const data = request.body
+			const data = { ...matchedData(request), ...additionalData }
 			let instance = await this._service.findOrFail(id, options)
 			if (this._policy && this._policy.update) {
 				await this._policy.update(request, instance, data)

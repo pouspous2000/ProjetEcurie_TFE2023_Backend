@@ -32,6 +32,7 @@ export class ContactValidator {
 			body('address').exists().withMessage(i18next.t('contact_request_validation_address_exists')),
 			body('phone').isLength({ max: 255 }).withMessage(i18next.t('contact_request_validation_phone_isLength')),
 			body('mobile').isLength({ max: 255 }).withMessage(i18next.t('contact_request_validation_mobile_isLength')),
+			body('invoicingAddress').optional(),
 		]
 	}
 }

@@ -33,8 +33,7 @@ export class EventController extends BaseController {
 	}
 
 	async create(request, response, next) {
-		request.body.creatorId = request.user.id
-		return await super.create(request, response, next, this._getRelationOptions())
+		return await super.create(request, response, next, this._getRelationOptions(), { creatorId: request.user.id })
 	}
 
 	async update(request, response, next) {

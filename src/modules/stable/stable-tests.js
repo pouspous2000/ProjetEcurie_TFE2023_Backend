@@ -54,6 +54,7 @@ describe('Stable Module', function () {
 			.request(app)
 			.get(`${routePrefix}/${bonnet.id}`)
 			.set('Authorization', `Bearer ${testClient.token}`)
+
 		response.should.have.status(200)
 		response.body.should.have.property('name').eql(bonnet.name)
 		response.body.should.have.property('vat').eql(bonnet.vat)

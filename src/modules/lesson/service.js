@@ -31,14 +31,6 @@ export class LessonService extends BaseService {
 			throw createError(422, i18next.t('lesson_422_update_completed'))
 		}
 
-		if (data.creatorId && data.creatorId !== instance.creatorId) {
-			throw createError(422, i18next.t('lesson_422_creatorId_change'))
-		}
-
-		if (data.clientId && data.clientId !== instance.clientId) {
-			throw createError(422, i18next.t('lesson_422_clientId_change'))
-		}
-
 		return await super.update(instance, data)
 	}
 }
