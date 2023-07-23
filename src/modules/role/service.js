@@ -45,15 +45,21 @@ export class RoleService extends BaseService {
 
 	async create(data) {
 		data.isEditable = true
-		await this.findOrFail(data.parentId)
+		const parentRole = await db.models.Role.findByPk(data.parentId)
+		if (!parentRole) {
+			throw createError(422, i18next.t('role_422_inexistingParentRole'))
+		}
 		return await super.create(data)
 	}
 
 	async update(role, data) {
 		if (!role.isEditable) {
-			throw createError(401, i18next.t('role_crud_record_unauthorized'))
+			throw createError(422, i18next.t('role_crud_record_unauthorized'))
 		}
-		await this.findOrFail(data.parentId)
+		const parentRole = await db.models.Role.findByPk(data.parentId)
+		if (!parentRole) {
+			throw createError(422, i18next.t('role_422_inexistingParentRole'))
+		}
 		return await role.set(data).save()
 	}
 

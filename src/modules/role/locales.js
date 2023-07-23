@@ -5,7 +5,9 @@ export const RoleLocales = {
 		role_employee: 'employee',
 		role_client: 'client',
 		role_404: 'role introuvable',
+		role_401: "Vous n'avez pas les permissions requises pour cette opération sur ce rôle",
 		role_crud_record_unauthorized: 'impossible de modifier ce role',
+		role_422_inexistingParentRole: 'Rôle parent introuvable',
 
 		//validation
 		role_sql_validation_name_unique: 'Ce nom est déjà utilisé',

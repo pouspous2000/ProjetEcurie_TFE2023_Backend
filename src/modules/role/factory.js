@@ -6,16 +6,20 @@ export class RoleFactory extends BaseFactory {
 		name: [],
 	}
 
-	static create() {
+	static create(parentId = undefined) {
 		let name
 		do {
 			name = faker.person.jobType()
+			if (this.uniqueConstraints.name.includes(name)) {
+				name = `${name}${Math.random()}`
+			}
 		} while (this.uniqueConstraints.name.includes(name))
 
 		this.uniqueConstraints.name.push(name)
 
 		return {
 			name: name,
+			parentId: parentId,
 			...this._create(),
 		}
 	}
