@@ -1,4 +1,5 @@
 import { body, query } from 'express-validator'
+import { DateUtils } from '@/utils/DateUtils'
 import i18next from '../../../i18n'
 
 export class DailyRideValidator {
@@ -18,20 +19,18 @@ export class DailyRideValidator {
 				.withMessage(i18next.t('dailyRide_request_validation_query_taskStatus_isIn')),
 			query('taskStartingAt')
 				.optional()
-				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('dailyRide_request_validation_query_taskStartingAt_isDate'))
-					}
-					return true
-				})
+				.custom(value => DateUtils.isCorrectFormat(value))
 				.toDate(),
 		]
 	}
 
 	static create() {
 		return [
-			body('horseId').exists().withMessage(i18next.t('dailyRide_request_validation_horseId_exists')),
-			body('horseId').isInt({ min: 1 }).withMessage(i18next.t('dailyRide_request_validation_horseId_isInt')),
+			body('horseId')
+				.exists()
+				.withMessage(i18next.t('dailyRide_request_validation_horseId_exists'))
+				.isInt({ min: 1 })
+				.withMessage(i18next.t('dailyRide_request_validation_horseId_isInt')),
 			...this._createUpdateCommon(),
 		]
 	}
@@ -50,10 +49,10 @@ export class DailyRideValidator {
 			body('task.startingAt')
 				.notEmpty()
 				.withMessage(i18next.t('dailyRide_request_validation_taskStartingAt_notEmpty'))
+				.custom(value =>
+					DateUtils.isCorrectFormat(value, 'dailyRide_request_validation_query_taskStartingAt_isDate')
+				)
 				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('dailyRide_request_validation_taskStartingAt_isDate'))
-					}
 					if (new Date() > new Date(value)) {
 						throw new Error(i18next.t('dailyRide_request_validation_taskStartingAt_isBeforeNow'))
 					}

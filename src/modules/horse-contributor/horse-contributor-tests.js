@@ -223,7 +223,7 @@ describe('HorseContributor module', function () {
 						.set('Authorization', `Bearer ${testAdminUser.token}`)
 						.send(data)
 					response.should.have.status(422)
-					response.body.errors.map(error => error.path).should.eql(['email', 'firstName', 'lastName'])
+					response.body.errors.map(error => error.path).should.eql(['firstName', 'lastName', 'email'])
 				})
 			})
 

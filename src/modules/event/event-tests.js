@@ -428,7 +428,7 @@ describe('Event module', function () {
 				response.should.have.status(422)
 				response.body.errors
 					.map(error => error.path)
-					.should.eql(['name', 'description', 'participants', 'startingAt', 'endingAt'])
+					.should.eql(['name', 'description', 'participants', 'endingAt', 'startingAt'])
 			})
 		})
 
@@ -554,7 +554,7 @@ describe('Event module', function () {
 				response.should.have.status(422)
 				response.body.errors
 					.map(error => error.path)
-					.should.eql(['name', 'description', 'startingAt', 'endingAt'])
+					.should.eql(['name', 'description', 'endingAt', 'startingAt'])
 			})
 		})
 	})

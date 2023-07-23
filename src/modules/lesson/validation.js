@@ -1,4 +1,5 @@
 import { body, query } from 'express-validator'
+import { DateUtils } from '@/utils/DateUtils'
 import i18next from '../../../i18n'
 
 export class LessonValidator {
@@ -14,12 +15,7 @@ export class LessonValidator {
 				.withMessage(i18next.t('lesson_request_validation_query_clientId_isInt')),
 			query('startingAt')
 				.optional()
-				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('lesson_request_validation_query_startingAt_isDate'))
-					}
-					return true
-				})
+				.custom(value => DateUtils.isCorrectFormat(value, 'lesson_request_validation_query_startingAt_isDate'))
 				.toDate(),
 			query('status')
 				.optional()
@@ -30,8 +26,11 @@ export class LessonValidator {
 
 	static create() {
 		return [
-			body('clientId').exists().withMessage(i18next.t('lesson_request_validation_clientId_exists')),
-			body('clientId').isInt({ min: 1 }).withMessage(i18next.t('lesson_request_validation_clientId_isInt')),
+			body('clientId')
+				.exists()
+				.withMessage(i18next.t('lesson_request_validation_clientId_exists'))
+				.isInt({ min: 1 })
+				.withMessage(i18next.t('lesson_request_validation_clientId_isInt')),
 			body('startingAt').exists().withMessage(i18next.t('lesson_request_validation_startingAt_exists')),
 			...this._createUpdateCommon(),
 		]
@@ -40,8 +39,9 @@ export class LessonValidator {
 	static update() {
 		return [
 			...this._createUpdateCommon(),
-			body('status').exists().withMessage(i18next.t('lesson_request_validation_status_exists')),
 			body('status')
+				.exists()
+				.withMessage(i18next.t('lesson_request_validation_status_exists'))
 				.isIn(['CONFIRMED', 'DONE', 'CANCELLED', 'ABSENCE'])
 				.withMessage(i18next.t('lesson_request_validation_query_status_isIn')),
 		]
@@ -50,23 +50,13 @@ export class LessonValidator {
 	static _createUpdateCommon() {
 		return [
 			body('startingAt')
-				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('lesson_request_validation_startingAt_isDate'))
-					}
-					return true
-				})
+				.custom(value => DateUtils.isCorrectFormat(value, 'lesson_request_validation_startingAt_isDate'))
 				.toDate(),
-			body('endingAt').exists().withMessage(i18next.t('lesson_request_validation_endingAt_exists')),
+
 			body('endingAt')
-				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('lesson_request_validation_endingAt_isDate'))
-					}
-					return true
-				})
-				.toDate(),
-			body('endingAt')
+				.exists()
+				.withMessage(i18next.t('lesson_request_validation_endingAt_exists'))
+				.custom(value => DateUtils.isCorrectFormat(value, 'lesson_request_validation_endingAt_isDate'))
 				.custom((value, { req }) => {
 					const startingAt = new Date(req.body.startingAt)
 					const endingAt = new Date(value)

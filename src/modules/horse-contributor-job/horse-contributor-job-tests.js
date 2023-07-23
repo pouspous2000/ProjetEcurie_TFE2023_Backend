@@ -149,9 +149,7 @@ describe('HorseContributorJob Module', function () {
 			.set('Authorization', `Bearer ${testAdmin.token}`)
 		response.body.should.have.property('message').eql(i18next.t('common_validation_error'))
 		response.should.have.status(422)
-		response.body.errors.should.have.length(1)
-		response.body.errors[0].should.have.property('path').eql('name')
-		response.body.errors[0].errors.should.eql([i18next.t('horseContributorJob_request_validation_name_exists')])
+		response.body.errors.map(error => error.path).should.eql(['name'])
 	})
 
 	it('update with admin', async function () {

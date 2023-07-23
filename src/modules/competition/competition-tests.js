@@ -346,13 +346,11 @@ describe('Competition module', function () {
 				const data = CompetitionFactory.create(testEmployeeUser1)
 				delete data['creatorId']
 				data.participants = [testClientUser1.id]
-
 				const response = await chai
 					.request(app)
 					.post(`${routePrefix}`)
 					.set('Authorization', `Bearer ${testAdminUser.token}`)
 					.send(data)
-
 				response.should.have.status(201)
 				response.body.should.have.property('id')
 				response.body.should.have
@@ -424,7 +422,7 @@ describe('Competition module', function () {
 				response.should.have.status(422)
 				response.body.errors
 					.map(error => error.path)
-					.should.eql(['name', 'description', 'participants', 'startingAt', 'endingAt'])
+					.should.eql(['name', 'description', 'participants', 'endingAt', 'startingAt'])
 			})
 		})
 
@@ -550,7 +548,7 @@ describe('Competition module', function () {
 				response.should.have.status(422)
 				response.body.errors
 					.map(error => error.path)
-					.should.eql(['name', 'description', 'startingAt', 'endingAt'])
+					.should.eql(['name', 'description', 'endingAt', 'startingAt'])
 			})
 		})
 	})

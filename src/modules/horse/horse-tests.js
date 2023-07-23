@@ -440,7 +440,7 @@ describe('Horse module', function () {
 				response.should.have.status(422)
 				response.body.errors
 					.map(error => error.path)
-					.should.eql(['ownerId', 'pensionId', 'rideId', 'name', 'horsemen', 'additives', 'comment'])
+					.should.eql(['rideId', 'comment', 'ownerId', 'pensionId', 'name', 'horsemen', 'additives'])
 			})
 		})
 

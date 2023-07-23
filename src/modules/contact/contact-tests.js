@@ -258,7 +258,7 @@ describe('Contact module', function () {
 					.set('Authorization', `Bearer ${testAdminUser.token}`)
 					.send(data)
 				response.should.have.status(422)
-				response.body.errors.map(error => error.path).should.eql(['userId', 'firstName', 'lastName', 'address'])
+				response.body.errors.map(error => error.path).should.eql(['address', 'userId', 'firstName', 'lastName'])
 			})
 		})
 

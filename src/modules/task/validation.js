@@ -1,4 +1,5 @@
 import { body, query } from 'express-validator'
+import { DateUtils } from '@/utils/DateUtils'
 import i18next from '../../../i18n'
 
 export class TaskValidator {
@@ -14,12 +15,7 @@ export class TaskValidator {
 				.withMessage(i18next.t('task_request_validation_query_creatorId_isInt')),
 			query('startingAt')
 				.optional()
-				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('task_request_validation_query_startingAt_isDate'))
-					}
-					return true
-				})
+				.custom(value => DateUtils.isCorrectFormat(value, 'task_request_validation_query_startingAt_isDate'))
 				.toDate(),
 			query('status')
 				.optional()
@@ -29,34 +25,52 @@ export class TaskValidator {
 	}
 
 	static create() {
+		return [...this._createUpdateCommon()]
+	}
+
+	static update() {
 		return [
-			body('employeeId').exists().withMessage(i18next.t('task_request_validation_employeeId_exists')),
-			body('employeeId').isInt({ min: 1 }).withMessage(i18next.t('task_request_validation_employeeId_isInt')),
-			body('name').exists().withMessage(i18next.t('task_request_validation_name_exists')),
-			body('name').isLength({ min: 1, max: 255 }).withMessage(i18next.t('task_request_validation_name_isLength')),
-			body('description').exists().withMessage(i18next.t('task_request_validation_description_exists')),
+			...this._createUpdateCommon(),
+			body('creatorId')
+				.exists()
+				.withMessage(i18next.t('task_request_validation_creatorId_exists'))
+				.isInt({ min: 1 })
+				.withMessage(i18next.t('task_request_validation_creatorId_isInt')),
+			body('remark').exists().withMessage(i18next.t('task_request_validation_remark_exists')),
+			body('status')
+				.exists()
+				.withMessage(i18next.t('task_request_validation_status_exists'))
+				.isIn(['PENDING', 'CONFIRMED', 'IN PROGRESS', 'COMPLETED', 'BLOCKED', 'CANCELLED'])
+				.withMessage(i18next.t('task_request_validation_query_status_isIn')),
+		]
+	}
+
+	static _createUpdateCommon() {
+		return [
+			body('employeeId')
+				.exists()
+				.withMessage(i18next.t('task_request_validation_employeeId_exists'))
+				.isInt({ min: 1 })
+				.withMessage(i18next.t('task_request_validation_employeeId_isInt')),
+			body('name')
+				.exists()
+				.withMessage(i18next.t('task_request_validation_name_exists'))
+				.isLength({ min: 1, max: 255 })
+				.withMessage(i18next.t('task_request_validation_name_isLength')),
 			body('description')
+				.exists()
+				.withMessage(i18next.t('task_request_validation_description_exists'))
 				.isLength({ min: 1 })
 				.withMessage(i18next.t('task_request_validation_description_isLength')),
-			body('startingAt').exists().withMessage(i18next.t('task_request_validation_startingAt_exists')),
 			body('startingAt')
-				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('task_request_validation_startingAt_isDate'))
-					}
-					return true
-				})
-				.toDate(),
-			body('endingAt').exists().withMessage(i18next.t('task_request_validation_endingAt_exists')),
-			body('endingAt')
-				.custom(value => {
-					if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-						throw new Error(i18next.t('task_request_validation_endingAt_isDate'))
-					}
-					return true
-				})
+				.exists()
+				.withMessage(i18next.t('task_request_validation_startingAt_exists'))
+				.custom(value => DateUtils.isCorrectFormat(value, 'task_request_validation_startingAt_isDate'))
 				.toDate(),
 			body('endingAt')
+				.exists()
+				.withMessage(i18next.t('task_request_validation_endingAt_exists'))
+				.custom(value => DateUtils.isCorrectFormat(value, 'task_request_validation_endingAt_isDate'))
 				.custom((value, { req }) => {
 					const startingAt = new Date(req.body.startingAt)
 					const endingAt = new Date(value)
@@ -66,19 +80,6 @@ export class TaskValidator {
 					throw new Error(i18next.t('task_request_validation_endingAt_isAfterStartingAt'))
 				})
 				.toDate(),
-		]
-	}
-
-	static update() {
-		return [
-			...this.create(),
-			body('creatorId').exists().withMessage(i18next.t('task_request_validation_creatorId_exists')),
-			body('creatorId').isInt({ min: 1 }).withMessage(i18next.t('task_request_validation_creatorId_isInt')),
-			body('remark').exists().withMessage(i18next.t('task_request_validation_remark_exists')),
-			body('status').exists().withMessage(i18next.t('task_request_validation_status_exists')),
-			body('status')
-				.isIn(['PENDING', 'CONFIRMED', 'IN PROGRESS', 'COMPLETED', 'BLOCKED', 'CANCELLED'])
-				.withMessage(i18next.t('task_request_validation_query_status_isIn')),
 		]
 	}
 }

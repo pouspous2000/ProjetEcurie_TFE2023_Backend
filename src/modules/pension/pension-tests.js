@@ -202,7 +202,7 @@ describe('Pension module', function () {
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(pensionData)
 			response.should.have.status(422)
-			response.body.errors.map(error => error.path).should.eql(['name', 'monthlyPrice', 'description'])
+			response.body.errors.map(error => error.path).should.eql(['description', 'name', 'monthlyPrice'])
 		})
 
 		describe('create invalid - sql errors', async function () {

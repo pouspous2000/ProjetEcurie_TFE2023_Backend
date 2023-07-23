@@ -3,28 +3,35 @@ import i18next from '../../../i18n'
 
 export class HorseContributorValidator {
 	static create() {
-		// change me when horse is implemented
-		return [
-			body('firstName').exists().withMessage(i18next.t('horseContributor_request_validation_firstName_exists')),
-			body('firstName')
-				.isLength({
-					min: 0,
-					max: 255,
-				})
-				.withMessage(i18next.t('horseContributor_request_validation_firstName_length')),
-			body('lastName').exists().withMessage(i18next.t('horseContributor_request_validation_lastName_exists')),
-			body('lastName')
-				.isLength({
-					min: 0,
-					max: 255,
-				})
-				.withMessage(i18next.t('horseContributor_request_validation_lastName_length')),
-			body('email').exists().withMessage(i18next.t('horseContributor_request_validation_email_exists')),
-			body('email').isEmail().withMessage(i18next.t('horseContributor_request_validation_email_email')),
-		]
+		return [...this._createUpdateCommon()]
 	}
 
 	static update() {
-		return this.create()
+		return [...this._createUpdateCommon()]
+	}
+
+	static _createUpdateCommon() {
+		return [
+			body('firstName')
+				.exists()
+				.withMessage(i18next.t('horseContributor_request_validation_firstName_exists'))
+				.isLength({
+					min: 1,
+					max: 255,
+				})
+				.withMessage(i18next.t('horseContributor_request_validation_firstName_length')),
+
+			body('lastName')
+				.exists()
+				.withMessage(i18next.t('horseContributor_request_validation_lastName_exists'))
+				.isLength({ min: 1, max: 255 })
+				.withMessage(i18next.t('horseContributor_request_validation_lastName_length')),
+
+			body('email')
+				.exists()
+				.withMessage(i18next.t('horseContributor_request_validation_email_exists'))
+				.isEmail()
+				.withMessage(i18next.t('horseContributor_request_validation_email_email')),
+		]
 	}
 }

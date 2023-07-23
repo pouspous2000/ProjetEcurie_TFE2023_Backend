@@ -12,14 +12,18 @@ export class PensionValidator {
 
 	static _create_update_common() {
 		return [
-			body('name').exists().withMessage(i18next.t('pension_request_validation_name_exists')),
 			body('name')
+				.exists()
+				.withMessage(i18next.t('pension_request_validation_name_exists'))
 				.isLength({ min: 1, max: 255 })
 				.withMessage(i18next.t('pension_request_validation_name_length')),
-			body('monthlyPrice').exists().withMessage(i18next.t('pension_request_validation_monthlyPrice_exists')),
+
 			body('monthlyPrice')
+				.exists()
+				.withMessage(i18next.t('pension_request_validation_monthlyPrice_exists'))
 				.isDecimal({ decimal_digits: 2 })
 				.withMessage(i18next.t('pension_request_validation_monthlyPrice_decimal')),
+
 			body('description').exists().withMessage(i18next.t('pension_request_validation_description_exists')),
 		]
 	}
