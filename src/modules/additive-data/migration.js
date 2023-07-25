@@ -3,7 +3,7 @@ import { AdditiveHorse } from '@/modules/additive-data/model'
 import { Additive } from '@/modules/additive/model'
 import { Horse } from '@/modules/horse/model'
 
-export const upAdditiveHorse = (queryInterface, Sequelize) =>
+export const upAdditiveData = (queryInterface, Sequelize) =>
 	queryInterface.createTable(AdditiveHorse.getTable(), {
 		id: {
 			type: DataTypes.INTEGER,
@@ -38,10 +38,15 @@ export const upAdditiveHorse = (queryInterface, Sequelize) =>
 			type: DataTypes.DECIMAL,
 			allowNull: false,
 		},
+		status: {
+			type: DataTypes.ENUM,
+			allowNull: false,
+			values: ['ACTIVE', 'CANCELLED', 'INVOICED'],
+		},
 		createdAt: {
 			type: Sequelize.DATE,
 			allowNull: false,
 		},
 	})
 
-export const downAdditiveHorse = queryInterface => queryInterface.dropTable(AdditiveHorse.getTable())
+export const downAdditiveData = queryInterface => queryInterface.dropTable(AdditiveHorse.getTable())

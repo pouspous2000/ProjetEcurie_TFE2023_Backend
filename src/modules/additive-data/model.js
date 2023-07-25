@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize'
 
 export class AdditiveHorse extends Model {
 	static getTable() {
-		return 'additive_horses'
+		return 'additive_datas'
 	}
 
 	static getModelName() {
@@ -38,6 +38,11 @@ export default function (sequelize) {
 			price: {
 				type: DataTypes.DECIMAL,
 				allowNull: false,
+			},
+			status: {
+				type: DataTypes.ENUM,
+				allowNull: false,
+				values: ['ACTIVE', 'CANCELLED', 'INVOICED'],
 			},
 		},
 		{
