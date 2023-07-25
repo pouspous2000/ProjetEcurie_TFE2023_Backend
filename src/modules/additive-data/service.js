@@ -4,7 +4,7 @@ export class AdditiveDataService {
 	constructor() {}
 
 	async add(horse, additives) {
-		await db.models.AdditiveHorse.bulkCreate(
+		await db.models.AdditiveData.bulkCreate(
 			additives.map(additive => ({
 				additiveId: additive.id,
 				horseId: horse.id,

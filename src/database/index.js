@@ -14,7 +14,7 @@ import AdditiveModel from '@/modules/additive/model'
 import HorseModel from '@/modules/horse/model'
 import HorseUserModel from '@/database/models/horse-user'
 import PensionDataModel from '@/modules/pension-data/model'
-import AdditiveHorseModel from '@/modules/additive-data/model'
+import AdditiveDataModel from '@/modules/additive-data/model'
 import TaskModel from '@/modules/task/model'
 import LessonModel from '@/modules/lesson/model'
 import EventModel from '@/modules/event/model'
@@ -42,7 +42,7 @@ const modelDefiners = [
 	HorseUserModel,
 	PensionDataModel,
 	TaskModel,
-	AdditiveHorseModel,
+	AdditiveDataModel,
 	LessonModel,
 	EventModel,
 	EventUserModel,

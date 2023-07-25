@@ -14,7 +14,7 @@ export class Additive extends Model {
 
 	static associate(models) {
 		Additive.belongsToMany(models.Horse, {
-			through: models.AdditiveHorse,
+			through: models.AdditiveData,
 			foreignKey: 'additiveId',
 			otherKey: 'horseId',
 			as: 'horses',

@@ -1,22 +1,22 @@
 import { DataTypes, Model } from 'sequelize'
 
-export class AdditiveHorse extends Model {
+export class AdditiveData extends Model {
 	static getTable() {
 		return 'additive_datas'
 	}
 
 	static getModelName() {
-		return 'AdditiveHorse'
+		return 'AdditiveData'
 	}
 
 	static associate(models) {
-		AdditiveHorse.belongsTo(models.Additive, { foreignKey: 'additiveId' })
-		AdditiveHorse.belongsTo(models.Horse, { foreignKey: 'horseId' })
+		AdditiveData.belongsTo(models.Additive, { foreignKey: 'additiveId' })
+		AdditiveData.belongsTo(models.Horse, { foreignKey: 'horseId' })
 	}
 }
 
 export default function (sequelize) {
-	AdditiveHorse.init(
+	AdditiveData.init(
 		{
 			id: {
 				type: DataTypes.INTEGER,
@@ -47,12 +47,12 @@ export default function (sequelize) {
 		},
 		{
 			sequelize,
-			modelName: AdditiveHorse.getModelName(),
-			tableName: AdditiveHorse.getTable(),
+			modelName: AdditiveData.getModelName(),
+			tableName: AdditiveData.getTable(),
 			timestamps: true,
 			updatedAt: false,
 		}
 	)
 
-	return AdditiveHorse
+	return AdditiveData
 }

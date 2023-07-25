@@ -1,15 +1,14 @@
 import { describe, it, beforeEach, afterEach } from 'mocha'
 import chaiHttp from 'chai-http'
 import chai from 'chai'
-
 import app from '@/app'
 import db from '@/database'
 import { RoleFactory } from '@/modules/role/factory'
 import { UserFactory } from '@/modules/authentication/factory'
+import { AdditiveFactory } from '@/modules/additive/factory'
 
 import { StringUtils } from '@/utils/StringUtils'
 import i18next from '../../../i18n'
-import { AdditiveFactory } from '@/modules/additive/factory'
 
 chai.should()
 chai.use(chaiHttp)
@@ -21,7 +20,7 @@ describe('Additive module', function () {
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
-		await db.models.AdditiveHorse.destroy({ truncate: { cascade: true } })
+		await db.models.AdditiveData.destroy({ truncate: { cascade: true } })
 		await db.models.Additive.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })

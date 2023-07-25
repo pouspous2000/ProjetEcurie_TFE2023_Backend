@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize'
-import { AdditiveHorse } from '@/modules/additive-data/model'
+import { AdditiveData } from '@/modules/additive-data/model'
 import { Additive } from '@/modules/additive/model'
 import { Horse } from '@/modules/horse/model'
 
 export const upAdditiveData = (queryInterface, Sequelize) =>
-	queryInterface.createTable(AdditiveHorse.getTable(), {
+	queryInterface.createTable(AdditiveData.getTable(), {
 		id: {
 			type: DataTypes.INTEGER,
 			autoIncrement: true,
@@ -49,4 +49,4 @@ export const upAdditiveData = (queryInterface, Sequelize) =>
 		},
 	})
 
-export const downAdditiveData = queryInterface => queryInterface.dropTable(AdditiveHorse.getTable())
+export const downAdditiveData = queryInterface => queryInterface.dropTable(AdditiveData.getTable())

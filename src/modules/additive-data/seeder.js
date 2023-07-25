@@ -1,10 +1,10 @@
 import { Op } from 'sequelize'
-import { AdditiveHorse } from '@/modules/additive-data/model'
+import { AdditiveData } from '@/modules/additive-data/model'
 import { Additive } from '@/modules/additive/model'
 import { Horse } from '@/modules/horse/model'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 
-export const upAdditiveHorse = async queryInterface => {
+export const upAdditiveData = async queryInterface => {
 	const additives = await queryInterface.rawSelect(
 		Additive.getTable(),
 		{
@@ -30,13 +30,14 @@ export const upAdditiveHorse = async queryInterface => {
 			horseId: horse.id,
 			name: additive.name,
 			price: additive.price,
+			status: 'ACTIVE',
 			createdAt: new Date(),
 		}
 	})
 
-	await queryInterface.bulkInsert(AdditiveHorse.getTable(), additiveDataObjs)
+	await queryInterface.bulkInsert(AdditiveData.getTable(), additiveDataObjs)
 }
 
-export const downAdditiveHorse = async queryInterface => {
-	await queryInterface.bulkDelete(AdditiveHorse.getTable(), null, {})
+export const downAdditiveData = async queryInterface => {
+	await queryInterface.bulkDelete(AdditiveData.getTable(), null, {})
 }
