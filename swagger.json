@@ -56,6 +56,9 @@
     },
     {
       "name": "DailyRide"
+    },
+    {
+      "name": "AdditiveData"
     }
   ],
   "securityDefinitions": {
@@ -2214,6 +2217,142 @@
           "Horse"
         ],
         "description": "Update horse"
+      }
+    },
+    "/horses/{horseId}/add": {
+      "post": {
+        "summary": "Add horse additive data [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "additiveIds"
+              ],
+              "properties": {
+                "additiveIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "horseId",
+            "type": "integer",
+            "required": true,
+            "description": "horse id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Horse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "AdditiveData"
+        ],
+        "description": "Add horse additive data"
+      }
+    },
+    "/horses/{horseId}/cancel": {
+      "post": {
+        "summary": "Cancel horse additive data [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "additiveDataIds"
+              ],
+              "properties": {
+                "additiveDataIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "horseId",
+            "type": "integer",
+            "required": true,
+            "description": "horse id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Horse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "AdditiveData"
+        ],
+        "description": "Cancel horse additive data"
       }
     },
     "/tasks": {
