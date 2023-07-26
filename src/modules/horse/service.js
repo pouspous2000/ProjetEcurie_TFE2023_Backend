@@ -4,7 +4,6 @@ import db from '@/database'
 import { Horse } from '@/modules/horse/model'
 import { BaseService } from '@/core/BaseService'
 import { PensionDataService } from '@/modules/pension-data/service'
-import { AdditiveDataService } from '@/modules/additive-data/service'
 import { RideDataService } from '@/modules/ride-data/service'
 import i18next from '../../../i18n'
 
@@ -12,7 +11,6 @@ export class HorseService extends BaseService {
 	constructor() {
 		super(Horse.getModelName(), 'horse_404')
 		this._pensionDataService = new PensionDataService()
-		this._additiveDataService = new AdditiveDataService()
 		this._rideDataService = new RideDataService()
 	}
 
@@ -47,24 +45,11 @@ export class HorseService extends BaseService {
 			throw createError(422, i18next.t('horse_422_inexistingHorseman'))
 		}
 
-		const additives = await db.models.Additive.findAll({
-			where: {
-				id: {
-					[Op.in]: data.additives,
-				},
-			},
-		})
-
-		if (additives.length !== data.additives.length) {
-			throw createError(422, i18next.t('horse_422_inexistingAdditives'))
-		}
-
 		const transaction = await db.transaction()
 		try {
 			let horse = await super.create(data)
 			await horse.setHorsemen(horsemen)
 			await this._pensionDataService.add(horse, pension)
-			await this._additiveDataService.add(horse, additives)
 			if (ride) {
 				await this._rideDataService.add(horse, ride)
 			}
@@ -104,25 +89,12 @@ export class HorseService extends BaseService {
 		if (horsemen.length !== data.horsemen.length) {
 			throw createError(422, i18next.t('horse_422_inexistingHorseman'))
 		}
-		const additives = await db.models.Additive.findAll({
-			where: {
-				id: {
-					[Op.in]: data.additives,
-				},
-			},
-			paranoid: false,
-		})
-
-		if (additives.length !== data.additives.length) {
-			throw createError(422, i18next.t('horse_422_inexistingAdditives'))
-		}
 
 		const transaction = await db.transaction()
 		try {
 			instance.setHorsemen(horsemen)
-			this._pensionDataService.update(instance, pension)
-			this._additiveDataService.update(instance, additives)
-			this._rideDataService.update(instance, ride)
+			await this._pensionDataService.update(instance, pension)
+			await this._rideDataService.update(instance, ride)
 			const horse = await super.update(instance, data)
 			await transaction.commit()
 			return horse

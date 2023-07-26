@@ -5,8 +5,8 @@ import { HorseView } from '@/modules/horse/views'
 import { User } from '@/modules/authentication/model'
 import { Contact } from '@/modules/contact/model'
 import { Pension } from '@/modules/pension/model'
-import { Additive } from '@/modules/additive/model'
 import { Ride } from '@/modules/ride/model'
+import { AdditiveData } from '@/modules/additive-data/model'
 
 export class HorseController extends BaseController {
 	constructor() {
@@ -61,9 +61,8 @@ export class HorseController extends BaseController {
 					},
 				},
 				{
-					model: Additive,
-					as: 'additives',
-					attributes: ['id', 'name', 'price'],
+					model: AdditiveData,
+					as: 'additiveDatas',
 				},
 				{
 					model: Ride,

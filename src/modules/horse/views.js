@@ -27,7 +27,7 @@ export class HorseView {
 			pension: this._getPensionView(horse),
 			ride: this._getRideView(horse),
 			horsemen: this._getHorsemenView(horse),
-			additives: this._getAdditivesView(horse),
+			additiveDatas: this._getAdditiveDatasView(horse),
 		}
 	}
 
@@ -81,13 +81,15 @@ export class HorseView {
 		return []
 	}
 
-	_getAdditivesView(horse) {
-		if (horse.additives.length) {
-			return horse.additives.map(additive => {
+	_getAdditiveDatasView(horse) {
+		if (horse.additiveDatas.length) {
+			return horse.additiveDatas.map(additiveData => {
 				return {
-					id: additive.id,
-					name: additive.name,
-					price: additive.price,
+					id: additiveData.id,
+					additiveId: additiveData.additiveId,
+					name: additiveData.name,
+					price: additiveData.price,
+					status: additiveData.status,
 				}
 			})
 		}

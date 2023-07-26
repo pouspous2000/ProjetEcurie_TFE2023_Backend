@@ -46,17 +46,6 @@ export class HorseValidator {
 						'horse_request_validation_horsemen_horseman_isPositiveInteger'
 					)
 				),
-			body('additives')
-				.exists()
-				.withMessage(i18next.t('horse_request_validation_additives_exists'))
-				.custom(additives =>
-					ArrayUtils.validateFkArray(
-						additives,
-						'horse_request_validation_additives_isArray',
-						'horse_request_validation_additives_isPositiveInteger',
-						'horse_request_validation_additives_isPositiveInteger'
-					)
-				),
 		]
 	}
 }

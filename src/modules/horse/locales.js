@@ -2,14 +2,13 @@ export const HorseLocales = {
 	fr: {
 		//errors
 		horse_404: 'Ce cheval est introuvable',
-		horse_unauthorized: "Vous n'avez pas les permissions requises pour ce cheval",
+		horse_401: "Vous n'avez pas les permissions requises pour ce cheval",
 		horse_unauthorized_change_ownerId:
 			'Vous ne pouvez pas changer le propriétaire du cheval, veuillez demander à un employé ou administrateur',
 		horse_422_inexistingOwner: "Le propriétaire renseigné n'existe pas",
 		horse_422_inexistingPension: "La pension renseignée n'existe pas",
 		horse_422_inexistingRide: "La sortie renseignée n'existe pas",
 		horse_422_inexistingHorseman: "Un ou plusieurs cavaliers n'existent pas",
-		horse_422_inexistingAdditives: "Un ou plusieurs additifs n'existent pas",
 
 		//validation(sql)
 		horse_sql_validation_ownerId_isInt:
@@ -32,9 +31,6 @@ export const HorseLocales = {
 		horse_request_validation_horsemen_exists: 'Vous devez renseigner au moins un cavalier',
 		horse_request_validation_horsemen_isArray: 'Vous devez renseigner au moins un cavalier',
 		horse_request_validation_horsemen_horseman_isPositiveInteger: 'Vous devez renseigner des cavaliers existants',
-		horse_request_validation_additives_exists: 'Vous devez renseigner les additifs',
-		horse_request_validation_additives_isArray: 'Les additifs doivent être encodés sous forme de tableau',
-		horse_request_validation_additives_isPositiveInteger: 'Vous devez renseigner des additifs existants',
 	},
 	en: {},
 	nl: {},

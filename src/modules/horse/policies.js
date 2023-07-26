@@ -21,7 +21,7 @@ export class HorsePolicy {
 				return horse
 			case 'CLIENT':
 				if (request.user.id !== horse.ownerId) {
-					throw createError(401, i18next.t('horse_unauthorized'))
+					throw createError(401, i18next.t('horse_401'))
 				}
 				return horse
 		}
@@ -35,7 +35,7 @@ export class HorsePolicy {
 				return horse
 			case 'CLIENT':
 				if (request.user.id !== horse.ownerId) {
-					throw createError(401, i18next.t('horse_unauthorized'))
+					throw createError(401, i18next.t('horse_401'))
 				}
 				return horse
 		}
@@ -49,7 +49,7 @@ export class HorsePolicy {
 				return data
 			case 'CLIENT':
 				if (data.ownerId !== request.user.id) {
-					throw createError(401, i18next.t('horse_unauthorized'))
+					throw createError(401, i18next.t('horse_401'))
 				}
 				return data
 		}
@@ -63,7 +63,7 @@ export class HorsePolicy {
 				return horse
 			case 'CLIENT':
 				if (horse.ownerId !== request.user.id) {
-					throw createError(401, i18next.t('horse_unauthorized'))
+					throw createError(401, i18next.t('horse_401'))
 				}
 				if (horse.ownerId !== data.ownerId) {
 					throw createError(401, i18next.t('horse_unauthorized_change_ownerId'))
