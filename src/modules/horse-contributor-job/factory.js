@@ -10,6 +10,9 @@ export class HorseContributorJobFactory extends BaseFactory {
 		let name = ''
 		do {
 			name = faker.person.jobTitle()
+			if (this.uniqueConstraints.name.includes(name)) {
+				name = `${name}${Math.random()}`
+			}
 		} while (this.uniqueConstraints.name.includes(name))
 
 		return {

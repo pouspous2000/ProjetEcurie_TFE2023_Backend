@@ -1,181 +1,361 @@
 import { describe, it, beforeEach, afterEach } from 'mocha'
+
 import chaiHttp from 'chai-http'
 import chai from 'chai'
-import i18next from '../../../i18n'
 
 import app from '@/app'
 import db from '@/database'
-import { HorseContributorJobFactory } from '@/modules/horse-contributor-job/factory'
-import { UserFactory } from '@/modules/authentication/factory'
+
 import { RoleFactory } from '@/modules/role/factory'
+import { UserFactory } from '@/modules/authentication/factory'
+import { HorseContributorJobFactory } from '@/modules/horse-contributor-job/factory'
+
+import { StringUtils } from '@/utils/StringUtils'
+import i18next from '../../../i18n'
 
 chai.should()
 chai.use(chaiHttp)
 
 const routePrefix = '/horse_contributor_jobs'
 
-describe('HorseContributorJob Module', function () {
-	let testAdmin, testEmployee, testClient
+describe('HorseContributorJob module', function () {
+	let roleAdmin, roleEmployee, roleClient
+	let testAdminUser, testEmployeeUser, testClientUser
 
 	beforeEach(async function () {
-		await db.models.PensionData.destroy({ truncate: { cascade: true } })
 		await db.models.HorseContributorJob.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
-		const roles = await db.models.Role.bulkCreate([
-			RoleFactory.createAdmin(),
-			RoleFactory.createEmployee(),
-			RoleFactory.createClient(),
-		])
+		//create roles
+		roleAdmin = await db.models.Role.create(RoleFactory.createAdmin())
+		roleEmployee = await db.models.Role.create(RoleFactory.createEmployee())
+		roleClient = await db.models.Role.create(RoleFactory.createClient())
 
-		testAdmin = await db.models.User.create(
-			UserFactory.createTestAdmin(roles.find(role => role.name === 'ADMIN').id)
-		)
-		testEmployee = await db.models.User.create(
-			UserFactory.createTestEmployee(roles.find(role => role.name === 'EMPLOYEE').id)
-		)
-		testClient = await db.models.User.create(
-			UserFactory.createTestClient(roles.find(role => role.name === 'CLIENT').id)
-		)
+		//create users
+		testAdminUser = await db.models.User.create(UserFactory.create(roleAdmin.id, true))
+		testEmployeeUser = await db.models.User.create(UserFactory.create(roleEmployee.id, true))
+		testClientUser = await db.models.User.create(UserFactory.create(roleClient.id, true))
 
-		testAdmin.token = testAdmin.generateToken()
-		testEmployee.token = testEmployee.generateToken()
-		testClient.token = testClient.generateToken()
+		//generate tokens
+		testAdminUser.token = testAdminUser.generateToken()
+		testEmployeeUser.token = testEmployeeUser.generateToken()
+		testClientUser.token = testClientUser.generateToken()
 	})
 
 	afterEach(function () {
-		testAdmin = testEmployee = testClient = undefined
+		roleAdmin = roleEmployee = roleClient = undefined
+		testAdminUser = testEmployeeUser = testClientUser = undefined
 	})
 
-	it('index', async function () {
-		await db.models.HorseContributorJob.bulkCreate(HorseContributorJobFactory.bulkCreate(10))
-		const response = await chai
-			.request(app)
-			.get(`${routePrefix}`)
-			.set('Authorization', `Bearer ${testClient.token}`)
+	describe('index', async function () {
+		let hcjs
 
-		response.should.have.status(200)
-		response.body.should.have.length(10)
+		beforeEach(async function () {
+			hcjs = await db.models.HorseContributorJob.bulkCreate(HorseContributorJobFactory.bulkCreate(10))
+		})
+
+		afterEach(function () {
+			hcjs = undefined
+		})
+
+		it('with role admin', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+			response.should.have.status(200)
+			response.body.should.have.length(hcjs.length)
+		})
+
+		it('with role employee', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+
+			response.should.have.status(200)
+			response.body.should.have.length(hcjs.length)
+		})
+
+		it('with role client', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+
+			response.should.have.status(200)
+			response.body.should.have.length(hcjs.length)
+		})
 	})
 
-	it('single valid', async function () {
-		const veterinary = await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
+	describe('show', async function () {
+		let hcj
 
-		const response = await chai
-			.request(app)
-			.get(`${routePrefix}/${veterinary.id}`)
-			.set('Authorization', `Bearer ${testClient.token}`)
-		response.should.have.status(200)
-		response.body.should.have.property('name').eql(veterinary.name)
-		response.body.should.have.property('createdAt')
-		response.body.should.have.property('updatedAt')
+		beforeEach(async function () {
+			hcj = await db.models.HorseContributorJob.create(HorseContributorJobFactory.create())
+		})
+
+		afterEach(function () {
+			hcj = undefined
+		})
+
+		it('with role admin', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${hcj.id}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(200)
+			response.body.should.have.property('id').eql(hcj.id)
+			response.body.should.have.property('name').eql(hcj.name)
+			response.body.should.have.property('createdAt').not.eql(null)
+			response.body.should.have.property('updatedAt').not.eql(null)
+		})
+
+		it('with role employee', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${hcj.id}`)
+				.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+			response.should.have.status(200)
+		})
+
+		it('with role client', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${hcj.id}`)
+				.set('Authorization', `Bearer ${testClientUser.token}`)
+			response.should.have.status(200)
+		})
+
+		it('404', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${hcj.id + 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('horseContributorJob_404'))
+		})
 	})
 
-	it('single 404', async function () {
-		const response = await chai
-			.request(app)
-			.get(`${routePrefix}/1`)
-			.set('Authorization', `Bearer ${testClient.token}`)
-		response.should.have.status(404)
-	})
+	describe('delete', async function () {
+		let hcj
 
-	it('delete with permission admin', async function () {
-		const veterinary = await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
-		let response = await chai
-			.request(app)
-			.delete(`${routePrefix}/${veterinary.id}`)
-			.set('Authorization', `Bearer ${testAdmin.token}`)
-		response.should.have.status(204)
-	})
+		beforeEach(async function () {
+			hcj = await db.models.HorseContributorJob.create(HorseContributorJobFactory.create())
+		})
 
-	it('delete with permission client', async function () {
-		const veterinary = await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
-		let response = await chai
-			.request(app)
-			.delete(`${routePrefix}/${veterinary.id}`)
-			.set('Authorization', `Bearer ${testClient.token}`)
-		response.should.have.status(401)
-	})
+		afterEach(function () {
+			hcj = undefined
+		})
 
-	it('create with permission admin', async function () {
-		const veterinaryObj = HorseContributorJobFactory.createVeterinary()
-		const response = await chai
-			.request(app)
-			.post(`${routePrefix}`)
-			.send(veterinaryObj)
-			.set('Authorization', `Bearer ${testAdmin.token}`)
-		response.should.have.status(201)
-		response.body.should.have.property('name').eql(i18next.t('Veterinarian'))
-		response.body.should.have.property('createdAt')
-		response.body.should.have.property('updatedAt')
-	})
-
-	it('create with permission client', async function () {
-		const veterinaryObj = HorseContributorJobFactory.createVeterinary()
-		const response = await chai
-			.request(app)
-			.post(`${routePrefix}`)
-			.send(veterinaryObj)
-			.set('Authorization', `Bearer ${testClient.token}`)
-		response.should.have.status(401)
-	})
-
-	it('create invalid - duplicate unique name', async function () {
-		// we assume the error is the handled sql constraint error
-		await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
-		const invalidDuplicateRecord = HorseContributorJobFactory.createVeterinary()
-		const response = await chai
-			.request(app)
-			.post(`${routePrefix}`)
-			.send(invalidDuplicateRecord)
-			.set('Authorization', `Bearer ${testAdmin.token}`)
-		response.should.have.status(422)
-		response.body.should.have.property('message').eql(i18next.t('common_validation_error'))
-		response.body.errors.should.have.length(1)
-		response.body.errors[0].should.have.property('path').eql('name')
-		response.body.errors[0].errors.should.eql([i18next.t('horseContributorJob_sql_validation_name_unique')])
-	})
-
-	it('create invalid - missing name', async function () {
-		const invalidHorseContributorJob = {
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		}
-		const response = await chai
-			.request(app)
-			.post(`${routePrefix}`)
-			.send(invalidHorseContributorJob)
-			.set('Authorization', `Bearer ${testAdmin.token}`)
-		response.body.should.have.property('message').eql(i18next.t('common_validation_error'))
-		response.should.have.status(422)
-		response.body.errors.map(error => error.path).should.eql(['name'])
-	})
-
-	it('update with admin', async function () {
-		const veterinary = await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
-		const response = await chai
-			.request(app)
-			.put(`${routePrefix}/${veterinary.id}`)
-			.send({
-				name: 'updatedName',
+		describe('permissions', async function () {
+			it('with role admin', async function () {
+				let response = await chai
+					.request(app)
+					.delete(`${routePrefix}/${hcj.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+				response.should.have.status(204)
+				const deletedHcj = await db.models.HorseContributorJob.findByPk(hcj.id)
+				chai.should().equal(deletedHcj, null)
 			})
-			.set('Authorization', `Bearer ${testAdmin.token}`)
-		response.should.have.status(200)
-		response.body.should.have.property('name').eql('Updatedname')
-		response.body.should.have.property('createdAt')
-		response.body.should.have.property('updatedAt')
+
+			it('with role employee', async function () {
+				let response = await chai
+					.request(app)
+					.delete(`${routePrefix}/${hcj.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+				response.should.have.status(204)
+			})
+
+			it('with role client', async function () {
+				let response = await chai
+					.request(app)
+					.delete(`${routePrefix}/${hcj.id}`)
+					.set('Authorization', `Bearer ${testClientUser.token}`)
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		it('404', async function () {
+			let response = await chai
+				.request(app)
+				.delete(`${routePrefix}/${hcj.id + 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('horseContributorJob_404'))
+		})
 	})
 
-	it('update with client', async function () {
-		const veterinary = await db.models.HorseContributorJob.create(HorseContributorJobFactory.createVeterinary())
-		const response = await chai
-			.request(app)
-			.put(`${routePrefix}/${veterinary.id}`)
-			.send({
-				name: 'updatedName',
+	describe('create', async function () {
+		describe('permissions', async function () {
+			let data
+
+			beforeEach(function () {
+				data = HorseContributorJobFactory.create()
 			})
-			.set('Authorization', `Bearer ${testClient.token}`)
-		response.should.have.status(401)
+
+			afterEach(function () {
+				data = undefined
+			})
+
+			it('with role admin', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.send(data)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+				response.should.have.status(201)
+				response.body.should.have.property('id')
+				response.body.should.have
+					.property('name')
+					.eql(StringUtils.capitalizeFirstLetter(data.name.toLowerCase()))
+				response.body.should.have.property('createdAt').not.eql(null)
+				response.body.should.have.property('updatedAt').not.eql(null)
+			})
+
+			it('with role employee', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.send(data)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+				response.should.have.status(201)
+			})
+
+			it('with role client', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.send(data)
+					.set('Authorization', `Bearer ${testClientUser.token}`)
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('middleware', async function () {
+			it('null mandatory values - name', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({})
+
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['name'])
+			})
+		})
+
+		describe('sql', async function () {
+			it('duplicate name entry', async function () {
+				const data = HorseContributorJobFactory.createVeterinary()
+				await db.models.HorseContributorJob.create(data)
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['name'])
+			})
+		})
+	})
+
+	describe('update', async function () {
+		let hcj
+
+		beforeEach(async function () {
+			hcj = await db.models.HorseContributorJob.create(HorseContributorJobFactory.create())
+		})
+
+		afterEach(function () {
+			hcj = undefined
+		})
+
+		it('404', async function () {
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${hcj.id + 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send({ name: 'something in the way' })
+
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('horseContributorJob_404'))
+		})
+
+		describe('permissions', async function () {
+			let data
+
+			beforeEach(function () {
+				data = {
+					name: 'Updatedname',
+				}
+			})
+
+			afterEach(function () {
+				data = undefined
+			})
+
+			it('with role admin', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${hcj.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+
+				response.should.have.status(200)
+				response.body.should.have.property('id').eql(hcj.id)
+				response.body.should.have
+					.property('name')
+					.eql(StringUtils.capitalizeFirstLetter(data.name.toLowerCase()))
+				response.body.should.have.property('createdAt').not.eql(null)
+				response.body.should.have.property('updatedAt').not.eql(null)
+			})
+
+			it('with role employee', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${hcj.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send(data)
+
+				response.should.have.status(200)
+			})
+
+			it('with role client', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${hcj.id}`)
+					.set('Authorization', `Bearer ${testClientUser.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('middleware', async function () {
+			it('null mandatory values - name', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${hcj.id + 1}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({})
+
+				response.should.have.status(422)
+				response.body.errors.map(error => error.path).should.eql(['name'])
+			})
+		})
 	})
 })
