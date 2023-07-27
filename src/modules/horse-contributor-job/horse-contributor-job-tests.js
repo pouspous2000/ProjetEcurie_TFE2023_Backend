@@ -106,7 +106,7 @@ describe('HorseContributorJob Module', function () {
 			.send(veterinaryObj)
 			.set('Authorization', `Bearer ${testAdmin.token}`)
 		response.should.have.status(201)
-		response.body.should.have.property('name').eql(i18next.t('horseContributorJob_factory_veterinarian'))
+		response.body.should.have.property('name').eql(i18next.t('Veterinarian'))
 		response.body.should.have.property('createdAt')
 		response.body.should.have.property('updatedAt')
 	})

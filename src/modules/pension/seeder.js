@@ -5,5 +5,5 @@ export const upPension = async queryInterface => {
 	await queryInterface.bulkInsert(Pension.getTable(), PensionFactory.bulkCreate(10))
 }
 export const downPension = async queryInterface => {
-	await queryInterface.bulkDelete(Pension.getTable(), null, {})
+	await queryInterface.bulkDelete(Pension.getTable(), null, { force: true })
 }

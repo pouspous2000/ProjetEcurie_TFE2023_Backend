@@ -1,18 +1,26 @@
 import { faker } from '@faker-js/faker'
-import i18next from '../../../i18n'
 import { BaseFactory } from '@/core/BaseFactory'
 
 export class HorseContributorJobFactory extends BaseFactory {
+	static uniqueConstraints = {
+		name: [],
+	}
+
 	static create() {
+		let name = ''
+		do {
+			name = faker.person.jobTitle()
+		} while (this.uniqueConstraints.name.includes(name))
+
 		return {
-			name: faker.person.jobTitle(),
+			name: name,
 			...this._create(),
 		}
 	}
 
 	static createVeterinary() {
 		return {
-			name: i18next.t('horseContributorJob_factory_veterinarian'),
+			name: 'Veterinarian',
 			...this._create(),
 		}
 	}

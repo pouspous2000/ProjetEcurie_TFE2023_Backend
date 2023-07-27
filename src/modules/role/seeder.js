@@ -61,5 +61,5 @@ export const upRole = async queryInterface => {
 }
 
 export const downRole = async queryInterface => {
-	await queryInterface.bulkDelete(Role.getTable(), null, {})
+	await queryInterface.bulkDelete(Role.getTable(), null, { force: true })
 }

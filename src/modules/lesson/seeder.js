@@ -1,4 +1,4 @@
-import { Op } from 'sequelize'
+import { QueryTypes } from 'sequelize'
 import { Role } from '@/modules/role/model'
 import { User } from '@/modules/authentication/model'
 import { Lesson } from '@/modules/lesson/model'
@@ -8,49 +8,21 @@ import { LessonFactory } from '@/modules/lesson/factory'
 
 export const upLesson = async queryInterface => {
 	const roleService = new RoleService()
-
-	const roles = await queryInterface.rawSelect(
-		Role.getTable(),
-		{
-			where: {
-				id: {
-					[Op.ne]: 0,
-				},
-			},
-			plain: false,
-		},
-		['id']
-	)
+	const roles = await queryInterface.sequelize.query(`SELECT * FROM ${Role.getTable()}`, { type: QueryTypes.SELECT })
 
 	const adminRoleIds = await roleService.getSubRoleIds(roles.find(role => role.name === 'ADMIN'))
 	const employeeRoleIds = await roleService.getSubRoleIds(roles.find(role => role.name === 'EMPLOYEE'))
 	const clientRoleIds = await roleService.getSubRoleIds(roles.find(role => role.name === 'CLIENT'))
+
 	const creatorRoleIds = [...adminRoleIds, ...employeeRoleIds]
 
-	const creatorUsers = await queryInterface.rawSelect(
-		User.getTable(),
-		{
-			where: {
-				roleId: {
-					[Op.in]: creatorRoleIds,
-				},
-			},
-			plain: false,
-		},
-		['id']
+	const creatorUsers = await queryInterface.sequelize.query(
+		`SELECT * FROM ${User.getTable()} WHERE "roleId" IN (${creatorRoleIds})`,
+		{ type: QueryTypes.SELECT }
 	)
-
-	const clientUsers = await queryInterface.rawSelect(
-		User.getTable(),
-		{
-			where: {
-				roleId: {
-					[Op.in]: clientRoleIds,
-				},
-			},
-			plain: false,
-		},
-		['id']
+	const clientUsers = await queryInterface.sequelize.query(
+		`SELECT * FROM ${User.getTable()} WHERE "roleId" IN (${clientRoleIds})`,
+		{ type: QueryTypes.SELECT }
 	)
 
 	const statuses = ['CONFIRMED', 'DONE', 'CANCELLED', 'ABSENCE']

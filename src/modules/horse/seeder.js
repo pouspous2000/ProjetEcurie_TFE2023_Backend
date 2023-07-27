@@ -1,4 +1,4 @@
-import { Op } from 'sequelize'
+import { QueryTypes } from 'sequelize'
 import { Horse } from '@/modules/horse/model'
 import { User } from '@/modules/authentication/model'
 import { Pension } from '@/modules/pension/model'
@@ -6,31 +6,10 @@ import { HorseFactory } from '@/modules/horse/factory'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 
 export const upHorse = async queryInterface => {
-	const users = await queryInterface.rawSelect(
-		User.getTable(),
-		{
-			where: {
-				id: {
-					[Op.ne]: 0,
-				},
-			},
-			plain: false,
-		},
-		['id']
-	)
-
-	const pensions = await queryInterface.rawSelect(
-		Pension.getTable(),
-		{
-			where: {
-				id: {
-					[Op.ne]: 0,
-				},
-			},
-			plain: false,
-		},
-		['id']
-	)
+	const users = await queryInterface.sequelize.query(`SELECT * FROM ${User.getTable()}`, { type: QueryTypes.SELECT })
+	const pensions = await queryInterface.sequelize.query(`SELECT * FROM ${Pension.getTable()}`, {
+		type: QueryTypes.SELECT,
+	})
 
 	const horseObjects = []
 	for (let i = 0; i < 20; i++) {
@@ -42,5 +21,5 @@ export const upHorse = async queryInterface => {
 }
 
 export const downHorse = async queryInterface => {
-	await queryInterface.bulkDelete(Horse.getTable(), null, {})
+	await queryInterface.bulkDelete(Horse.getTable(), null, { force: true })
 }

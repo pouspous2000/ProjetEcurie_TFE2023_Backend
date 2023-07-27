@@ -1,4 +1,4 @@
-import { Op } from 'sequelize'
+import { QueryTypes } from 'sequelize'
 import { hash } from 'bcrypt'
 import { User } from '@/modules/authentication/model'
 import { Role } from '@/modules/role/model'
@@ -6,22 +6,12 @@ import { UserFactory } from '@/modules/authentication/factory'
 
 export const upUser = async queryInterface => {
 	const users = []
+	const roles = await queryInterface.sequelize.query(`SELECT * FROM ${Role.getTable()}`, { type: QueryTypes.SELECT })
 
-	const roles = await queryInterface.rawSelect(
-		Role.getTable(),
-		{
-			where: {
-				id: {
-					[Op.ne]: 0,
-				},
-			},
-			plain: false,
-		},
-		['id']
-	)
 	const admin = roles.find(role => role.name === 'ADMIN')
 	const roleIds = roles.map(role => role.id)
 	const roleClientId = roles.find(role => role.name === 'CLIENT').id
+
 	users.push(UserFactory.createCecile(admin.id))
 	users.push(...UserFactory.bulkCreate(10, roleIds, true))
 	users.push(...UserFactory.bulkCreate(10, [roleClientId], true))
@@ -34,5 +24,5 @@ export const upUser = async queryInterface => {
 }
 
 export const downUser = async queryInterface => {
-	await queryInterface.bulkDelete(User.getTable(), null, {})
+	await queryInterface.bulkDelete(User.getTable(), null, { force: true })
 }

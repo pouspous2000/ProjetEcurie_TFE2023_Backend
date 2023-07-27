@@ -5,33 +5,38 @@ import { RoleService } from '@/modules/role/service'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 import { Task } from '@/modules/task/model'
 import { Role } from '@/modules/role/model'
+import { Ride } from '@/modules/ride/model'
+import { Horse } from '@/modules/horse/model'
+import { User } from '@/modules/authentication/model'
 
 export const upDailyRide = async queryInterface => {
 	const roleService = new RoleService()
-	const roles = await queryInterface.sequelize.query('SELECT * FROM roles', { type: QueryTypes.SELECT })
+	const roles = await queryInterface.sequelize.query(`SELECT * FROM ${Role.getTable()}`, { type: QueryTypes.SELECT })
 	const adminRoleIds = await roleService.getSubRoleIds(roles.find(role => role.name === 'ADMIN'))
 	const employeeRoleIds = await roleService.getSubRoleIds(roles.find(role => role.name === 'EMPLOYEE'))
 
 	const adminUsers = await queryInterface.sequelize.query(
 		`
-		SELECT * FROM ${Role.getTable()}
-		WHERE id in (${adminRoleIds.join(', ')})
+		SELECT * FROM ${User.getTable()}
+		WHERE "roleId" IN (${adminRoleIds.join(', ')})
 	`,
 		{ type: QueryTypes.SELECT }
 	)
 
 	const employeeUsers = await queryInterface.sequelize.query(
 		`
-		SELECT * FROM ${Role.getTable()}
-		WHERE id in (${employeeRoleIds.join(', ')})
+		SELECT * FROM ${User.getTable()}
+		WHERE "roleId" in (${employeeRoleIds.join(', ')})
 	`,
 		{ type: QueryTypes.SELECT }
 	)
 
-	const rides = await queryInterface.sequelize.query('SELECT * FROM rides', { type: QueryTypes.SELECT })
+	const rides = await queryInterface.sequelize.query(`SELECT * FROM ${Ride.getTable()}`, { type: QueryTypes.SELECT })
 	const horsesWithRideIds = rides.map(ride => ride.horseId)
 	const dayRide = rides.find(ride => ride.period === 'DAY')
-	const horses = await queryInterface.sequelize.query('SELECT * FROM horses', { type: QueryTypes.SELECT })
+	const horses = await queryInterface.sequelize.query(`SELECT * FROM ${Horse.getTable()}`, {
+		type: QueryTypes.SELECT,
+	})
 	const horsesWithoutRide = horses.filter(horse => !horsesWithRideIds.includes(horse.id))
 
 	const dailyRideObjs = []
@@ -72,5 +77,5 @@ export const upDailyRide = async queryInterface => {
 }
 
 export const downDailyRide = async queryInterface => {
-	await queryInterface.bulkDelete(DailyRide.getTable(), null)
+	await queryInterface.bulkDelete(DailyRide.getTable(), null, { force: true })
 }

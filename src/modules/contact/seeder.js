@@ -1,17 +1,12 @@
+import { QueryTypes } from 'sequelize'
 import { Contact } from '@/modules/contact/model'
 import { User } from '@/modules/authentication/model'
 import { ContactFactory } from '@/modules/contact/factory'
 
 export const upContact = async queryInterface => {
-	const activeUsers = await queryInterface.rawSelect(
-		User.getTable(),
-		{
-			where: {
-				status: 'ACTIVE',
-			},
-			plain: false,
-		},
-		['id']
+	const activeUsers = await queryInterface.sequelize.query(
+		`SELECT * FROM ${User.getTable()} WHERE "status" = 'ACTIVE'`,
+		{ type: QueryTypes.SELECT }
 	)
 
 	const contacts = []
@@ -23,5 +18,5 @@ export const upContact = async queryInterface => {
 }
 
 export const downContact = async queryInterface => {
-	await queryInterface.bulkDelete(Contact.getTable(), null, {})
+	await queryInterface.bulkDelete(Contact.getTable(), null, { force: true })
 }

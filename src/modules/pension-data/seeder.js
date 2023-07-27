@@ -1,34 +1,16 @@
-import { Op } from 'sequelize'
+import { QueryTypes } from 'sequelize'
 import { Horse } from '@/modules/horse/model'
 import { PensionData } from '@/modules/pension-data/model'
 import { Pension } from '@/modules/pension/model'
 
 export const upPensionData = async queryInterface => {
-	const pensions = await queryInterface.rawSelect(
-		Pension.getTable(),
-		{
-			where: {
-				id: {
-					[Op.ne]: 0,
-				},
-			},
-			plain: false,
-		},
-		['id']
-	)
+	const pensions = await queryInterface.sequelize.query(`SELECT * FROM ${Pension.getTable()}`, {
+		type: QueryTypes.SELECT,
+	})
+	const horses = await queryInterface.sequelize.query(`SELECT * FROM ${Horse.getTable()}`, {
+		type: QueryTypes.SELECT,
+	})
 
-	const horses = await queryInterface.rawSelect(
-		Horse.getTable(),
-		{
-			where: {
-				id: {
-					[Op.ne]: 0,
-				},
-			},
-			plain: false,
-		},
-		['id']
-	)
 	const pensionDataObjects = horses.map(horse => {
 		const pension = pensions.find(pension => pension.id === horse.pensionId)
 		return {
@@ -46,5 +28,5 @@ export const upPensionData = async queryInterface => {
 }
 
 export const downPensionData = async queryInterface => {
-	await queryInterface.bulkDelete(PensionData.getTable(), null, {})
+	await queryInterface.bulkDelete(PensionData.getTable(), null, { force: true })
 }

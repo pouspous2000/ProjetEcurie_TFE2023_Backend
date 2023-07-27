@@ -11,5 +11,5 @@ export const upHorseContributorJob = async queryInterface => {
 }
 
 export const downHorseContributorJob = async queryInterface => {
-	await queryInterface.bulkDelete(HorseContributorJob.getTable(), null, {})
+	await queryInterface.bulkDelete(HorseContributorJob.getTable(), null, { force: true })
 }

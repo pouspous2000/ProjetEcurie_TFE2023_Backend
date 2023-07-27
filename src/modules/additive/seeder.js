@@ -6,5 +6,5 @@ export const upAdditive = async queryInterface => {
 }
 
 export const downAdditive = async queryInterface => {
-	await queryInterface.bulkDelete(Additive.getTable(), null, {})
+	await queryInterface.bulkDelete(Additive.getTable(), null, { force: true })
 }

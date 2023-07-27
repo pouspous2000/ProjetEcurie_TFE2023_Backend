@@ -6,5 +6,5 @@ export const upRide = async queryInterface => {
 }
 
 export const downRide = async queryInterface => {
-	await queryInterface.bulkDelete(Ride.getTable(), null, {})
+	await queryInterface.bulkDelete(Ride.getTable(), null, { force: true })
 }

@@ -1,27 +1,14 @@
-import { Op } from 'sequelize'
+import { QueryTypes } from 'sequelize'
 import { Horse } from '@/modules/horse/model'
 import { RideData } from '@/modules/ride-data/model'
 import { Ride } from '@/modules/ride/model'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 
 export const upRideData = async queryInterface => {
-	const horses = await queryInterface.rawSelect(
-		Horse.getTable(),
-		{
-			where: { id: { [Op.ne]: 0 } },
-			plain: false,
-		},
-		['id']
-	)
-
-	const rides = await queryInterface.rawSelect(
-		Ride.getTable(),
-		{
-			where: { id: { [Op.ne]: 0 } },
-			plain: false,
-		},
-		['id']
-	)
+	const horses = await queryInterface.sequelize.query(`SELECT * FROM ${Horse.getTable()}`, {
+		type: QueryTypes.SELECT,
+	})
+	const rides = await queryInterface.sequelize.query(`SELECT * FROM ${Ride.getTable()}`, { type: QueryTypes.SELECT })
 
 	const rideDataObjs = horses.map(horse => {
 		const ride = ArrayUtils.getRandomElement(rides)
@@ -38,6 +25,7 @@ export const upRideData = async queryInterface => {
 			deletedAt: null,
 		}
 	})
+
 	await queryInterface.bulkInsert(
 		RideData.getTable(),
 		rideDataObjs.filter(rideDataObj => rideDataObj !== null)
@@ -45,5 +33,5 @@ export const upRideData = async queryInterface => {
 }
 
 export const downRideData = async queryInterface => {
-	await queryInterface.bulkDelete(RideData.getTable(), null, {})
+	await queryInterface.bulkDelete(RideData.getTable(), null, { force: true })
 }
