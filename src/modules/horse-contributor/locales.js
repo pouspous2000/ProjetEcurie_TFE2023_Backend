@@ -2,7 +2,7 @@ export const HorseContributorLocales = {
 	fr: {
 		//errors
 		horseContributor_404: 'contact introuvable',
-		horseContributor_unauthorized: "Vous n'avez pas les permissions requises pour ce contact",
+		horseContributor_401: "Vous n'avez pas les permissions requises pour cette opération sur ce contact",
 
 		// validation requests
 		horseContributor_request_validation_firstName_exists: 'Vous devez renseigner le champs prénom',

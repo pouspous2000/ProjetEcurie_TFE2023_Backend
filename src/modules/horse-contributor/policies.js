@@ -1,12 +1,7 @@
-import { HorseContributorService } from '@/modules/horse-contributor/service'
 import createError from 'http-errors'
 import i18next from '../../../i18n'
 
 export class HorseContributorPolicy {
-	constructor() {
-		this._horseContributorService = new HorseContributorService()
-	}
-
 	async index(request, horseContributorJobs) {
 		return horseContributorJobs
 	}
@@ -23,7 +18,7 @@ export class HorseContributorPolicy {
 			case 'EMPLOYEE':
 				return horseContributorJob
 			case 'CLIENT':
-				throw createError(401, i18next.t('horseContributor_unauthorized'))
+				throw createError(401, i18next.t('horseContributor_401'))
 		}
 	}
 
@@ -39,7 +34,7 @@ export class HorseContributorPolicy {
 			case 'EMPLOYEE':
 				return horseContributorJob
 			case 'CLIENT':
-				throw createError(401, i18next.t('horseContributor_unauthorized'))
+				throw createError(401, i18next.t('horseContributor_401'))
 		}
 	}
 }
