@@ -17,6 +17,7 @@ export class HorseContributor extends Model {
 			through: models.HorseContributorHorseContributorJob,
 			foreignKey: 'horseContributorId',
 			otherKey: 'horseContributorJobId',
+			as: 'horseContributorJobs',
 		})
 	}
 }

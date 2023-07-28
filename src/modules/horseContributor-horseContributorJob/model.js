@@ -11,9 +11,13 @@ export class HorseContributorHorseContributorJob extends Model {
 
 	static associate(models) {
 		HorseContributorHorseContributorJob.belongsTo(models.Horse, { foreignKey: 'horseId' })
-		HorseContributorHorseContributorJob.belongsTo(models.HorseContributor, { foreignKey: 'horseContributorId' })
+		HorseContributorHorseContributorJob.belongsTo(models.HorseContributor, {
+			foreignKey: 'horseContributorId',
+			as: 'horseContributor',
+		})
 		HorseContributorHorseContributorJob.belongsTo(models.HorseContributorJob, {
 			foreignKey: 'horseContributorJobId',
+			as: 'horseContributorJob',
 		})
 	}
 }

@@ -7,6 +7,9 @@ import { Contact } from '@/modules/contact/model'
 import { Pension } from '@/modules/pension/model'
 import { Ride } from '@/modules/ride/model'
 import { AdditiveData } from '@/modules/additive-data/model'
+import { HorseContributor } from '@/modules/horse-contributor/model'
+import { HorseContributorJob } from '@/modules/horse-contributor-job/model'
+import { HorseContributorHorseContributorJob } from '@/modules/horseContributor-horseContributorJob/model'
 
 export class HorseController extends BaseController {
 	constructor() {
@@ -67,6 +70,20 @@ export class HorseController extends BaseController {
 				{
 					model: Ride,
 					as: 'ride',
+				},
+				{
+					model: HorseContributorHorseContributorJob,
+					as: 'horseContributorHorseContributorJobs',
+					include: [
+						{
+							model: HorseContributor,
+							as: 'horseContributor',
+						},
+						{
+							model: HorseContributorJob,
+							as: 'horseContributorJob',
+						},
+					],
 				},
 			],
 		}

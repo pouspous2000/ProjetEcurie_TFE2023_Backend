@@ -28,6 +28,7 @@ export class HorseView {
 			ride: this._getRideView(horse),
 			horsemen: this._getHorsemenView(horse),
 			additiveDatas: this._getAdditiveDatasView(horse),
+			horseContributorHorseContributorJobs: this._getHorseContributorHorseContributorJobs(horse),
 		}
 	}
 
@@ -64,7 +65,7 @@ export class HorseView {
 	}
 
 	_getHorsemenView(horse) {
-		if (horse.horsemen.length) {
+		if (horse.horsemen && horse.horsemen.length) {
 			return horse.horsemen.map(horseman => {
 				return {
 					email: horseman.email,
@@ -82,7 +83,7 @@ export class HorseView {
 	}
 
 	_getAdditiveDatasView(horse) {
-		if (horse.additiveDatas.length) {
+		if (horse.additiveDatas && horse.additiveDatas.length) {
 			return horse.additiveDatas.map(additiveData => {
 				return {
 					id: additiveData.id,
@@ -92,6 +93,27 @@ export class HorseView {
 					status: additiveData.status,
 				}
 			})
+		}
+		return []
+	}
+
+	_getHorseContributorHorseContributorJobs(horse) {
+		if (horse.horseContributorHorseContributorJobs && horse.horseContributorHorseContributorJobs.length) {
+			return horse.horseContributorHorseContributorJobs.map(data => ({
+				id: data.id,
+				horseContributor: {
+					id: data.horseContributor.id,
+					firstName: data.horseContributor.firstName,
+					lastName: data.horseContributor.lastName,
+					email: data.horseContributor.email,
+				},
+				horseContributorJob: {
+					id: data.horseContributorJob.id,
+					name: data.horseContributorJob.name,
+				},
+				createdAt: data.createdAt,
+				updatedAt: data.updatedAt,
+			}))
 		}
 		return []
 	}

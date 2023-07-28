@@ -14,6 +14,8 @@ import { PensionFactory } from '@/modules/pension/factory'
 import { ContactFactory } from '@/modules/contact/factory'
 import { RideFactory } from '@/modules/ride/factory'
 import { AdditiveFactory } from '@/modules/additive/factory'
+import { HorseContributorFactory } from '@/modules/horse-contributor/factory'
+import { HorseContributorJobFactory } from '@/modules/horse-contributor-job/factory'
 
 import i18next from '../../../i18n'
 
@@ -31,6 +33,8 @@ describe('Horse module', function () {
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
+		await db.models.HorseContributor.destroy({ truncate: { cascade: true } })
+		await db.models.HorseContributorJob.destroy({ truncate: { cascade: true } })
 		await db.models.Additive.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.Contact.destroy({ truncate: { cascade: true } })
 		await db.models.Horse.destroy({ truncate: { cascade: true } })
@@ -141,6 +145,16 @@ describe('Horse module', function () {
 			const pension = ArrayUtils.getRandomElement(pensions)
 			const ride = ArrayUtils.getRandomElement(rides)
 			const horse = await db.models.Horse.create(HorseFactory.create(testHorseOwner1.id, pension.id, ride.id))
+			const horseContributor = await db.models.HorseContributor.create(HorseContributorFactory.create())
+			const horseContributorJobs = await db.models.HorseContributorJob.bulkCreate(
+				HorseContributorJobFactory.bulkCreate(3)
+			)
+			const horseContributorHorseContributorJobObjs = horseContributorJobs.map(hcj => ({
+				horseId: horse.id,
+				horseContributorId: horseContributor.id,
+				horseContributorJobId: hcj.id,
+			}))
+			await db.models.HorseContributorHorseContributorJob.bulkCreate(horseContributorHorseContributorJobObjs)
 			const horsemen = [testHorseOwner1, testHorseOwner2]
 			horse.setHorsemen(horsemen.map(horseman => horseman.id))
 
@@ -207,6 +221,20 @@ describe('Horse module', function () {
 				name: additivesDatas[0].name,
 				price: additivesDatas[0].price,
 				status: additivesDatas[0].status,
+			})
+			response.body.horseContributorHorseContributorJobs.should.have.length(
+				horseContributorHorseContributorJobObjs.length
+			)
+
+			response.body.horseContributorHorseContributorJobs[0].should.have.property('horseContributor').eql({
+				id: horseContributor.id,
+				firstName: horseContributor.firstName,
+				lastName: horseContributor.lastName,
+				email: horseContributor.email,
+			})
+			response.body.horseContributorHorseContributorJobs[0].should.have.property('horseContributorJob').eql({
+				id: horseContributorJobs[0].id,
+				name: horseContributorJobs[0].name,
 			})
 		})
 
@@ -432,6 +460,7 @@ describe('Horse module', function () {
 					},
 				])
 				response.body.should.have.property('additiveDatas').eql([])
+				response.body.should.have.property('horseContributorHorseContributorJobs').eql([])
 			})
 
 			it('with role employee', async function () {
@@ -657,6 +686,7 @@ describe('Horse module', function () {
 					},
 				])
 				response.body.should.have.property('additiveDatas').eql([])
+				response.body.should.have.property('horseContributorHorseContributorJobs').eql([])
 			})
 
 			it('with role employee', async function () {
