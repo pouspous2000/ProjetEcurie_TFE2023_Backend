@@ -10,6 +10,7 @@ export class HorseContributorHorseContributorJob extends Model {
 	}
 
 	static associate(models) {
+		HorseContributorHorseContributorJob.belongsTo(models.Horse, { foreignKey: 'horseId' })
 		HorseContributorHorseContributorJob.belongsTo(models.HorseContributor, { foreignKey: 'horseContributorId' })
 		HorseContributorHorseContributorJob.belongsTo(models.HorseContributorJob, {
 			foreignKey: 'horseContributorJobId',
@@ -24,6 +25,10 @@ export default function (sequelize) {
 				type: DataTypes.INTEGER,
 				autoIncrement: true,
 				primaryKey: true,
+			},
+			horseId: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
 			},
 			horseContributorId: {
 				type: DataTypes.INTEGER,

@@ -1,14 +1,25 @@
 import { DataTypes } from 'sequelize'
-import { HorseContributorHorseContributorJob } from '@/database/models/horseContributor-horseContributorJob'
+import { HorseContributorHorseContributorJob } from '@/modules/horseContributor-horseContributorJob/model'
 import { HorseContributorJob } from '@/modules/horse-contributor-job/model'
 import { HorseContributor } from '@/modules/horse-contributor/model'
+import { Horse } from '@/modules/horse/model'
 
-export const up = async (queryInterface, Sequelize) =>
+export const upHcHcj = async (queryInterface, Sequelize) =>
 	queryInterface.createTable(HorseContributorHorseContributorJob.getTable(), {
 		id: {
 			type: DataTypes.INTEGER,
 			autoIncrement: true,
 			primaryKey: true,
+		},
+		horseId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			references: {
+				model: Horse.getTable(),
+				field: 'id',
+			},
+			onDelete: 'CASCADE',
+			onUpdate: 'CASCADE',
 		},
 		horseContributorId: {
 			type: DataTypes.INTEGER,
@@ -40,4 +51,5 @@ export const up = async (queryInterface, Sequelize) =>
 		},
 	})
 
-export const down = async queryInterface => queryInterface.dropTable(HorseContributorHorseContributorJob.getTable())
+export const downHcHcj = async queryInterface =>
+	queryInterface.dropTable(HorseContributorHorseContributorJob.getTable())
