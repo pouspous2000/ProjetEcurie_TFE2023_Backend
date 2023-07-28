@@ -1,7 +1,8 @@
 import { body } from 'express-validator'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class ContactValidator {
+export class ContactValidator extends BaseValidator {
 	static create() {
 		return [
 			body('userId')
@@ -14,7 +15,7 @@ export class ContactValidator {
 	}
 
 	static update() {
-		return this._createUpdateCommon()
+		return [...super.update(), ...this._createUpdateCommon()]
 	}
 
 	static _createUpdateCommon() {

@@ -1,8 +1,9 @@
 import { body, query } from 'express-validator'
 import { DateUtils } from '@/utils/DateUtils'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class DailyRideValidator {
+export class DailyRideValidator extends BaseValidator {
 	static index() {
 		return [
 			query('horseId')
@@ -36,7 +37,7 @@ export class DailyRideValidator {
 	}
 
 	static update() {
-		return [...this._createUpdateCommon()]
+		return [...super.update(), ...this._createUpdateCommon()]
 	}
 
 	static _createUpdateCommon() {

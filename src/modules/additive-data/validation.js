@@ -1,10 +1,12 @@
 import { body } from 'express-validator'
 import { ArrayUtils } from '@/utils/ArrayUtils'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class AdditiveDataValidator {
+export class AdditiveDataValidator extends BaseValidator {
 	static add() {
 		return [
+			...super.show('horseId'),
 			body('additiveIds')
 				.exists()
 				.withMessage(i18next.t('additiveData_request_validation_additiveIds_exists'))
@@ -21,6 +23,7 @@ export class AdditiveDataValidator {
 
 	static cancel() {
 		return [
+			...super.show('horseId'),
 			body('additiveDataIds')
 				.exists()
 				.withMessage(i18next.t('additiveData_request_validation_additiveDataIds_exists'))

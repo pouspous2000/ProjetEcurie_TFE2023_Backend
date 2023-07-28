@@ -1,8 +1,9 @@
 import { body, query } from 'express-validator'
 import { DateUtils } from '@/utils/DateUtils'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class TaskValidator {
+export class TaskValidator extends BaseValidator {
 	static index() {
 		return [
 			query('employeeId')
@@ -30,6 +31,7 @@ export class TaskValidator {
 
 	static update() {
 		return [
+			...super.update(),
 			...this._createUpdateCommon(),
 			body('creatorId')
 				.exists()

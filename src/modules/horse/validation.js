@@ -1,14 +1,15 @@
 import { body } from 'express-validator'
 import { ArrayUtils } from '@/utils/ArrayUtils'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class HorseValidator {
+export class HorseValidator extends BaseValidator {
 	static create() {
 		return this._create_update_common()
 	}
 
 	static update() {
-		return this._create_update_common()
+		return [...super.update(), ...this._create_update_common()]
 	}
 
 	static _create_update_common() {

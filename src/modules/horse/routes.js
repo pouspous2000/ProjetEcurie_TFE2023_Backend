@@ -10,11 +10,18 @@ const controller = new HorseController()
 const prefix = 'horses'
 
 horseRouter.get(`/${prefix}`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.index)
-horseRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.show)
+horseRouter.get(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(HorseValidator.show()),
+	controller.show
+)
 horseRouter.delete(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(HorseValidator.delete()),
 	controller.delete
 )
 horseRouter.post(

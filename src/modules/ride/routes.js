@@ -10,8 +10,14 @@ const controller = new RideController()
 
 const prefix = 'rides'
 rideRouter.get(`/${prefix}`, isAuthenticated, controller.index)
-rideRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
-rideRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
+rideRouter.get(`/${prefix}/:id`, isAuthenticated, validate(RideValidator.show()), controller.show)
+rideRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(RideValidator.delete()),
+	controller.delete
+)
 rideRouter.post(
 	`/${prefix}`,
 	isAuthenticated,

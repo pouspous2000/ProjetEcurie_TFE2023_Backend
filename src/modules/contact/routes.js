@@ -10,11 +10,18 @@ const controller = new ContactController()
 
 const prefix = 'contacts'
 contactRouter.get(`/${prefix}`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.index)
-contactRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.show)
+contactRouter.get(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(ContactValidator.show()),
+	controller.show
+)
 contactRouter.delete(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(ContactValidator.delete()),
 	controller.delete
 )
 contactRouter.post(

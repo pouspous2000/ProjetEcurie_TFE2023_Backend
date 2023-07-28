@@ -10,8 +10,14 @@ const pensionRouter = Router()
 const prefix = 'pensions'
 
 pensionRouter.get(`/${prefix}`, isAuthenticated, controller.index)
-pensionRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
-pensionRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
+pensionRouter.get(`/${prefix}/:id`, isAuthenticated, validate(PensionValidator.show()), controller.show)
+pensionRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(PensionValidator.delete()),
+	controller.delete
+)
 pensionRouter.post(
 	`/${prefix}`,
 	isAuthenticated,

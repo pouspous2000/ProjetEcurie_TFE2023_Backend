@@ -1,10 +1,12 @@
 import { body } from 'express-validator'
 import { ArrayUtils } from '@/utils/ArrayUtils'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class HorseContributorHorseContributorJobValidator {
+export class HorseContributorHorseContributorJobValidator extends BaseValidator {
 	static addJobs() {
 		return [
+			...super.show('horseId'),
 			body('horseContributorId')
 				.exists()
 				.withMessage(
@@ -32,6 +34,7 @@ export class HorseContributorHorseContributorJobValidator {
 
 	static removeJobs() {
 		return [
+			...super.show('horseId'),
 			body('horseContributorHorseContributorJobIds')
 				.exists()
 				.withMessage(

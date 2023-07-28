@@ -1,13 +1,14 @@
 import { body } from 'express-validator'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class AdditiveValidator {
+export class AdditiveValidator extends BaseValidator {
 	static create() {
 		return [...this._createUpdateCommon()]
 	}
 
 	static update() {
-		return [...this._createUpdateCommon()]
+		return [...super.update(), ...this._createUpdateCommon()]
 	}
 
 	static _createUpdateCommon() {

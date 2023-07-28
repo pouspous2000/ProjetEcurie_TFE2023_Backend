@@ -27,6 +27,7 @@ export class LocalUtils {
 				common_404: 'Resource introuvable',
 				common_error: 'Une erreur est survenue',
 				common_validation_error: 'Erreur(s) de validation',
+				common_invalidId: 'Valeur invalide id',
 			},
 			en: {
 				hello_world: 'Hello world!',

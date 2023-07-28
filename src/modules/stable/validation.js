@@ -1,9 +1,11 @@
 import { body } from 'express-validator'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class StableValidator {
+export class StableValidator extends BaseValidator {
 	static update() {
 		return [
+			...super.update(),
 			body('name')
 				.exists()
 				.withMessage(i18next.t('stable_request_validation_name_exists'))

@@ -17,8 +17,20 @@ taskRouter.get(
 	controller.index
 )
 
-taskRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.show)
-taskRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
+taskRouter.get(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(TaskValidator.show()),
+	controller.show
+)
+taskRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(TaskValidator.delete()),
+	controller.delete
+)
 taskRouter.post(
 	`/${prefix}`,
 	isAuthenticated,

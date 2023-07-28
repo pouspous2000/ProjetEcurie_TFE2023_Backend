@@ -10,8 +10,14 @@ const controller = new EventController()
 const prefix = 'events'
 
 eventRouter.get(`/${prefix}`, isAuthenticated, validate(EventValidator.index()), controller.index)
-eventRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
-eventRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.delete)
+eventRouter.get(`/${prefix}/:id`, isAuthenticated, validate(EventValidator.show()), controller.show)
+eventRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(EventValidator.delete()),
+	controller.delete
+)
 eventRouter.post(
 	`/${prefix}`,
 	isAuthenticated,

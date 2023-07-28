@@ -10,8 +10,14 @@ const controller = new AdditiveController()
 
 const prefix = 'additives'
 additiveRouter.get(`/${prefix}`, isAuthenticated, controller.index)
-additiveRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
-additiveRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN']), controller.delete)
+additiveRouter.get(`/${prefix}/:id`, isAuthenticated, validate(AdditiveValidator.show()), controller.show)
+additiveRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(AdditiveValidator.delete()),
+	controller.delete
+)
 additiveRouter.post(
 	`/${prefix}`,
 	isAuthenticated,

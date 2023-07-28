@@ -1,8 +1,9 @@
 import { body, query } from 'express-validator'
 import { DateUtils } from '@/utils/DateUtils'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class LessonValidator {
+export class LessonValidator extends BaseValidator {
 	static index() {
 		return [
 			query('creatorId')
@@ -38,6 +39,7 @@ export class LessonValidator {
 
 	static update() {
 		return [
+			...super.update(),
 			...this._createUpdateCommon(),
 			body('status')
 				.exists()

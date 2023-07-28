@@ -1,9 +1,10 @@
 import { body, query } from 'express-validator'
+import { BaseValidator } from '@/core/BaseValidator'
 import { DateUtils } from '@/utils/DateUtils'
 import { ArrayUtils } from '@/utils/ArrayUtils'
 import i18next from '../../../i18n'
 
-export class CompetitionValidator {
+export class CompetitionValidator extends BaseValidator {
 	static index() {
 		return [
 			query('creatorId')
@@ -41,7 +42,11 @@ export class CompetitionValidator {
 	}
 
 	static update() {
-		return [...this._createUpdateCommon()]
+		return [...super.update(), ...this._createUpdateCommon()]
+	}
+
+	static confirm() {
+		return [...super.show()]
 	}
 
 	static _createUpdateCommon() {

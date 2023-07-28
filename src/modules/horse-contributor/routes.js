@@ -19,12 +19,14 @@ horseContributorRouter.get(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(HorseContributorValidator.show()),
 	controller.show
 )
 horseContributorRouter.delete(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(HorseContributorValidator.delete()),
 	controller.delete
 )
 horseContributorRouter.post(

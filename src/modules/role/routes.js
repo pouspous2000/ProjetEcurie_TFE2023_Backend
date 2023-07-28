@@ -10,8 +10,14 @@ const controller = new RoleController()
 
 const prefix = 'roles'
 RoleRouter.get(`/${prefix}`, isAuthenticated, controller.index)
-RoleRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
-RoleRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.delete)
+RoleRouter.get(`/${prefix}/:id`, isAuthenticated, validate(RoleValidator.show()), controller.show)
+RoleRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(RoleValidator.delete()),
+	controller.delete
+)
 RoleRouter.post(
 	`/${prefix}`,
 	isAuthenticated,

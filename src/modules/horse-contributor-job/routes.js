@@ -10,11 +10,17 @@ const controller = new HorseContributorJobController()
 
 const prefix = 'horse_contributor_jobs'
 HorseContributorJobRouter.get(`/${prefix}`, isAuthenticated, controller.index)
-HorseContributorJobRouter.get(`/${prefix}/:id`, isAuthenticated, controller.show)
+HorseContributorJobRouter.get(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	validate(HorseContributorJobValidator.show()),
+	controller.show
+)
 HorseContributorJobRouter.delete(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(HorseContributorJobValidator.delete()),
 	controller.delete
 )
 HorseContributorJobRouter.post(

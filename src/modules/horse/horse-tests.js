@@ -387,9 +387,13 @@ describe('Horse module', function () {
 		})
 
 		it('404', async function () {
+			const horse = await db.models.Horse.create(
+				HorseFactory.create(testHorseOwner1.id, pensions[0].id, rides[0].id)
+			)
+
 			const response = await chai
 				.request(app)
-				.delete(`${routePrefix}/${0}`)
+				.delete(`${routePrefix}/${horse.id + 1}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 			response.should.have.status(404)
 			response.body.should.have.property('message').eql(i18next.t('horse_404'))

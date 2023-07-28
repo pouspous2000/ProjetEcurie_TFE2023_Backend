@@ -16,8 +16,20 @@ lessonRouter.get(
 	validate(LessonValidator.index()),
 	controller.index
 )
-lessonRouter.get(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.show)
-lessonRouter.delete(`/${prefix}/:id`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE']), controller.delete)
+lessonRouter.get(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(LessonValidator.show()),
+	controller.show
+)
+lessonRouter.delete(
+	`/${prefix}/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+	validate(LessonValidator.delete()),
+	controller.delete
+)
 lessonRouter.post(
 	`/${prefix}`,
 	isAuthenticated,

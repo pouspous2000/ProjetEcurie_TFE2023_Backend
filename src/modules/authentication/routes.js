@@ -21,7 +21,11 @@ AuthenticationRouter.post(
 	validate(AuthenticationValidator.registerClient()),
 	controller.registerClient
 )
-AuthenticationRouter.get(`/${prefix}/confirm/:confirmationCode`, controller.confirm)
+AuthenticationRouter.get(
+	`/${prefix}/confirm/:confirmationCode`,
+	validate(AuthenticationValidator.validateConfirmationCode()),
+	controller.confirm
+)
 AuthenticationRouter.post(`/${prefix}/login`, validate(AuthenticationValidator.login()), controller.login)
 AuthenticationRouter.delete(`/${prefix}/me`, isAuthenticated, controller.delete)
 AuthenticationRouter.put(

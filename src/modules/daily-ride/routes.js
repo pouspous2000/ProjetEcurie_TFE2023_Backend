@@ -20,12 +20,14 @@ dailyRideRouter.get(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(DailyRideValidator.show()),
 	controller.show
 )
 dailyRideRouter.delete(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	validate(DailyRideValidator.delete()),
 	controller.delete
 )
 

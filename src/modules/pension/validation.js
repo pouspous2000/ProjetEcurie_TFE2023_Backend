@@ -1,16 +1,17 @@
 import { body } from 'express-validator'
+import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
-export class PensionValidator {
+export class PensionValidator extends BaseValidator {
 	static create() {
-		return this._create_update_common()
+		return [...this._createUpdateCommon()]
 	}
 
 	static update() {
-		return this._create_update_common()
+		return [...super.update(), ...this._createUpdateCommon()]
 	}
 
-	static _create_update_common() {
+	static _createUpdateCommon() {
 		return [
 			body('name')
 				.exists()
