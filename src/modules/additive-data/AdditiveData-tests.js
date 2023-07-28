@@ -9,14 +9,14 @@ import { UserFactory } from '@/modules/authentication/factory'
 import { ContactFactory } from '@/modules/contact/factory'
 import { PensionFactory } from '@/modules/pension/factory'
 import { RideFactory } from '@/modules/ride/factory'
+import { HorseFactory } from '@/modules/horse/factory'
+import { AdditiveFactory } from '@/modules/additive/factory'
+import { AdditiveDataService } from '@/modules/additive-data/service'
 
 import app from '@/app'
 import db from '@/database'
 
 import i18next from '../../../i18n'
-import { HorseFactory } from '@/modules/horse/factory'
-import { AdditiveFactory } from '@/modules/additive/factory'
-import { AdditiveDataService } from '@/modules/additive-data/service'
 
 chai.should()
 chai.use(chaiHttp)
@@ -31,6 +31,8 @@ describe('AdditiveData Module', function () {
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
+		await db.models.HorseContributor.destroy({ truncate: { cascade: true } })
+		await db.models.HorseContributorJob.destroy({ truncate: { cascade: true } })
 		await db.models.Additive.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.Contact.destroy({ truncate: { cascade: true } })
 		await db.models.Horse.destroy({ truncate: { cascade: true } })
@@ -148,6 +150,7 @@ describe('AdditiveData Module', function () {
 					additiveData.should.have.keys('id', 'additiveId', 'name', 'price', 'status')
 					additiveData.should.have.property('status').eql('ACTIVE')
 				})
+				response.body.should.have.property('horseContributorHorseContributorJobs').eql([])
 			})
 
 			it('with role employee', async function () {
@@ -309,6 +312,7 @@ describe('AdditiveData Module', function () {
 					additiveData.should.have.keys('id', 'additiveId', 'name', 'price', 'status')
 					additiveData.should.have.property('status').eql('CANCELLED')
 				})
+				response.body.should.have.property('horseContributorHorseContributorJobs').eql([])
 			})
 
 			it('with role employee', async function () {

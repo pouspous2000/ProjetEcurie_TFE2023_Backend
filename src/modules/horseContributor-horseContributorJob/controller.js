@@ -1,50 +1,58 @@
 import { User } from '@/modules/authentication/model'
 import { Contact } from '@/modules/contact/model'
 import { Pension } from '@/modules/pension/model'
-import { Ride } from '@/modules/ride/model'
 import { AdditiveData } from '@/modules/additive-data/model'
+import { Ride } from '@/modules/ride/model'
 import { HorseContributorHorseContributorJob } from '@/modules/horseContributor-horseContributorJob/model'
 import { HorseContributor } from '@/modules/horse-contributor/model'
 import { HorseContributorJob } from '@/modules/horse-contributor-job/model'
 
+import { HorseContributorHorseContributorJobService } from '@/modules/horseContributor-horseContributorJob/service'
+import { HorseContributorHorseContributorJobPolicy } from '@/modules/horseContributor-horseContributorJob/policies'
 import { HorseView } from '@/modules/horse/views'
-import { AdditiveDataPolicy } from '@/modules/additive-data/policies'
-import { AdditiveDataService } from '@/modules/additive-data/service'
 
 import db from '@/database'
 
-export class AdditiveDataController {
+export class HorseContributorHorseContributorJobController {
 	constructor() {
-		this._service = new AdditiveDataService()
-		this._policy = new AdditiveDataPolicy()
+		this._service = new HorseContributorHorseContributorJobService()
+		this._policy = new HorseContributorHorseContributorJobPolicy()
 		this._view = new HorseView()
-		this._getRelationOptions = this._getRelationOptions.bind(this)
-		this.add = this.add.bind(this)
-		this.cancel = this.cancel.bind(this)
+		this.addJobs = this.addJobs.bind(this)
+		this.removeJobs = this.removeJobs.bind(this)
 	}
 
-	async add(request, response, next) {
+	async addJobs(request, response, next) {
 		const transaction = await db.transaction()
 		try {
 			const { horseId } = request.params
-			const horse = await this._service.add(horseId, request.body.additiveIds, this._getRelationOptions())
-			await this._policy.add(request, horse)
+			const horse = await this._service.addJobs(
+				horseId,
+				request.body.horseContributorId,
+				request.body.horseContributorJobIds,
+				this._getRelationOptions()
+			)
+			await this._policy.addJobs(request, horse)
 			await transaction.commit()
-			return response.status(201).json(this._view.show(horse))
+			return response.status(200).json(this._view.show(horse))
 		} catch (error) {
 			await transaction.rollback()
 			next(error)
 		}
 	}
 
-	async cancel(request, response, next) {
+	async removeJobs(request, response, next) {
 		const transaction = await db.transaction()
 		try {
 			const { horseId } = request.params
-			const horse = await this._service.cancel(horseId, request.body.additiveDataIds, this._getRelationOptions())
-			await this._policy.cancel(request, horse)
+			const horse = await this._service.removeJobs(
+				horseId,
+				request.body.horseContributorHorseContributorJobIds,
+				this._getRelationOptions()
+			)
+			await this._policy.removeJobs(request, horse)
 			await transaction.commit()
-			return response.status(201).json(this._view.show(horse))
+			return response.status(200).json(this._view.show(horse))
 		} catch (error) {
 			await transaction.rollback()
 			next(error)

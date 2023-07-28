@@ -59,6 +59,9 @@
     },
     {
       "name": "AdditiveData"
+    },
+    {
+      "name": "HorseContributorHorseContributorJob"
     }
   ],
   "securityDefinitions": {
@@ -2353,6 +2356,146 @@
           "AdditiveData"
         ],
         "description": "Cancel horse additive data"
+      }
+    },
+    "/horses/{horseId}/addJobs": {
+      "post": {
+        "summary": "Associate horseContributor to HorseContributorJobs ids for this horse  [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "horseContributorId",
+                "horseContributorJobIds"
+              ],
+              "properties": {
+                "horseContributorId": {
+                  "type": "integer"
+                },
+                "horseContributorJobIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "horseId",
+            "type": "integer",
+            "required": true,
+            "description": "horse id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Horse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "HorseContributorHorseContributorJob"
+        ],
+        "description": "AContributor to HorseContributorJobs ids for this horse"
+      }
+    },
+    "/horses/{horseId}/removeJobs": {
+      "post": {
+        "summary": "Delete horseContributor's HorseContributorJobs for this horse  [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "horseContributorHorseContributorJobIds"
+              ],
+              "properties": {
+                "horseContributorHorseContributorJobIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "in": "path",
+            "name": "horseId",
+            "type": "integer",
+            "required": true,
+            "description": "horse id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Horse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "HorseContributorHorseContributorJob"
+        ],
+        "description": "Delete horseContributor's HorseContributorJobs for this horse"
       }
     },
     "/tasks": {

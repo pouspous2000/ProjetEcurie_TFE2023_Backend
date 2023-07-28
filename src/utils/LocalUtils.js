@@ -16,6 +16,7 @@ import { CompetitionLocales } from '@/modules/competition/locales'
 import { RideLocales } from '@/modules/ride/locales'
 import { RideDataLocales } from '@/modules/ride-data/locales'
 import { DailyRideLocales } from '@/modules/daily-ride/locales'
+import { HorseContributorHorseContributorJobLocales } from '@/modules/horseContributor-horseContributorJob/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -56,6 +57,7 @@ export class LocalUtils {
 		RideLocales,
 		RideDataLocales,
 		DailyRideLocales,
+		HorseContributorHorseContributorJobLocales,
 	]
 
 	static getLocales() {
