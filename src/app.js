@@ -55,7 +55,7 @@ app.use(sequelizeErrorFormatter)
 // eslint-disable-next-line no-unused-vars
 app.use((error, request, response, _next) => {
 	const errorMessage = environment.environment === 'PROD' ? i18next.t('common_error') : error
-	response.status(error.status || 500).json(errorMessage)
+	return response.status(error.status || 500).json(errorMessage)
 })
 
 export default app

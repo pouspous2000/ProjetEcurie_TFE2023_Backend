@@ -2,83 +2,47 @@ import { Router } from 'express'
 import swaggerUi from 'swagger-ui-express'
 import swaggerDocument from '../../swagger.json'
 
-import RgpdRouter from '@/modules/rgpd/routes'
-import HorseContributorJobRouter from '@/modules/horse-contributor-job/routes'
-import StableRouter from '@/modules/stable/routes'
-import RoleRouter from '@/modules/role/routes'
-import ContactRouter from '@/modules/contact/routes'
-import AuthenticationRouter from '@/modules/authentication/routes'
-import PensionRouter from '@/modules/pension/routes'
-import HorseContributorRouter from '@/modules/horse-contributor/routes'
-import AdditiveRouter from '@/modules/additive/routes'
-import HorseRouter from '@/modules/horse/routes'
-import TaskRouter from '@/modules/task/routes'
-import LessonRouter from '@/modules/lesson/routes'
-import EventRouter from '@/modules/event/routes'
-import CompetitionRouter from '@/modules/competition/routes'
-import RideRouter from '@/modules/ride/routes'
-import EventableRouter from '@/modules/eventable/routes'
-import DailyRideRouter from '@/modules/daily-ride/routes'
-import AdditiveDataRouter from '@/modules/additive-data/routes'
-import HorseContributorHorseContributorJobRouter from '@/modules/horseContributor-horseContributorJob/routes'
-
-import db from '@/database'
-import { User } from '@/modules/authentication/model'
-import { Contact } from '@/modules/contact/model'
-import { Op } from 'sequelize'
+import rgpdRouter from '@/modules/rgpd/routes'
+import horseContributorJobRouter from '@/modules/horse-contributor-job/routes'
+import stableRouter from '@/modules/stable/routes'
+import roleRouter from '@/modules/role/routes'
+import contactRouter from '@/modules/contact/routes'
+import authenticationRouter from '@/modules/authentication/routes'
+import pensionRouter from '@/modules/pension/routes'
+import horseContributorRouter from '@/modules/horse-contributor/routes'
+import additiveRouter from '@/modules/additive/routes'
+import horseRouter from '@/modules/horse/routes'
+import taskRouter from '@/modules/task/routes'
+import lessonRouter from '@/modules/lesson/routes'
+import eventRouter from '@/modules/event/routes'
+import competitionRouter from '@/modules/competition/routes'
+import rideRouter from '@/modules/ride/routes'
+import eventableRouter from '@/modules/eventable/routes'
+import dailyRideRouter from '@/modules/daily-ride/routes'
+import additiveDataRouter from '@/modules/additive-data/routes'
+import horseContributorHorseContributorJobRouter from '@/modules/horseContributor-horseContributorJob/routes'
 
 const router = Router()
 
-router.use(RgpdRouter)
-router.use(AuthenticationRouter)
-router.use(HorseContributorJobRouter)
-router.use(StableRouter)
-router.use(RoleRouter)
-router.use(ContactRouter)
-router.use(PensionRouter)
-router.use(HorseContributorRouter)
-router.use(AdditiveRouter)
-router.use(HorseRouter)
-router.use(TaskRouter)
-router.use(LessonRouter)
-router.use(EventRouter)
-router.use(CompetitionRouter)
-router.use(RideRouter)
-router.use(EventableRouter)
-router.use(DailyRideRouter)
-router.use(AdditiveDataRouter)
-router.use(HorseContributorHorseContributorJobRouter)
-
-// eslint-disable-next-line no-unused-vars
-router.post(`/debug`, async function (request, response) {
-	const result = await db.models.Event.findAll({
-		include: [
-			{
-				model: User,
-				as: 'creator',
-				attributes: ['email'],
-				include: {
-					model: Contact,
-					as: 'contact',
-				},
-			},
-			{
-				model: User,
-				as: 'participants',
-				attributes: ['email'],
-				include: {
-					model: Contact,
-					as: 'contact',
-				},
-			},
-		],
-		where: {
-			[Op.and]: [{ creatorId: 4 }, { '$participants.contact.userId$': { [Op.in]: [17] } }],
-		},
-	})
-
-	return response.status(200).json(result)
-})
+router.use(rgpdRouter)
+router.use(authenticationRouter)
+router.use(horseContributorJobRouter)
+router.use(stableRouter)
+router.use(roleRouter)
+router.use(contactRouter)
+router.use(pensionRouter)
+router.use(horseContributorRouter)
+router.use(additiveRouter)
+router.use(horseRouter)
+router.use(taskRouter)
+router.use(lessonRouter)
+router.use(eventRouter)
+router.use(competitionRouter)
+router.use(rideRouter)
+router.use(eventableRouter)
+router.use(dailyRideRouter)
+router.use(additiveDataRouter)
+router.use(horseContributorHorseContributorJobRouter)
 
 router.use('/docs', swaggerUi.serve)
 router.get('/docs', swaggerUi.setup(swaggerDocument))

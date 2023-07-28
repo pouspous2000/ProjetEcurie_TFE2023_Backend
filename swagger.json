@@ -34,9 +34,6 @@
       "name": "Horse"
     },
     {
-      "name": "Debug"
-    },
-    {
       "name": "Task"
     },
     {
@@ -4275,51 +4272,6 @@
             }
           }
         }
-      }
-    },
-    "/debug": {
-      "post": {
-        "summary": "Debug",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/SuccessResponse"
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "422": {
-            "description": "Unprocessable Entity",
-            "schema": {
-              "$ref": "#/definitions/UnprocessableEntityResponse"
-            }
-          }
-        },
-        "tags": [
-          "Debug"
-        ],
-        "description": "Debug route"
       }
     }
   },
