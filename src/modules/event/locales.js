@@ -1,4 +1,4 @@
-export const EventLocales = {
+export const eventLocales = {
 	fr: {
 		//errors
 		event_404: 'Evénement introuvable',

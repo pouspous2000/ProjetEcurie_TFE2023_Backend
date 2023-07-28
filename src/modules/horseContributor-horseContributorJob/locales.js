@@ -1,4 +1,4 @@
-export const HorseContributorHorseContributorJobLocales = {
+export const horseContributorHorseContributorJobLocales = {
 	fr: {
 		horseContributorHorseContributorJob_401:
 			"Vous n'avez pas les permissions pour ajouter ce rôle à ce contact pour ce cheval",

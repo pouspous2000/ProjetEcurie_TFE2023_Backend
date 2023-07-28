@@ -1,4 +1,4 @@
-export const DailyRideLocales = {
+export const dailyRideLocales = {
 	fr: {
 		dailyRide_404: 'Cette sortie journalière est introuvable',
 		dailyRide_unauthorized:

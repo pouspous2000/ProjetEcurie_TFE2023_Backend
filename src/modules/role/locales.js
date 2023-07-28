@@ -1,4 +1,4 @@
-export const RoleLocales = {
+export const roleLocales = {
 	fr: {
 		// general
 		role_admin: 'admin',

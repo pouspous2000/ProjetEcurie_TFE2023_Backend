@@ -1,4 +1,4 @@
-export const AdditiveLocales = {
+export const additiveLocales = {
 	fr: {
 		//errors
 		additive_404: 'Cet additif est introuvable',

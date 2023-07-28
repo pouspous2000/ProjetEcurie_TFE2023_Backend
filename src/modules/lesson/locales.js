@@ -1,4 +1,4 @@
-export const LessonLocales = {
+export const lessonLocales = {
 	fr: {
 		// errors
 		lesson_404: 'Leçon trouvable',

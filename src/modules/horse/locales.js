@@ -1,4 +1,4 @@
-export const HorseLocales = {
+export const horseLocales = {
 	fr: {
 		//errors
 		horse_404: 'Ce cheval est introuvable',

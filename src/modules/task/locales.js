@@ -1,4 +1,4 @@
-export const TaskLocales = {
+export const taskLocales = {
 	fr: {
 		//errors
 		task_404: 'Tâche introuvable',

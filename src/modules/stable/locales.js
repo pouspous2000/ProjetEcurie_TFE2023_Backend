@@ -1,4 +1,4 @@
-export const StableLocales = {
+export const stableLocales = {
 	fr: {
 		stable_404: 'Ecurie introuvable',
 

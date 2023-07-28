@@ -1,4 +1,4 @@
-export const PensionLocales = {
+export const pensionLocales = {
 	fr: {
 		//errors
 		pension_404: 'Cette pension est introuvable',

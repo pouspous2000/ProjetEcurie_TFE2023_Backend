@@ -1,4 +1,4 @@
-export const CompetitionLocales = {
+export const competitionLocales = {
 	fr: {
 		//errors
 		competition_404: 'Compétition introuvable',

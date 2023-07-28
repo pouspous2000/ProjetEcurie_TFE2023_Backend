@@ -1,4 +1,4 @@
-export const AdditiveDataLocales = {
+export const additiveDataLocales = {
 	fr: {
 		additiveData_401: "Vous n'avez pas les permissions pour ajouter cet additif(s) à ce cheval",
 		additiveData_422_inexistingAdditive: 'Impossible de trouver un ou plusieurs additifs',

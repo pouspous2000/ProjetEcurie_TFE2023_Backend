@@ -1,4 +1,4 @@
-export const AuthenticationLocales = {
+export const authenticationLocales = {
 	fr: {
 		authentication_404: 'Utilisateur introuvable',
 

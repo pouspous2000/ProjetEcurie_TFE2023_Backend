@@ -1,4 +1,4 @@
-export const locales = {
+export const middlewarelocales = {
 	fr: {
 		middlewares_tooManyRequest: 'Trop de requêtes',
 	},

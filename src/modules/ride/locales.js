@@ -1,4 +1,4 @@
-export const RideLocales = {
+export const rideLocales = {
 	fr: {
 		//errors
 		ride_404: 'Cette sortie est introuvable',

@@ -1,4 +1,4 @@
-export const HorseContributorLocales = {
+export const horseContributorLocales = {
 	fr: {
 		//errors
 		horseContributor_404: 'contact introuvable',

@@ -1,4 +1,4 @@
-export const PensionDataLocales = {
+export const pensionDataLocales = {
 	fr: {
 		//errors
 		pensionData_404: 'Impossible de retrouver les informations de pension du cheval',
