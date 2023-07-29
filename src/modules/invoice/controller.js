@@ -1,7 +1,9 @@
+import { PDFDocument } from 'pdf-lib'
+import { PassThrough } from 'stream'
+import createError from 'http-errors'
 import { BaseController } from '@/core/BaseController'
 import { InvoiceService } from '@/modules/invoice/service'
 import s3Client from '@/aws'
-import createError from 'http-errors'
 import i18next from '../../../i18n'
 
 export class InvoiceController extends BaseController {
@@ -32,6 +34,30 @@ export class InvoiceController extends BaseController {
 				throw createError(404, i18next.t('invoice_404'))
 			}
 			return next(error)
+		}
+	}
+
+	async generateInvoice(request, response, next) {
+		const doc = await PDFDocument.create()
+		const page = doc.addPage([400, 200])
+		const text = 'This is important.Sure.'
+		page.drawText(text, { x: 50, y: 150 })
+
+		const pdfStream = new PassThrough()
+		const pdfBytes = await doc.save()
+		await pdfStream.end(pdfBytes)
+
+		try {
+			await s3Client
+				.upload({
+					Bucket: process.env.FILE_BUCKET,
+					Key: 'uniquekeybis',
+					Body: pdfStream,
+				})
+				.promise()
+			return response.status(200).json({ message: 'OK' })
+		} catch (error) {
+			return next
 		}
 	}
 

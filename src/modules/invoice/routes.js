@@ -8,6 +8,7 @@ const controller = new InvoiceController()
 const prefix = 'invoices'
 
 invoiceRouter.post(`/${prefix}`, isAuthenticated, uploadFile.single('document'), controller.upload)
+invoiceRouter.post(`/${prefix}/generatepdf`, isAuthenticated, controller.generateInvoice)
 invoiceRouter.get(`/${prefix}/:id`, isAuthenticated, controller.download)
 
 export default invoiceRouter

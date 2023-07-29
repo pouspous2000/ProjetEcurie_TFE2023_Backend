@@ -4310,6 +4310,32 @@
         }
       }
     },
+    "/invoices/generatepdf": {
+      "post": {
+        "summary": "test on pdf creation",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/invoices/{id}": {
       "get": {
         "summary": "test on pdf download",
