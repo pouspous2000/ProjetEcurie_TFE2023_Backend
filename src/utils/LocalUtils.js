@@ -18,6 +18,7 @@ import { rideDataLocales } from '@/modules/ride-data/locales'
 import { dailyRideLocales } from '@/modules/daily-ride/locales'
 import { horseContributorHorseContributorJobLocales } from '@/modules/horseContributor-horseContributorJob/locales'
 import { invoiceLocales } from '@/modules/invoice/locales'
+import { cronLocales } from '@/modules/cron/locales'
 
 export class LocalUtils {
 	static allLocales = [
@@ -61,6 +62,7 @@ export class LocalUtils {
 		dailyRideLocales,
 		horseContributorHorseContributorJobLocales,
 		invoiceLocales,
+		cronLocales,
 	]
 
 	static getLocales() {

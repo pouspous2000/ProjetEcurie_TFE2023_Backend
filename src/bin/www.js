@@ -8,16 +8,17 @@ import { EmailUtils } from '@/utils/EmailUtils'
 
 import { Dotenv } from '@/utils/Dotenv'
 import { errorHandlerLogger, otherLogger } from '@/loggers/loggers'
-import startInvoiceGenerationCron from '@/crons/invoiceGeneration'
+import { InvoiceCron } from '@/crons/invoiceGeneration'
 
 new Dotenv()
+const invoiceCron = new InvoiceCron()
 
 const debug = debugLib('express-starter:server')
 
 const port = process.env.SERVER_PORT
 app.set('port', port)
 
-startInvoiceGenerationCron()
+invoiceCron.start()
 
 const server = http.createServer(app)
 
