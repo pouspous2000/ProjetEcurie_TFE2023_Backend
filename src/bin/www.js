@@ -3,6 +3,8 @@ import debugLib from 'debug'
 import app from '@/app'
 import db from '@/database'
 import redisClient from '@/cache'
+import s3Client from '@/aws'
+import { ListBucketsCommand } from '@aws-sdk/client-s3'
 import { EmailUtils } from '@/utils/EmailUtils'
 
 import { Dotenv } from '@/utils/Dotenv'
@@ -48,6 +50,18 @@ redisClient
 	.catch(error => {
 		console.error(`Redis connection or flush error ${error}`) // [IMP] refactore with async await the entire file
 		errorHandlerLogger.log('error', `Redis connection error ${error}`)
+	})
+
+// check s3 communication
+const command = new ListBucketsCommand({})
+s3Client
+	.send(command)
+	.then(() => {
+		console.log('Connection to AWS is ok')
+	})
+	.catch(error => {
+		console.error('AWS connection error : ', error)
+		errorHandlerLogger.log('error', `AWS connection error ${error}`)
 	})
 
 // check smtp connexion and log if connexion is down
