@@ -1,13 +1,20 @@
 import cron from 'node-cron'
-// import { InvoiceService } from '@/modules/invoice/service'
+import { InvoiceService } from '@/modules/invoice/service'
 
-export default function startInvoiceGenerationCron() {
-	let i = 0
+export default async function startInvoiceGenerationCron() {
+	const invoiceService = new InvoiceService()
+
+	let i = 1
 	const invoiceGenerationCron = cron.schedule(
-		'*/1 * * * * *',
-		() => {
+		'0 0 1 * *', // every first day of the month at midnight
+		async () => {
 			i++
-			console.log('le cron a ete appele ...  i', i)
+			try {
+				await invoiceService.generateInvoice(`invoice${i}`)
+			} catch (error) {
+				console.log('error', error)
+				// we do not throw an error as it would shut down the application
+			}
 		},
 		{
 			scheduled: true,
