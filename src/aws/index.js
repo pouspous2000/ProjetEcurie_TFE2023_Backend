@@ -1,6 +1,9 @@
-import { S3Client } from '@aws-sdk/client-s3'
+import AWS from 'aws-sdk'
+
 import { awsConfig } from '@/configuration/aws'
 
-const s3Client = new S3Client(awsConfig)
+AWS.config.update(awsConfig)
+
+const s3Client = new AWS.S3()
 
 export default s3Client

@@ -21,6 +21,7 @@ import eventableRouter from '@/modules/eventable/routes'
 import dailyRideRouter from '@/modules/daily-ride/routes'
 import additiveDataRouter from '@/modules/additive-data/routes'
 import horseContributorHorseContributorJobRouter from '@/modules/horseContributor-horseContributorJob/routes'
+import invoiceRouter from '@/modules/invoice/routes'
 
 const router = Router()
 
@@ -43,6 +44,7 @@ router.use(eventableRouter)
 router.use(dailyRideRouter)
 router.use(additiveDataRouter)
 router.use(horseContributorHorseContributorJobRouter)
+router.use(invoiceRouter)
 
 router.use('/docs', swaggerUi.serve)
 router.get('/docs', swaggerUi.setup(swaggerDocument))

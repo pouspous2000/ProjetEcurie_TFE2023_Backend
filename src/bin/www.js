@@ -4,7 +4,6 @@ import app from '@/app'
 import db from '@/database'
 import redisClient from '@/cache'
 import s3Client from '@/aws'
-import { ListBucketsCommand } from '@aws-sdk/client-s3'
 import { EmailUtils } from '@/utils/EmailUtils'
 
 import { Dotenv } from '@/utils/Dotenv'
@@ -53,11 +52,11 @@ redisClient
 	})
 
 // check s3 communication
-const command = new ListBucketsCommand({})
 s3Client
-	.send(command)
+	.listBuckets()
+	.promise()
 	.then(() => {
-		console.log('Connection to AWS is ok')
+		console.log('aws connection : ok')
 	})
 	.catch(error => {
 		console.error('AWS connection error : ', error)

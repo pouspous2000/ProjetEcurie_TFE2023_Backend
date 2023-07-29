@@ -59,6 +59,9 @@
     },
     {
       "name": "HorseContributorHorseContributorJob"
+    },
+    {
+      "name": "Invoice"
     }
   ],
   "securityDefinitions": {
@@ -4260,6 +4263,75 @@
         "parameters": [],
         "tags": [
           "Eventable"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/invoices": {
+      "post": {
+        "summary": "test sur upload d'un pdf",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "document",
+            "in": "formData",
+            "description": "Fichier à télécharger",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/invoices/{id}": {
+      "get": {
+        "summary": "test on pdf download",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "document id"
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "produces": [
+          "application/pdf"
         ],
         "responses": {
           "200": {
