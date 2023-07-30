@@ -25,6 +25,7 @@ import RideModel from '@/modules/ride/model'
 import RideDataModel from '@/modules/ride-data/model'
 import DailyRideModel from '@/modules/daily-ride/model'
 import CronModel from '@/modules/cron/model'
+import InvoiceModel from '@/modules/invoice/model'
 
 const sequelize = new Sequelize(configs[process.env.NODE_ENV])
 
@@ -53,6 +54,7 @@ const modelDefiners = [
 	RideDataModel,
 	DailyRideModel,
 	CronModel,
+	InvoiceModel,
 ]
 
 // eslint-disable-next-line no-restricted-syntax

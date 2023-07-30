@@ -46,6 +46,7 @@ export class User extends Model {
 			otherKey: 'horseId',
 			as: 'rideHorses',
 		})
+		User.hasMany(models.Invoice, { foreignKey: 'clientId', as: 'invoices' })
 	}
 }
 
