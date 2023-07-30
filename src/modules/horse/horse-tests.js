@@ -8,7 +8,6 @@ import db from '@/database'
 
 import { RoleFactory } from '@/modules/role/factory'
 import { UserFactory } from '@/modules/authentication/factory'
-import { ArrayUtils } from '@/utils/ArrayUtils'
 import { HorseFactory } from '@/modules/horse/factory'
 import { PensionFactory } from '@/modules/pension/factory'
 import { ContactFactory } from '@/modules/contact/factory'
@@ -16,6 +15,7 @@ import { RideFactory } from '@/modules/ride/factory'
 import { AdditiveFactory } from '@/modules/additive/factory'
 import { HorseContributorFactory } from '@/modules/horse-contributor/factory'
 import { HorseContributorJobFactory } from '@/modules/horse-contributor-job/factory'
+import { ArrayUtils } from '@/utils/ArrayUtils'
 
 import i18next from '../../../i18n'
 

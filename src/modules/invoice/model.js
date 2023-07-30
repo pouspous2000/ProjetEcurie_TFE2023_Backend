@@ -11,7 +11,6 @@ export class Invoice extends Model {
 	}
 
 	static associate(models) {
-		Invoice.belongsTo(models.Stable, { foreignKey: 'stableId', as: 'stable' })
 		Invoice.belongsTo(models.User, { foreignKey: 'clientId', as: 'client' })
 		Invoice.hasOne(models.Cron, { foreignKey: 'invoiceId', as: 'cron' })
 	}
@@ -24,10 +23,6 @@ export default function (sequelize) {
 				type: DataTypes.INTEGER,
 				autoIncrement: true,
 				primaryKey: true,
-			},
-			stableId: {
-				type: DataTypes.INTEGER,
-				allowNull: false,
 			},
 			clientId: {
 				type: DataTypes.INTEGER,

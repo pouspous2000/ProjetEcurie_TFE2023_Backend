@@ -6,7 +6,6 @@ import { describe, it, beforeEach, afterEach } from 'mocha'
 import { CronService } from '@/modules/cron/service'
 import chai from 'chai'
 import db from '@/database'
-import { StableFactory } from '@/modules/stable/factory'
 import { UserFactory } from '@/modules/authentication/factory'
 import { RoleFactory } from '@/modules/role/factory'
 
@@ -14,7 +13,6 @@ chai.should()
 
 describe('Cron module', async function () {
 	let cronService = new CronService()
-	let stable
 	let client
 
 	beforeEach(async function () {
@@ -22,15 +20,12 @@ describe('Cron module', async function () {
 		await db.models.Cron.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
-		await db.models.Stable.destroy({ truncate: { cascade: true } })
 
-		stable = await db.models.Stable.create(StableFactory.createBonnet())
 		const roleClient = await db.models.Role.create(RoleFactory.createClient())
 		client = await db.models.User.create(UserFactory.create(roleClient.id, true))
 	})
 
 	afterEach(function () {
-		stable = undefined
 		client = undefined
 	})
 
@@ -41,7 +36,6 @@ describe('Cron module', async function () {
 			dueDateAt.setMonth(now.getMonth() + 1)
 
 			const invoice = await db.models.Invoice.create({
-				stableId: stable.id,
 				clientId: client.id,
 				bucket: null,
 				key: null,
@@ -64,7 +58,6 @@ describe('Cron module', async function () {
 			dueDateAt.setMonth(now.getMonth() + 1)
 
 			const invoice = await db.models.Invoice.create({
-				stableId: stable.id,
 				clientId: client.id,
 				bucket: null,
 				key: null,
@@ -88,7 +81,6 @@ describe('Cron module', async function () {
 			dueDateAt.setMonth(now.getMonth() + 1)
 
 			const invoice = await db.models.Invoice.create({
-				stableId: stable.id,
 				clientId: client.id,
 				bucket: null,
 				key: null,

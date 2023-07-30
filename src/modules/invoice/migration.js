@@ -1,7 +1,6 @@
 import { DataTypes } from 'sequelize'
 import { Invoice } from '@/modules/invoice/model'
 import { User } from '@/modules/authentication/model'
-import { Stable } from '@/modules/stable/model'
 
 export const upInvoice = async (queryInterface, Sequelize) =>
 	queryInterface.createTable(Invoice.getTable(), {
@@ -9,16 +8,6 @@ export const upInvoice = async (queryInterface, Sequelize) =>
 			type: DataTypes.INTEGER,
 			autoIncrement: true,
 			primaryKey: true,
-		},
-		stableId: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			references: {
-				model: Stable.getTable(),
-				field: 'id',
-			},
-			onDelete: 'CASCADE',
-			onUpdate: 'CASCADE',
 		},
 		clientId: {
 			type: DataTypes.INTEGER,

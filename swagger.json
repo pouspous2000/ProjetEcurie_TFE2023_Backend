@@ -4278,8 +4278,8 @@
       }
     },
     "/invoices": {
-      "post": {
-        "summary": "test sur upload d'un pdf",
+      "get": {
+        "summary": "List all invoices [ADMIN, EMPLOYEE, CLIENT]",
         "security": [
           {
             "bearer": []
@@ -4287,45 +4287,45 @@
         ],
         "parameters": [
           {
-            "name": "document",
-            "in": "formData",
-            "description": "Fichier à télécharger",
-            "required": true,
-            "type": "file"
-          }
-        ],
-        "tags": [
-          "Invoice"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
+            "in": "query",
+            "name": "clientId",
+            "type": "integer",
+            "required": false
           },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          }
-        }
-      }
-    },
-    "/invoices/generatepdf": {
-      "post": {
-        "summary": "test on pdf creation",
-        "security": [
           {
-            "bearer": []
+            "in": "query",
+            "name": "status",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "cronStatus",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "year",
+            "type": "integer",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "type": "integer",
+            "required": false
           }
-        ],
-        "parameters": [
         ],
         "tags": [
           "Invoice"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/InvoiceList"
+            }
           },
           "401": {
             "description": "Unauthorized",
@@ -4338,7 +4338,50 @@
     },
     "/invoices/{id}": {
       "get": {
-        "summary": "test on pdf download",
+        "summary": "Get invoice by id [ADMIN, EMPLOYEE, CLIENT]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "integer",
+            "required": true,
+            "description": "invoice id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Invoice"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Get invoice by id"
+      }
+    },
+    "/invoices/download/{id}": {
+      "get": {
+        "summary": "Invoice pdf upload by invoice id [ADMIN, EMPLOYEE, CLIENT]",
         "security": [
           {
             "bearer": []
@@ -4350,7 +4393,7 @@
             "name": "id",
             "type": "string",
             "required": true,
-            "description": "document id"
+            "description": "invoice id"
           }
         ],
         "tags": [
@@ -4365,6 +4408,12 @@
           },
           "401": {
             "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -5231,6 +5280,88 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/DailyRide"
+      }
+    },
+    "Invoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "client": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string"
+            },
+            "userId": {
+              "type": "integer"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            },
+            "address": {
+              "type": "string"
+            },
+            "invoicingAddress": {
+              "type": "string"
+            }
+          }
+        },
+        "cron": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "step": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        },
+        "number": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string"
+        },
+        "dueDateAt": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "isUnpaidAfterDueDateAt": {
+          "type": "boolean"
+        }
+
+      }
+    },
+    "InvoiceList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Invoice"
       }
     }
   }

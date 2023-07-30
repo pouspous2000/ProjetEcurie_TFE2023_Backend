@@ -11,10 +11,6 @@ export class Stable extends Model {
 	static getModelName() {
 		return 'Stable'
 	}
-
-	static associate(models) {
-		Stable.hasMany(models.Invoice, { foreignKey: 'stableId', as: 'invoices' })
-	}
 }
 
 export default function (sequelize) {
