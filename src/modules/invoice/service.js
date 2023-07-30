@@ -1,11 +1,13 @@
 import { PDFDocument } from 'pdf-lib'
 import { PassThrough } from 'stream'
 
+import { Invoice } from '@/modules/invoice/model'
 import { AwsService } from '@/utils/AwsUtils'
+import { BaseService } from '@/core/BaseService'
 
-export class InvoiceService {
-	// This will extend soon baseService to manage actual invoices
+export class InvoiceService extends BaseService {
 	constructor() {
+		super(Invoice.getModelName(), 'invoice_404')
 		this._awsService = new AwsService()
 	}
 

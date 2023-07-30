@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize'
 import { Cron } from '@/modules/cron/model'
+import { Invoice } from '@/modules/invoice/model'
 
 export const upCron = (queryInterface, Sequelize) =>
 	queryInterface.createTable(Cron.getTable(), {
@@ -7,6 +8,16 @@ export const upCron = (queryInterface, Sequelize) =>
 			type: DataTypes.INTEGER,
 			autoIncrement: true,
 			primaryKey: true,
+		},
+		invoiceId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			references: {
+				model: Invoice.getTable(),
+				field: 'id',
+			},
+			onUpdate: 'CASCADE',
+			onDelete: 'CASCADE',
 		},
 		name: {
 			type: DataTypes.STRING,

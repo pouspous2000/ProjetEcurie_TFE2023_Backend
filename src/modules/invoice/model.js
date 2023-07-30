@@ -13,6 +13,7 @@ export class Invoice extends Model {
 	static associate(models) {
 		Invoice.belongsTo(models.Stable, { foreignKey: 'stableId', as: 'stable' })
 		Invoice.belongsTo(models.User, { foreignKey: 'clientId', as: 'client' })
+		Invoice.hasOne(models.Cron, { foreignKey: 'invoiceId', as: 'cron' })
 	}
 }
 
@@ -30,15 +31,15 @@ export default function (sequelize) {
 			},
 			clientId: {
 				type: DataTypes.INTEGER,
-				allowNull: false,
+				allowNull: true, // to prevent data lost if client deleted its account
 			},
 			bucket: {
 				type: DataTypes.STRING,
-				allowNull: false,
+				allowNull: true,
 			},
 			key: {
 				type: DataTypes.STRING,
-				allowNull: false,
+				allowNull: true,
 			},
 			number: {
 				type: DataTypes.INTEGER,

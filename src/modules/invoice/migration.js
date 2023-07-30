@@ -22,21 +22,21 @@ export const upInvoice = async (queryInterface, Sequelize) =>
 		},
 		clientId: {
 			type: DataTypes.INTEGER,
-			allowNull: false,
+			allowNull: true,
 			references: {
 				model: User.getTable(),
 				field: 'id',
 			},
-			onDelete: 'CASCADE',
+			onDelete: 'SET NULL',
 			onUpdate: 'CASCADE',
 		},
 		bucket: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: true,
 		},
 		key: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: true,
 		},
 		number: {
 			type: DataTypes.INTEGER,
