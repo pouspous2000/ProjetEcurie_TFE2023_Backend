@@ -21,6 +21,14 @@ export class InvoiceView {
 		}
 	}
 
+	markAsPaid(invoice) {
+		return this.show(invoice)
+	}
+
+	markAsUnpaid(invoice) {
+		return this.show(invoice)
+	}
+
 	_getClientView(invoice) {
 		if (invoice.client) {
 			return {

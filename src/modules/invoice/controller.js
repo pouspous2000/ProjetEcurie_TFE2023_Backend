@@ -18,6 +18,8 @@ export class InvoiceController extends BaseController {
 		this.index = this.index.bind(this)
 		this.show = this.show.bind(this)
 		this.download = this.download.bind(this)
+		this.markAsPaid = this.markAsPaid.bind(this)
+		this.markAsUnpaid = this.markAsUnpaid.bind(this)
 
 		this.upload = this.upload.bind(this)
 		this.generateInvoice = this.generateInvoice.bind(this)
@@ -35,7 +37,35 @@ export class InvoiceController extends BaseController {
 		return await super.show(request, response, next, this._getRelationOptions())
 	}
 
+	async markAsPaid(request, response, next) {
+		try {
+			const { id } = request.params
+			const paidAt = request.body.paidAt ? new Date(request.body.paidAt) : null
+			let invoice = await this._service.findOrFail(id)
+			await this._policy.markAsPaid(request, invoice)
+			await this._service.markAsPaid(invoice, paidAt)
+			invoice = await this._service.findOrFail(id, this._getRelationOptions())
+			return response.status(200).json(this._view.markAsPaid(invoice))
+		} catch (error) {
+			return next(error)
+		}
+	}
+
+	async markAsUnpaid(request, response, next) {
+		try {
+			const { id } = request.params
+			let invoice = await this._service.findOrFail(id)
+			await this._policy.markAsUnpaid(request, invoice)
+			await this._service.markAsUnpaid(invoice)
+			invoice = await this._service.findOrFail(id, this._getRelationOptions())
+			return response.status(200).json(this._view.markAsUnpaid(invoice))
+		} catch (error) {
+			return next(error)
+		}
+	}
+
 	async upload(request, response, next) {
+		// this method is about to be deleted too
 		try {
 			return response.status(200).json({ file: request.file })
 		} catch (error) {

@@ -33,6 +33,22 @@ invoiceRouter.get(
 	controller.show
 )
 
+invoiceRouter.post(
+	`/${prefix}/markAsPaid/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(InvoiceValidator.markAsPaid()),
+	controller.markAsPaid
+)
+
+invoiceRouter.post(
+	`/${prefix}/markAsUnpaid/:id`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(InvoiceValidator.show()),
+	controller.markAsUnpaid
+)
+
 // invoiceRouter.post(`/${prefix}`, isAuthenticated, uploadFile.single('document'), controller.upload)
 // invoiceRouter.post(`/${prefix}/generatepdf`, isAuthenticated, controller.generateInvoice)
 

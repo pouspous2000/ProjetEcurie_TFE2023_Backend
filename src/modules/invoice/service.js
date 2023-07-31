@@ -1,14 +1,44 @@
 import { PDFDocument } from 'pdf-lib'
 import { PassThrough } from 'stream'
+import createError from 'http-errors'
 
 import { Invoice } from '@/modules/invoice/model'
 import { AwsService } from '@/utils/AwsUtils'
 import { BaseService } from '@/core/BaseService'
+import i18next from '../../../i18n'
 
 export class InvoiceService extends BaseService {
 	constructor() {
 		super(Invoice.getModelName(), 'invoice_404')
 		this._awsService = new AwsService()
+	}
+
+	async markAsPaid(invoice, paidAt = undefined) {
+		if (!paidAt) {
+			paidAt = new Date()
+		}
+		if (paidAt < invoice.createdAt) {
+			throw createError(422, i18next.t('invoice_422_markAsPaid_inconsistentDate'))
+		}
+		if (invoice.status === 'PAID') {
+			throw createError(422, i18next.t('invoice_422_markAsPaid_alreadyPaid'))
+		}
+
+		return await super.update(invoice, {
+			status: 'PAID',
+			paidAt: paidAt,
+		})
+	}
+
+	async markAsUnpaid(invoice) {
+		if (invoice.status === 'UNPAID') {
+			throw createError(422, i18next.t('invoice_422_markAsUnpaid_alreadyUnpaid'))
+		}
+
+		return await super.update(invoice, {
+			status: 'UNPAID',
+			paidAt: null,
+		})
 	}
 
 	async generateInvoice(key) {

@@ -27,6 +27,32 @@ export class InvoicePolicy {
 		}
 	}
 
+	async markAsPaid(request, invoice) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return invoice
+			case 'EMPLOYEE':
+				// this code should never be reached and is just an extra security
+				throw createError(401, i18next.t('invoice_401'))
+			case 'CLIENT':
+				// this code should never be reached and is just an extra security
+				throw createError(401, i18next.t('invoice_401'))
+		}
+	}
+
+	async markAsUnpaid(request, invoice) {
+		switch (request.user.roleCategory) {
+			case 'ADMIN':
+				return invoice
+			case 'EMPLOYEE':
+				// this code should never be reached and is just an extra security
+				throw createError(401, i18next.t('invoice_401'))
+			case 'CLIENT':
+				// this code should never be reached and is just an extra security
+				throw createError(401, i18next.t('invoice_401'))
+		}
+	}
+
 	async download(request, invoice) {
 		switch (request.user.roleCategory) {
 			case 'ADMIN':

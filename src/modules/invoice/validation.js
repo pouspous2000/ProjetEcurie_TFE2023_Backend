@@ -1,5 +1,6 @@
-import { query } from 'express-validator'
+import { query, body } from 'express-validator'
 import { BaseValidator } from '@/core/BaseValidator'
+import { DateUtils } from '@/utils/DateUtils'
 import i18next from '../../../i18n'
 
 export class InvoiceValidator extends BaseValidator {
@@ -30,5 +31,15 @@ export class InvoiceValidator extends BaseValidator {
 
 	static download() {
 		return super.show()
+	}
+
+	static markAsPaid() {
+		return [
+			...super.update(),
+			body('paidAt')
+				.optional()
+				.custom(value => DateUtils.isCorrectFormat(value, 'invoice_request_validation_paidAt_isDate'))
+				.toDate(),
+		]
 	}
 }

@@ -8,11 +8,11 @@ import db from '@/database'
 
 import { RoleFactory } from '@/modules/role/factory'
 import { UserFactory } from '@/modules/authentication/factory'
+import { ContactFactory } from '@/modules/contact/factory'
 import { InvoiceFactory } from '@/modules/invoice/factory'
 import { CronFactory } from '@/modules/cron/factory'
 
 import i18next from '../../../i18n'
-import { ContactFactory } from '@/modules/contact/factory'
 
 chai.should()
 chai.use(chaiHttp)
@@ -243,6 +243,16 @@ describe('Invoice module', async function () {
 			invoice = cron = undefined
 		})
 
+		it('404', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${invoice.id + 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('invoice_404'))
+		})
+
 		it('with role admin', async function () {
 			const response = await chai
 				.request(app)
@@ -308,4 +318,177 @@ describe('Invoice module', async function () {
 	})
 
 	// we do not test upload as it would require a mock of aws
+
+	describe('markAsPaid', async function () {
+		it('404', async function () {
+			const lastInvoice = await db.models.Invoice.findOne({ order: [['id', 'DESC']] })
+			const response = await chai
+				.request(app)
+				.post(`${routePrefix}/markAsPaid/${lastInvoice ? lastInvoice.id + 1 : 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send({})
+
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('invoice_404'))
+		})
+
+		describe('permissions', async function () {
+			let invoice
+
+			beforeEach(async function () {
+				invoice = await db.models.Invoice.create(InvoiceFactory.create(testClientUser1.id))
+			})
+
+			afterEach(function () {
+				invoice = undefined
+			})
+
+			it('with role admin', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsPaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({})
+
+				response.body.should.have.property('id').eql(invoice.id)
+				response.body.should.have.property('status').eql('PAID')
+				response.body.should.have.property('paidAt').not.eql(null)
+			})
+
+			it('with role employee', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsPaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send({})
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+
+			it('with role client', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsPaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testClientUser1.token}`)
+					.send({})
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('service', async function () {
+			it('invalid paidAt', async function () {
+				const invoice = await db.models.Invoice.create(InvoiceFactory.create(testClientUser1.id))
+				const yesterday = new Date()
+				yesterday.setDate(yesterday.getDate() - 1)
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsPaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({ paidAt: yesterday })
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('invoice_422_markAsPaid_inconsistentDate'))
+			})
+
+			it('invalid status', async function () {
+				const invoice = await db.models.Invoice.create(InvoiceFactory.create(testClientUser1.id, 'PAID'))
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsPaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({})
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('invoice_422_markAsPaid_alreadyPaid'))
+			})
+		})
+	})
+
+	describe('markAsUnpaid', async function () {
+		it('404', async function () {
+			const lastInvoice = await db.models.Invoice.findOne({ order: [['id', 'DESC']] })
+			const response = await chai
+				.request(app)
+				.post(`${routePrefix}/markAsUnpaid/${lastInvoice ? lastInvoice.id + 1 : 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send({})
+
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('invoice_404'))
+		})
+
+		describe('permissions', async function () {
+			let invoice
+
+			beforeEach(async function () {
+				invoice = await db.models.Invoice.create(InvoiceFactory.create(testClientUser1.id, 'PAID'))
+			})
+
+			afterEach(function () {
+				invoice = undefined
+			})
+
+			it('with role admin', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsUnpaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({})
+				response.should.have.status(200)
+				response.body.should.have.property('id').eql(invoice.id)
+				response.body.should.have.property('status').eql('UNPAID')
+				response.body.should.have.property('paidAt').eql(null)
+			})
+
+			it('with role employee', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsUnpaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send({})
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+
+			it('with role client', async function () {
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsUnpaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testClientUser1.token}`)
+					.send({})
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		describe('service', async function () {
+			it('invalid status', async function () {
+				const invoice = await db.models.Invoice.create(InvoiceFactory.create(testClientUser1.id))
+
+				const response = await chai
+					.request(app)
+					.post(`${routePrefix}/markAsUnpaid/${invoice.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({})
+
+				response.should.have.status(422)
+				response.body.should.have.property('message').eql(i18next.t('invoice_422_markAsUnpaid_alreadyUnpaid'))
+			})
+		})
+	})
 })
