@@ -29,8 +29,9 @@ db.authenticate()
 		server.on('error', onError)
 		server.on('listening', onListening)
 	})
-	.catch(err => {
-		console.error('Database connection error', err)
+	.catch(error => {
+		console.error('Database connection error', error)
+		errorHandlerLogger.log('error', error)
 	})
 
 // check cache connexion and log if connexion is down

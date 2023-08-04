@@ -11,6 +11,7 @@ import { PensionFactory } from '@/modules/pension/factory'
 import { HorseFactory } from '@/modules/horse/factory'
 import { RideFactory } from '@/modules/ride/factory'
 import { Op } from 'sequelize'
+import i18next from '../../../i18n'
 
 chai.should()
 chai.use(chaiHttp)
@@ -200,6 +201,7 @@ describe('PensionData module', async function () {
 						{ deletedAt: { [Op.ne]: null } },
 					],
 				},
+				paranoid: false,
 			})
 
 			pensionDataDeleted.should.have.property('name').eql(pensionData.name)
@@ -216,6 +218,7 @@ describe('PensionData module', async function () {
 			Number(currentPensionData.monthlyPrice).should.eql(response2.body.monthlyPrice)
 			currentPensionData.should.have.property('description').eql(response2.body.description)
 		})
+
 		it('delete pension', async function () {
 			const pension = await db.models.Pension.create(PensionFactory.create())
 			const ride = await db.models.Ride.create(RideFactory.create('WORKINGDAYS'))
@@ -224,30 +227,20 @@ describe('PensionData module', async function () {
 				horsemen: [testClientUser.id],
 				additives: [],
 			}
-			const response1 = await chai
+
+			await chai
 				.request(app)
 				.post('/horses')
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(horseData)
 
-			await chai
+			const response = await chai
 				.request(app)
 				.delete(`/pensions/${pension.id}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 
-			const pensionDataDeleted = await db.models.PensionData.findOne({
-				where: {
-					[Op.and]: [
-						{ horseId: response1.body.id },
-						{ pensionId: pension.id },
-						{ deletedAt: { [Op.ne]: null } },
-					],
-				},
-			})
-
-			pensionDataDeleted.should.have.property('name').eql(pension.name)
-			pensionDataDeleted.should.have.property('monthlyPrice').eql(pension.monthlyPrice)
-			pensionDataDeleted.should.have.property('description').eql(pension.description)
+			response.should.have.status(422)
+			response.body.should.have.property('message').eql(i18next.t('pension_422_cannotDeletePension'))
 		})
 	})
 

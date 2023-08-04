@@ -675,14 +675,17 @@
                 "vat": {
                   "type": "string"
                 },
+                "address": {
+                  "type": "string"
+                },
+                "iban": {
+                  "type": "string"
+                },
                 "phone": {
                   "type": "string"
                 },
                 "email": {
                   "type": "string"
-                },
-                "invoiceNb": {
-                  "type": "integer"
                 },
                 "invoicePrefix": {
                   "type": "string"
@@ -1711,7 +1714,7 @@
     },
     "/additives": {
       "get": {
-        "summary": "List all additives",
+        "summary": "List all additives [ADMIN, EMPLOYEE, CLIENT]",
         "security": [
           {
             "bearer": []
@@ -4645,14 +4648,17 @@
         "vat": {
           "type": "string"
         },
+        "address": {
+          "type": "string"
+        },
+        "iban": {
+          "type": "string"
+        },
         "phone": {
           "type": "string"
         },
         "email": {
           "type": "string"
-        },
-        "invoiceNb": {
-          "type": "integer"
         },
         "invoicePrefix": {
           "type": "string"

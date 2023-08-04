@@ -8,6 +8,7 @@ import app from '@/app'
 import db from '@/database'
 import { RoleFactory } from '@/modules/role/factory'
 import { UserFactory } from '@/modules/authentication/factory'
+import i18next from '../../../i18n'
 
 chai.should()
 chai.use(chaiHttp)
@@ -15,7 +16,8 @@ chai.use(chaiHttp)
 const routePrefix = '/stables'
 
 describe('Stable Module', function () {
-	let testAdmin, testEmployee, testClient
+	let testAdminUser, testEmployeeUser, testClientUser
+	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
 		await db.models.PensionData.destroy({ truncate: { cascade: true } })
@@ -23,113 +25,177 @@ describe('Stable Module', function () {
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
-		const roles = await db.models.Role.bulkCreate([
-			RoleFactory.createAdmin(),
-			RoleFactory.createEmployee(),
-			RoleFactory.createClient(),
-		])
+		// create roles
+		roleAdmin = await db.models.Role.create(RoleFactory.createAdmin())
+		roleEmployee = await db.models.Role.create(RoleFactory.createEmployee())
+		roleClient = await db.models.Role.create(RoleFactory.createClient())
 
-		testAdmin = await db.models.User.create(
-			UserFactory.createTestAdmin(roles.find(role => role.name === 'ADMIN').id)
-		)
-		testEmployee = await db.models.User.create(
-			UserFactory.createTestEmployee(roles.find(role => role.name === 'EMPLOYEE').id)
-		)
-		testClient = await db.models.User.create(
-			UserFactory.createTestClient(roles.find(role => role.name === 'CLIENT').id)
-		)
+		// create users
+		testAdminUser = await db.models.User.create(UserFactory.create(roleAdmin.id))
+		testEmployeeUser = await db.models.User.create(UserFactory.create(roleEmployee.id))
+		testClientUser = await db.models.User.create(UserFactory.create(roleClient.id))
 
-		testAdmin.token = testAdmin.generateToken()
-		testEmployee.token = testEmployee.generateToken()
-		testClient.token = testClient.generateToken()
+		// generate token
+		testAdminUser.token = await testAdminUser.generateToken()
+		testEmployeeUser.token = await testEmployeeUser.generateToken()
+		testClientUser.token = await testClientUser.generateToken()
 	})
 
 	afterEach(function () {
-		testAdmin = testEmployee = testClient = undefined
+		testAdminUser = testEmployeeUser = testClientUser = undefined
+		roleAdmin = roleEmployee = roleClient = undefined
 	})
 
-	it('single valid', async function () {
-		const bonnet = await db.models.Stable.create(StableFactory.createBonnet())
-		const response = await chai
-			.request(app)
-			.get(`${routePrefix}/${bonnet.id}`)
-			.set('Authorization', `Bearer ${testClient.token}`)
+	describe('show', function () {
+		let stable
 
-		response.should.have.status(200)
-		response.body.should.have.property('name').eql(bonnet.name)
-		response.body.should.have.property('vat').eql(bonnet.vat)
-		response.body.should.have.property('phone').eql(bonnet.phone)
-		response.body.should.have.property('email').eql(bonnet.email)
-		response.body.should.have.property('invoiceNb').eql(bonnet.invoiceNb)
-		response.body.should.have.property('invoicePrefix').eql(bonnet.invoicePrefix)
-		response.body.should.have.property('createdAt')
-		response.body.should.have.property('updatedAt')
-	})
+		beforeEach(async function () {
+			stable = await db.models.Stable.create(StableFactory.createBonnet())
+		})
 
-	it('single 404', async function () {
-		const response = await chai
-			.request(app)
-			.get(`${routePrefix}/1`)
-			.set('Authorization', `Bearer ${testClient.token}`)
-		response.should.have.status(404)
-	})
+		afterEach(function () {
+			stable = undefined
+		})
 
-	it('update success', async function () {
-		const bonnet = await db.models.Stable.create(StableFactory.createBonnet())
-		const response = await chai
-			.request(app)
-			.put(`${routePrefix}/${bonnet.id}`)
-			.send({
-				name: 'UpdatedName',
-				vat: 'BE0123456787',
-				phone: 'valid phone',
-				email: 'test@bidon.com',
-				invoiceNb: 10,
+		describe('permissions', async function () {
+			it('with role admin', async function () {
+				const response = await chai
+					.request(app)
+					.get(`${routePrefix}/${stable.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+				response.should.have.status(200)
+				response.body.should.have.property('id').eql(stable.id)
+				response.body.should.have.property('name').eql(stable.name)
+				response.body.should.have.property('vat').eql(stable.vat)
+				response.body.should.have.property('address').eql(stable.address)
+				response.body.should.have.property('iban').eql(stable.iban)
+				response.body.should.have.property('phone').eql(stable.phone)
+				response.body.should.have.property('email').eql(stable.email)
+				response.body.should.have.property('invoicePrefix').eql(stable.invoicePrefix)
+				response.body.should.have.property('createdAt').not.null
+				response.body.should.have.property('updatedAt').not.null
 			})
-			.set('Authorization', `Bearer ${testAdmin.token}`)
 
-		response.should.have.status(200)
-		response.body.should.have.property('name').eql('UpdatedName')
-		response.body.should.have.property('vat').eql('BE0123456787')
-		response.body.should.have.property('phone').eql('validphone')
-		response.body.should.have.property('email').eql('test@bidon.com')
-		response.body.should.have.property('invoiceNb').eql(10)
-		response.body.should.have.property('invoicePrefix').eql(bonnet.invoicePrefix)
-		response.body.should.have.property('createdAt')
-		response.body.should.have.property('updatedAt')
+			it('with role employee', async function () {
+				const response = await chai
+					.request(app)
+					.get(`${routePrefix}/${stable.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+				response.should.have.status(200)
+			})
+
+			it('with role client', async function () {
+				const response = await chai
+					.request(app)
+					.get(`${routePrefix}/${stable.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+
+				response.should.have.status(200)
+			})
+		})
+
+		it('404', async function () {
+			const response = await chai
+				.request(app)
+				.get(`${routePrefix}/${stable.id + 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('stable_404'))
+		})
 	})
 
-	it('update failure - role', async function () {
-		const bonnet = await db.models.Stable.create(StableFactory.createBonnet())
-		const response = await chai
-			.request(app)
-			.put(`${routePrefix}/${bonnet.id}`)
-			.send({
-				name: 'UpdatedName',
-				vat: 'BE0123456787',
-				phone: 'valid phone',
-				email: 'test@bidon.com',
-				invoiceNb: 10,
+	describe('update', function () {
+		let stable, data
+
+		beforeEach(async function () {
+			stable = await db.models.Stable.create(StableFactory.createBonnet())
+			data = {
+				name: 'updated',
+				vat: 'BE0123456788',
+				phone: '+32(0)494.91.08.90',
+				email: 'ecurie.bonnet.updated@gmail.com',
+				address: '1A rue du Chaumont, 1460 Ittre updated',
+				iban: 'BE68539007547035',
+				invoicePrefix: 'prefix',
+			}
+		})
+
+		afterEach(function () {
+			stable = undefined
+			data = undefined
+		})
+
+		describe('permissions', async function () {
+			it('with role admin', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${stable.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send(data)
+				response.should.have.status(200)
+				response.body.should.have.property('id').eql(stable.id)
+				response.body.should.have.property('name').eql(data.name)
+				response.body.should.have.property('vat').eql(data.vat)
+				response.body.should.have.property('address').eql(data.address)
+				response.body.should.have.property('iban').eql(data.iban)
+				response.body.should.have.property('phone').eql(data.phone)
+				response.body.should.have.property('email').eql(data.email)
+				response.body.should.have.property('invoicePrefix').eql(data.invoicePrefix)
+				response.body.should.have.property('createdAt').not.null
+				response.body.should.have.property('updatedAt').not.null
 			})
-			.set('Authorization', `Bearer ${testClient.token}`)
 
-		response.should.have.status(401)
-	})
+			it('with role employee', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${stable.id}`)
+					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
+					.send(data)
 
-	it('update failure', async function () {
-		const bonnet = await db.models.Stable.create(StableFactory.createBonnet())
-		const response = await chai
-			.request(app)
-			.put(`${routePrefix}/${bonnet.id}`)
-			.send({
-				vat: 'wrong',
-				email: 'wrong',
-				invoiceNb: -19,
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
 			})
-			.set('Authorization', `Bearer ${testAdmin.token}`)
 
-		response.should.have.status(422)
-		response.body.should.have.property('errors')
-		response.body.errors.should.have.length(5)
+			it('with role client', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${stable.id}`)
+					.set('Authorization', `Bearer ${testClientUser.token}`)
+					.send(data)
+
+				response.should.have.status(401)
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+			})
+		})
+
+		it('404', async function () {
+			const response = await chai
+				.request(app)
+				.put(`${routePrefix}/${stable.id + 1}`)
+				.set('Authorization', `Bearer ${testAdminUser.token}`)
+				.send(data)
+			response.should.have.status(404)
+			response.body.should.have.property('message').eql(i18next.t('stable_404'))
+		})
+
+		describe('middleware', async function () {
+			it('null mandatory values', async function () {
+				const response = await chai
+					.request(app)
+					.put(`${routePrefix}/${stable.id}`)
+					.set('Authorization', `Bearer ${testAdminUser.token}`)
+					.send({})
+				response.should.have.status(422)
+				response.body.errors
+					.map(error => error.path)
+					.should.eql(['name', 'vat', 'address', 'iban', 'phone', 'email'])
+			})
+		})
 	})
 })

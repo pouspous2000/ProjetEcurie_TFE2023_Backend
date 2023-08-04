@@ -2,6 +2,8 @@ export const pensionLocales = {
 	fr: {
 		//errors
 		pension_404: 'Cette pension est introuvable',
+		pension_422_cannotDeletePension:
+			"Vous ne pouvez pas supprimer cette pension car un ou plusieurs chevaux l'utilisent actuellement",
 		pension_unauthorized: "Vous n'avez pas les permissions requises pour cette opération sur cette pension",
 
 		//validation(sql)

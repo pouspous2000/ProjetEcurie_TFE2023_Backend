@@ -42,6 +42,8 @@ app.use((req, res, next) => {
 	next(createError(404, i18next.t('common_404')))
 })
 
+app.use(sequelizeErrorFormatter)
+
 // middleware to log unhandled errors, position is not a choice
 app.use(
 	expressWinston.errorLogger({
@@ -49,8 +51,6 @@ app.use(
 		statusLevels: true,
 	})
 )
-
-app.use(sequelizeErrorFormatter)
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, request, response, _next) => {

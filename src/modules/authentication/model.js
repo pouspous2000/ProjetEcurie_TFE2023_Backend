@@ -23,8 +23,8 @@ export class User extends Model {
 		return await compare(passwordPlain, this.password)
 	}
 
-	async sendMail(subject, html) {
-		await EmailUtils.sendEmail(this.email, subject, html)
+	async sendMail(subject, html, attachments = []) {
+		await EmailUtils.sendEmail(this.email, subject, html, attachments)
 	}
 
 	generateToken(expiresIn = '1h') {

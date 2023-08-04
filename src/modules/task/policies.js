@@ -97,6 +97,7 @@ export class TaskPolicy {
 							throw createError(422, i18next.t('task_422_update_employee_fromBlocked_toInProgress'))
 						}
 					}
+
 					if (!['remark', 'status', 'id'].includes(key) && task[key] !== data[key]) {
 						if (
 							['startingAt', 'endingAt', 'createdAt', 'updatedAt'].includes(key) &&

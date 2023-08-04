@@ -1,5 +1,6 @@
 export const invoiceLocales = {
 	fr: {
+		invoice: 'Facture',
 		invoice_404: 'La facture demandée est introuvable',
 		aws_404: 'la clef demandée est introuvable',
 		invoice_401: "Vous n'avez pas les permissions requises pour cette opération sur cette facture",

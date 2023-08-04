@@ -1,25 +1,37 @@
+import { Op } from 'sequelize'
 import cron from 'node-cron'
 import { InvoiceService } from '@/modules/invoice/service'
-import { CronService } from '@/modules/cron/service'
+import { RoleService } from '@/modules/role/service'
+import db from '@/database'
+import { errorHandlerLogger } from '@/loggers/loggers'
 
 export class InvoiceCron {
 	constructor() {
 		this._invoiceService = new InvoiceService()
-		this._cronService = new CronService()
+		this._roleService = new RoleService()
 	}
 
 	async start() {
-		let i = 0 // will be deleted as soon as invoice logic is implemented
 		const invoiceGenerationCron = cron.schedule(
 			'0 0 1 * *', // every first day of the month at midnight
 			async () => {
-				i++
-				try {
-					const cron = await this._cronService.create(`invoice${i}`)
-					await this._invoiceService.generateInvoice(`invoice${i}`)
-					await this._cronService.markAsPdfGenerated(cron)
-				} catch (error) {
-					console.log('error', error)
+				const clientRole = await this._roleService.getRoleByNameOrFail('CLIENT')
+				const clientSubRoleIds = await this._roleService.getSubRoleIds(clientRole)
+
+				const clientUsers = await db.models.User.findAll({
+					where: {
+						roleId: {
+							[Op.in]: clientSubRoleIds,
+						},
+					},
+				})
+
+				for (const clientUser of clientUsers) {
+					try {
+						await this._invoiceService.createInvoicesForUser(clientUser)
+					} catch (error) {
+						errorHandlerLogger.log('error', error)
+					}
 				}
 			},
 			{

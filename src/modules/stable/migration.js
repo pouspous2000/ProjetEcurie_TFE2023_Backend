@@ -17,6 +17,14 @@ export const upStable = async (queryInterface, Sequelize) =>
 			allowNull: false,
 			unique: true,
 		},
+		address: {
+			type: DataTypes.TEXT,
+			allowNull: false,
+		},
+		iban: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
 		phone: {
 			type: DataTypes.STRING,
 			allowNull: false,
@@ -26,11 +34,6 @@ export const upStable = async (queryInterface, Sequelize) =>
 			type: DataTypes.STRING,
 			allowNull: false,
 			unique: true,
-		},
-		invoiceNb: {
-			type: DataTypes.INTEGER,
-			allowNull: true,
-			default: 1,
 		},
 		invoicePrefix: {
 			type: DataTypes.STRING,

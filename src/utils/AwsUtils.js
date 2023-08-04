@@ -9,6 +9,10 @@ export class AwsService {
 		this._bucket = bucket
 	}
 
+	get bucket() {
+		return this._bucket
+	}
+
 	async findByKey(key) {
 		try {
 			return await this._client
@@ -27,6 +31,10 @@ export class AwsService {
 	}
 
 	async upload(key, data) {
+		if (process.env.NODE_ENV === 'TEST') {
+			return
+		}
+
 		try {
 			return await this._client
 				.upload({

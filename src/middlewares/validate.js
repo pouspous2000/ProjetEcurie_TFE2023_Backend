@@ -11,7 +11,7 @@ export default function (validations) {
 			return next()
 		}
 
-		const formattedErrors = []
+		const formattedErrors = [] // [{path : fieldName, errors: ['err1', 'err2']}}]
 		const formattedErrorKeys = []
 		for (const error of errors.array()) {
 			if (!formattedErrorKeys.includes(error.path)) {

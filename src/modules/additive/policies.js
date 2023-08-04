@@ -1,11 +1,8 @@
-import { AdditiveService } from '@/modules/additive/service'
 import createError from 'http-errors'
 import i18next from '../../../i18n'
 
 export class AdditivePolicy {
-	constructor() {
-		this._additiveService = new AdditiveService()
-	}
+	constructor() {}
 
 	async index(request, additives) {
 		return additives

@@ -1,3 +1,4 @@
+import { QueryTypes } from 'sequelize'
 import { describe, it, beforeEach, afterEach } from 'mocha'
 
 import chaiHttp from 'chai-http'
@@ -12,7 +13,16 @@ import { ContactFactory } from '@/modules/contact/factory'
 import { InvoiceFactory } from '@/modules/invoice/factory'
 import { CronFactory } from '@/modules/cron/factory'
 
+import { PensionDataService } from '@/modules/pension-data/service'
+import { RideDataService } from '@/modules/ride-data/service'
+
 import i18next from '../../../i18n'
+import { HorseFactory } from '@/modules/horse/factory'
+import { RideFactory } from '@/modules/ride/factory'
+import { PensionFactory } from '@/modules/pension/factory'
+import { AdditiveFactory } from '@/modules/additive/factory'
+import { TaskFactory } from '@/modules/task/factory'
+import { InvoiceService } from '@/modules/invoice/service'
 
 chai.should()
 chai.use(chaiHttp)
@@ -28,6 +38,11 @@ describe('Invoice module', async function () {
 	beforeEach(async function () {
 		await db.models.Cron.destroy({ truncate: { cascade: true } })
 		await db.models.Invoice.destroy({ truncate: { cascade: true } })
+		await db.models.Ride.destroy({ truncate: { cascade: true }, force: true })
+		await db.models.Pension.destroy({ truncate: { cascade: true }, force: true })
+		await db.models.Additive.destroy({ truncate: { cascade: true }, force: true })
+		await db.models.Task.destroy({ truncate: { cascade: true }, force: true })
+		await db.models.Horse.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
 
@@ -489,6 +504,93 @@ describe('Invoice module', async function () {
 				response.should.have.status(422)
 				response.body.should.have.property('message').eql(i18next.t('invoice_422_markAsUnpaid_alreadyUnpaid'))
 			})
+		})
+	})
+
+	describe('generateInvoices', async function () {
+		it('test on service', async function () {
+			const rides = await db.models.Ride.bulkCreate(RideFactory.createAll())
+			const pension = await db.models.Pension.create(PensionFactory.create())
+			const additive = await db.models.Additive.create(AdditiveFactory.create())
+			const ride = rides[0] // 'WORKINGDAYS
+			const rideDay = rides.find(ride => ride.period === 'DAY')
+			await db.models.Contact.create(ContactFactory.create(testClientUser1.id))
+
+			const today = new Date()
+			const previousMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+
+			const pensionDataService = new PensionDataService()
+			const rideDataService = new RideDataService()
+
+			const horse = await db.models.Horse.create(HorseFactory.create(testClientUser1.id, pension.id, ride.id))
+			let pensionData = await pensionDataService.add(horse, pension)
+			await db.query('UPDATE "pension_datas" SET "createdAt" = :newDate WHERE "id" = :id', {
+				replacements: {
+					newDate: previousMonth,
+					id: pensionData.id,
+				},
+				type: QueryTypes.UPDATE,
+			})
+
+			let rideData = await rideDataService.add(horse, ride)
+			await db.query('UPDATE "ride_datas" SET "createdAt" = :newDate WHERE "id" = :id', {
+				replacements: {
+					newDate: previousMonth,
+					id: rideData.id,
+				},
+				type: QueryTypes.UPDATE,
+			})
+
+			let additiveData = await db.models.AdditiveData.create({
+				additiveId: additive.id,
+				horseId: horse.id,
+				name: additive.name,
+				price: additive.price,
+				status: 'ACTIVE',
+			})
+
+			await db.query('UPDATE "additive_datas" SET "createdAt" = :newDate WHERE "id" = :id', {
+				replacements: {
+					newDate: previousMonth,
+					id: additiveData.id,
+				},
+				type: QueryTypes.UPDATE,
+			})
+
+			let task = await db.models.Task.create(TaskFactory.create(testAdminUser.id, testAdminUser.id, 'COMPLETED'))
+			await db.query('UPDATE "tasks" SET "updatedAt" = :newDate WHERE "id" = :id', {
+				replacements: {
+					newDate: previousMonth,
+					id: task.id,
+				},
+				type: QueryTypes.UPDATE,
+			})
+			task = await db.models.Task.findByPk(task.id)
+
+			let dailyRide = await db.models.DailyRide.create({
+				horseId: horse.id,
+				rideId: ride.id,
+				taskId: task.id,
+				name: 'DAY',
+				period: 'DAY',
+				price: rideDay.price,
+			})
+
+			await db.query('UPDATE "daily_rides" SET "createdAt" = :newDate WHERE "id" = :id', {
+				replacements: {
+					newDate: previousMonth,
+					id: dailyRide.id,
+				},
+				type: QueryTypes.UPDATE,
+			})
+
+			const invoiceService = new InvoiceService()
+			try {
+				await invoiceService.createInvoicesForUser(testClientUser1)
+				// [Imp] test the amount here
+			} catch (error) {
+				console.log(error)
+			}
 		})
 	})
 })

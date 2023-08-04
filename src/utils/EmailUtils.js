@@ -46,7 +46,7 @@ export class EmailUtils {
 
 		const emailInfo = await transporter.sendMail(email)
 
-		if (process.env.NODE_ENV !== 'PROD') {
+		if (process.env.NODE_ENV === 'DEV') {
 			console.log(`Mail preview at ${getTestMessageUrl(emailInfo)}`)
 		}
 

@@ -247,7 +247,6 @@ describe('Pension module', function () {
 				.put(`${routePrefix}/${pension.id}`)
 				.set('Authorization', `Bearer ${testAdminUser.token}`)
 				.send(updatedData)
-
 			response.should.have.status(200)
 			response.body.should.have.property('id').eql(pension.id)
 			response.body.should.have

@@ -9,8 +9,9 @@ export class StableFactory extends BaseFactory {
 			vat: this._generateBelgianVatNumber(),
 			phone: faker.phone.number(),
 			email: faker.internet.email(),
-			invoiceNb: 1,
 			invoicePrefix: '',
+			address: faker.location.streetAddress(),
+			iban: 'BE68539007547038',
 			...this._create(),
 		}
 	}
@@ -29,7 +30,8 @@ export class StableFactory extends BaseFactory {
 			vat: 'BE0123456789',
 			phone: '+32(0)494.91.08.85',
 			email: 'ecurie.bonnet@gmail.com',
-			invoiceNb: 1,
+			address: '1A rue du Chaumont, 1460 Ittre',
+			iban: 'BE68539007547034',
 			invoicePrefix: '',
 			...this._create(),
 		}

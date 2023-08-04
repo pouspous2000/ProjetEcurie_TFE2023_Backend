@@ -47,6 +47,25 @@ export default function (sequelize) {
 					this.setDataValue('vat', StringUtils.removeAllWhiteSpaces(value))
 				},
 			},
+			address: {
+				type: DataTypes.TEXT,
+				allowNull: false,
+				set(value) {
+					this.setDataValue('address', value ? value.trim() : value)
+				},
+			},
+			iban: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				isValidBelgianIban(value) {
+					if (!new RegExp('^(BE\\d{2})(\\d{12})$').test(value)) {
+						throw new Error(i18next.t('stable_sql_validation_iban_format'))
+					}
+				},
+				set(value) {
+					this.setDataValue('iban', value ? value.trim() : value)
+				},
+			},
 			phone: {
 				type: DataTypes.STRING,
 				allowNull: false,
@@ -70,20 +89,6 @@ export default function (sequelize) {
 				},
 				set(value) {
 					this.setDataValue('email', StringUtils.removeAllWhiteSpaces(value.toLowerCase()))
-				},
-			},
-			invoiceNb: {
-				type: DataTypes.INTEGER,
-				allowNull: true,
-				default: 1,
-				validate: {
-					isInt: {
-						msg: i18next.t('stable_sql_validation_invoiceNb_isInt'),
-					},
-					min: {
-						args: [1],
-						msg: i18next.t(''),
-					},
 				},
 			},
 			invoicePrefix: {
