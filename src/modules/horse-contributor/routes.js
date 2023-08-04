@@ -25,7 +25,7 @@ horseContributorRouter.get(
 horseContributorRouter.delete(
 	`/${prefix}/:id`,
 	isAuthenticated,
-	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
 	validate(HorseContributorValidator.delete()),
 	controller.delete
 )
@@ -39,7 +39,7 @@ horseContributorRouter.post(
 horseContributorRouter.put(
 	`/${prefix}/:id`,
 	isAuthenticated,
-	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),
+	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
 	validate(HorseContributorValidator.update()),
 	controller.update
 )

@@ -18,6 +18,7 @@ export class HorseContributorPolicy {
 			case 'EMPLOYEE':
 				return horseContributorJob
 			case 'CLIENT':
+				// this code should never be reached confer middleware
 				throw createError(401, i18next.t('horseContributor_401'))
 		}
 	}
@@ -34,6 +35,7 @@ export class HorseContributorPolicy {
 			case 'EMPLOYEE':
 				return horseContributorJob
 			case 'CLIENT':
+				// this code should never be reached confer middleware
 				throw createError(401, i18next.t('horseContributor_401'))
 		}
 	}

@@ -180,7 +180,9 @@ describe('HorseContributor module', function () {
 					.set('Authorization', `Bearer ${testClientUser.token}`)
 
 				response.should.have.status(401)
-				response.body.should.have.property('message').eql(i18next.t('horseContributor_401'))
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
 			})
 		})
 
@@ -341,7 +343,9 @@ describe('HorseContributor module', function () {
 					.set('Authorization', `Bearer ${testClientUser.token}`)
 					.send(data)
 				response.should.have.status(401)
-				response.body.should.have.property('message').eql(i18next.t('horseContributor_401'))
+				response.body.should.have
+					.property('message')
+					.eql(i18next.t('authentication_role_incorrectRolePermission'))
 			})
 		})
 
