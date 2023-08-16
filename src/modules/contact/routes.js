@@ -11,6 +11,12 @@ const controller = new ContactController()
 const prefix = 'contacts'
 contactRouter.get(`/${prefix}`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.index)
 contactRouter.get(
+	`/${prefix}/by-role/:roleId`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	controller.getContactByRole
+)
+contactRouter.get(
 	`/${prefix}/:id`,
 	isAuthenticated,
 	hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']),

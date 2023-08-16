@@ -47,6 +47,7 @@ export class User extends Model {
 			as: 'rideHorses',
 		})
 		User.hasMany(models.Invoice, { foreignKey: 'clientId', as: 'invoices' })
+		User.belongsTo(models.Role, { foreignKey: 'roleId', as: 'role' })
 	}
 }
 

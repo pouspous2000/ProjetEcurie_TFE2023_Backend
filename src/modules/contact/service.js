@@ -1,7 +1,10 @@
+import createError from 'http-errors'
+import { Op } from 'sequelize'
 import db from '@/database'
 import { Contact } from '@/modules/contact/model'
+import { User } from '@/modules/authentication/model'
 import { BaseService } from '@/core/BaseService'
-import createError from 'http-errors'
+import { RoleService } from '@/modules/role/service'
 import i18next from '../../../i18n'
 
 export class ContactService extends BaseService {
@@ -21,5 +24,22 @@ export class ContactService extends BaseService {
 		}
 
 		return await super.create(data)
+	}
+
+	async getContactByRole(roleId) {
+		const roleService = new RoleService()
+		const role = await roleService.findOrFail(roleId)
+		const subRoleIds = await roleService.getSubRoleIds(role)
+		return await this.index({
+			include: {
+				model: User,
+				as: 'user',
+			},
+			where: {
+				'$user.roleId$': {
+					[Op.in]: subRoleIds,
+				},
+			},
+		})
 	}
 }

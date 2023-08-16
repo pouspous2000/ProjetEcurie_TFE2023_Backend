@@ -2,7 +2,7 @@ export const ContactLocales = {
 	fr: {
 		//errors
 		contact_404: 'Ce contact est introuvable',
-		contact_unauthorized: "Vous n'avez pas les permissions requises pour ce contact",
+		contact_401: "Vous n'avez pas les permissions requises pour ce contact",
 		contact_422_inexistingUser: "L'utilisateur renseigné n'existe pas",
 		contact_422_alreadyContact: "L'utilisateur renseigné possède déjà un contact",
 

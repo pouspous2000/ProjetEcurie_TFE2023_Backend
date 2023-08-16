@@ -1066,6 +1066,49 @@
         "description": "Create new contact"
       }
     },
+    "/contacts/by-role/{roleId}": {
+      "get": {
+        "summary": "Get contacts by roleId [ADMIN]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "roleId",
+            "type": "integer",
+            "required": true,
+            "description": "role id"
+          }
+        ],
+        "tags": [
+          "Contact"
+        ],
+        "description": "Get contacts by roleId",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ContactList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/contacts/{id}": {
       "get": {
         "summary": "Get contact by id  [ADMIN, EMPLOYEE, CLIENT]",

@@ -35,7 +35,6 @@ export class ContactPolicy {
 		await this._getSinglePermissionCreate(request, { userId: data.userId })
 	}
 
-	// eslint-disable-next-line no-unused-vars
 	async update(request, contact) {
 		await this._getSinglePermissionsButCreate(request, contact)
 	}
@@ -48,12 +47,12 @@ export class ContactPolicy {
 				// eslint-disable-next-line no-case-declarations
 				const permittedContactsForEmployees = await this._getPermittedContactsForEmployee(request.user.id)
 				if (!permittedContactsForEmployees.find(permittedContact => permittedContact.id === contact.id)) {
-					throw createError(401, i18next.t('contact_unauthorized'))
+					throw createError(401, i18next.t('contact_401'))
 				}
 				break
 			case 'CLIENT':
 				if (contact.userId !== request.user.id) {
-					throw createError(401, i18next.t('contact_unauthorized'))
+					throw createError(401, i18next.t('contact_401'))
 				}
 				break
 		}
@@ -84,6 +83,7 @@ export class ContactPolicy {
 			case 'ADMIN':
 				break
 			case 'EMPLOYEE':
+				// we can create a contact for a client or for the employee itself
 				// eslint-disable-next-line no-case-declarations
 				const permittedUsers = await db.models.User.findAll({
 					where: {
@@ -102,12 +102,12 @@ export class ContactPolicy {
 					},
 				})
 				if (!permittedUsers.find(user => user.id === contact.userId)) {
-					throw createError(401, i18next.t('contact_unauthorized'))
+					throw createError(401, i18next.t('contact_401'))
 				}
 				break
 			case 'CLIENT':
 				if (contact.userId !== request.user.id) {
-					throw createError(401, i18next.t('contact_unauthorized'))
+					throw createError(401, i18next.t('contact_401'))
 				}
 				break
 		}
