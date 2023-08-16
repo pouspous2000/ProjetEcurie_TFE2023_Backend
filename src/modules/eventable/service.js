@@ -5,6 +5,7 @@ import { EventService } from '@/modules/event/service'
 import { CompetitionService } from '@/modules/competition/service'
 import { LessonService } from '@/modules/lesson/service'
 import { TaskService } from '@/modules/task/service'
+import db from '@/database'
 
 export class EventableService {
 	constructor() {
@@ -36,7 +37,7 @@ export class EventableService {
 					},
 				},
 			],
-			attributes: [[Sequelize.literal("'event'"), 'eventable']],
+			attributes: [...Object.keys(db.models.Event.rawAttributes), [Sequelize.literal("'event'"), 'eventable']],
 		})
 
 		const competitions = await this._competitionService.index({
@@ -60,7 +61,10 @@ export class EventableService {
 					},
 				},
 			],
-			attributes: [[Sequelize.literal("'competition'"), 'eventable']],
+			attributes: [
+				...Object.keys(db.models.Competition.rawAttributes),
+				[Sequelize.literal("'competition'"), 'eventable'],
+			],
 		})
 
 		const lessons = await this._lessonService.index({
@@ -82,7 +86,7 @@ export class EventableService {
 					},
 				},
 			],
-			attributes: [[Sequelize.literal("'lesson'"), 'eventable']],
+			attributes: [...Object.keys(db.models.Lesson.rawAttributes), [Sequelize.literal("'lesson'"), 'eventable']],
 		})
 
 		const tasks = await this._taskService.index({
@@ -104,7 +108,7 @@ export class EventableService {
 					},
 				},
 			],
-			attributes: [[Sequelize.literal("'task'"), 'eventable']],
+			attributes: [...Object.keys(db.models.Task.rawAttributes), [Sequelize.literal("'task'"), 'eventable']],
 		})
 
 		return [...events, ...competitions, ...lessons, ...tasks]
