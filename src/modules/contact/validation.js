@@ -3,6 +3,10 @@ import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
 export class ContactValidator extends BaseValidator {
+	static byRole() {
+		return [...super.show('roleId')]
+	}
+
 	static create() {
 		return [
 			body('userId')
