@@ -115,18 +115,7 @@ export class InvoiceService extends BaseService {
 					contact,
 					horseReporter
 				)
-				await transaction2.commit()
-			} catch (error) {
-				errorHandlerLogger.log(
-					'error',
-					`error while creating pdf invoice for client ${user.id} at date ${new Date()} : error ${error}`
-				)
-				await transaction2.rollback()
-				continue
-			}
-
-			// mind this update is not strictly required
-			try {
+				// mind this update is not strictly required
 				await db.models.AdditiveData.update(
 					{ status: 'INVOICED' },
 					{
@@ -137,13 +126,13 @@ export class InvoiceService extends BaseService {
 						},
 					}
 				)
+				await transaction2.commit()
 			} catch (error) {
 				errorHandlerLogger.log(
 					'error',
-					`error while updating additiveDatas for client ${user.id} at date ${new Date()} and invoice ${
-						invoice.id
-					} : error ${error}`
+					`error while creating pdf invoice for client ${user.id} at date ${new Date()} : error ${error}`
 				)
+				await transaction2.rollback()
 				continue
 			}
 
@@ -254,7 +243,7 @@ export class InvoiceService extends BaseService {
 
 		const drawInvoiceItem = item => {
 			// item {name: string, price: string, monthlyPrice ?: string, nbDays?: integer)
-			;['name', 'monthlyPrice', 'nbDays', 'price'].forEach((key, index) => {
+			['name', 'monthlyPrice', 'nbDays', 'price'].forEach((key, index) => {
 				currentX = margin + (index / 4) * availableWith
 				let printedValue = !item[key] ? '-' : item[key]
 				if (typeof printedValue === 'number') {

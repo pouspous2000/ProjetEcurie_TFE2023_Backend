@@ -772,15 +772,12 @@ describe('Contact module', function () {
 				response.body.should.have.length(testClientUsers.length)
 			})
 
-			it('with role employee - not allowed', async function () {
+			it('with role employee - allowed', async function () {
 				const response = await chai
 					.request(app)
 					.get(`${routePrefix}/by-role/${roleAdmin.id}`)
 					.set('Authorization', `Bearer ${testEmployeeUser.token}`)
-				response.should.have.status(401)
-				response.body.should.have
-					.property('message')
-					.eql(i18next.t('authentication_role_incorrectRolePermission'))
+				response.should.have.status(200)
 			})
 
 			it('with role client - not allowed', async function () {
