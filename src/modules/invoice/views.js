@@ -21,6 +21,13 @@ export class InvoiceView {
 		}
 	}
 
+	create(response) {
+		return {
+			errors: response.errors,
+			invoices: response.invoices.map(invoice => this.show(invoice)),
+		}
+	}
+
 	markAsPaid(invoice) {
 		return this.show(invoice)
 	}
