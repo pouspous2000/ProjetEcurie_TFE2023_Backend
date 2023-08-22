@@ -42,6 +42,7 @@ describe('Cron module', async function () {
 				number: 1,
 				price: 10,
 				status: 'UNPAID',
+				period: now,
 				dueDateAt: dueDateAt,
 				paidAt: null,
 			})
@@ -64,6 +65,7 @@ describe('Cron module', async function () {
 				number: 1,
 				price: 10,
 				status: 'UNPAID',
+				period: now,
 				dueDateAt: dueDateAt,
 				paidAt: null,
 			})
@@ -88,6 +90,7 @@ describe('Cron module', async function () {
 				price: 10,
 				status: 'UNPAID',
 				dueDateAt: dueDateAt,
+				period: now,
 				paidAt: null,
 			})
 

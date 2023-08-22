@@ -9,6 +9,8 @@ export const invoiceLocales = {
 			'La facture ne peut avoir une date de paiement antérieure à la date de création',
 		invoice_422_markAsPaid_alreadyPaid: 'La facture est déjà payée',
 		invoice_422_markAsUnpaid_alreadyUnpaid: 'La facture est déjà impayée',
+		invoice_422_alreadyExistingInvoice: 'La facture que vous voulez générer a déjà été créée',
+		invoice_422_inexistingUser: "L'utilisateur que vous avez renseigné n'existe pas",
 
 		//sql
 		invoice_sql_validation_number_min: 'Le numéro de facture ne peut pas être négatif',
@@ -26,9 +28,13 @@ export const invoiceLocales = {
 		invoice_request_validation_query_year_isInt: 'Veuillez entrer une année valide',
 		invoice_request_validation_query_month_isInt:
 			'Veuillez entrer un mois valide, valeurs acceptées de 0 à 11 inclus',
+		invoice_request_validation_userId_exists: "Veuillez renseigner l'id du client",
+		invoice_request_validation_userId_isInt:
+			'Veuillez renseigner un id valide de client (entier strictement positif)',
 
 		//body params
 		invoice_request_validation_paidAt_isDate: 'Veuillez entrer une date valide ISO format de YYYY-MM-DDTHH:MM:SSZ',
+		invoice_request_validation_period_isDate: 'Veuillez entrer une date valide ISO format de YYYY-MM-DDTHH:MM:SSZ',
 	},
 	en: {},
 	nl: {},

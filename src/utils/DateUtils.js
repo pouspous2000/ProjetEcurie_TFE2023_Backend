@@ -8,31 +8,33 @@ export class DateUtils {
 		return true
 	}
 
-	static getFirstDayOfLastMonth() {
-		const today = new Date()
+	static getFirstDayOfThisMonth(referenceDate) {
+		const date = new Date(referenceDate)
+		return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1, 0, 0, 0, 0))
+	}
 
-		const referenceDate = new Date(today)
-		let previousMonth = referenceDate.getMonth() - 1
-		let year = referenceDate.getFullYear()
+	static getLastDayOfThisMonth(referenceDate) {
+		const date = new Date(referenceDate)
+		return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0, 23, 59, 59, 999))
+	}
+
+	static getFirstDayOfPreviousMonth(referenceDate) {
+		const date = new Date(referenceDate)
+
+		let year = date.getUTCFullYear()
+		let previousMonth = date.getUTCMonth() - 1
 
 		if (previousMonth < 0) {
 			previousMonth = 11
 			year--
 		}
-		return new Date(year, previousMonth, 1)
+
+		return new Date(Date.UTC(year, previousMonth, 1, 0, 0, 0, 0))
 	}
 
-	static getLastDateOfLastMonth() {
-		const today = new Date()
-		const firstDayOfThisMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-		const lastDayOfLastMonth = new Date(firstDayOfThisMonth)
-		lastDayOfLastMonth.setDate(lastDayOfLastMonth.getDate() - 1)
-
-		lastDayOfLastMonth.setHours(23)
-		lastDayOfLastMonth.setMinutes(59)
-		lastDayOfLastMonth.setSeconds(59)
-		lastDayOfLastMonth.setMilliseconds(999)
-		return lastDayOfLastMonth
+	static getLastDayOfPreviousMonth(referenceDate) {
+		const date = new Date(referenceDate)
+		return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 0, 23, 59, 59, 999))
 	}
 
 	static getNbDaysBetween2Dates(afterDate, beforeDate) {

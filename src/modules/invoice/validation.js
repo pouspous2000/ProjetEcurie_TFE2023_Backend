@@ -42,4 +42,18 @@ export class InvoiceValidator extends BaseValidator {
 				.toDate(),
 		]
 	}
+
+	static create() {
+		return [
+			body('userId')
+				.exists()
+				.withMessage(i18next.t('invoice_request_validation_userId_exists'))
+				.isInt({ min: 1 })
+				.withMessage(i18next.t('invoice_request_validation_userId_isInt')),
+			body('period')
+				.optional()
+				.custom(value => DateUtils.isCorrectFormat(value, 'invoice_request_validation_period_isDate'))
+				.toDate(),
+		]
+	}
 }

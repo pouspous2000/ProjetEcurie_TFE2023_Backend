@@ -20,9 +20,8 @@ export class InvoiceController extends BaseController {
 		this.download = this.download.bind(this)
 		this.markAsPaid = this.markAsPaid.bind(this)
 		this.markAsUnpaid = this.markAsUnpaid.bind(this)
-
 		this.upload = this.upload.bind(this)
-		this.generateInvoice = this.generateInvoice.bind(this)
+		this.manualCreateInvoiceForUserId = this.manualCreateInvoiceForUserId.bind(this)
 	}
 
 	async index(request, response, next) {
@@ -86,11 +85,11 @@ export class InvoiceController extends BaseController {
 		}
 	}
 
-	async generateInvoice(request, response, next) {
-		// this method is about to be deleted, was only a proof-of-concept
+	async manualCreateInvoiceForUserId(request, response, next) {
 		try {
-			await this._service.generateInvoice('someuniquekey')
-			return response.status(200).json({ message: 'OK' })
+			const { userId, period } = request.body
+			const res = await this._service.manualCreateInvoiceForUserId(userId, period) // {invoices: [Invoice], errors: [error]}
+			return response.status(200).json(this._view.create(res))
 		} catch (error) {
 			return next(error)
 		}

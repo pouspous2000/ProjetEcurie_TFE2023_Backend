@@ -17,6 +17,7 @@ import { HorseInvoiceReporter } from '@/modules/invoice/ClientInvoiceReporter'
 import db from '@/database'
 import i18next from '../../../i18n'
 import { PathUtils } from '@/utils/PathUtils'
+import { DateUtils } from '@/utils/DateUtils'
 
 export class InvoiceService extends BaseService {
 	constructor() {
@@ -25,7 +26,22 @@ export class InvoiceService extends BaseService {
 		this._awsService = new AwsService()
 	}
 
-	async createInvoicesForUser(user) {
+	async createInvoicesForUser(user, referenceDatetime = undefined) {
+		// get the invoicing period
+		let startingAt, endingAt
+		const invoices = []
+		const errors = []
+
+		if (referenceDatetime) {
+			const referenceDate = new Date(referenceDatetime)
+			startingAt = DateUtils.getFirstDayOfThisMonth(referenceDate)
+			endingAt = DateUtils.getLastDayOfThisMonth(referenceDate)
+		} else {
+			const referenceDate = new Date()
+			startingAt = DateUtils.getFirstDayOfPreviousMonth(referenceDate)
+			endingAt = DateUtils.getLastDayOfPreviousMonth(referenceDate)
+		}
+
 		const stable = await db.models.Stable.findOne({
 			order: [['id', 'DESC']],
 		})
@@ -40,15 +56,30 @@ export class InvoiceService extends BaseService {
 			},
 		})
 
-		const horseReporters = horses.map(horse => new HorseInvoiceReporter(horse))
+		const horseReporters = horses.map(horse => new HorseInvoiceReporter(horse, startingAt, endingAt))
 
 		for (const horseReporter of horseReporters) {
+			const existingInvoice = await db.models.Invoice.findOne({
+				where: {
+					clientId: user.id,
+					horseId: horseReporter.horse.id,
+					period: {
+						[Op.between]: [startingAt, endingAt],
+					},
+				},
+			})
+
+			if (existingInvoice) {
+				errors.push(i18next.t('invoice_422_alreadyExistingInvoice'))
+				continue
+			}
+
 			const transaction1 = await db.transaction()
 			let invoice, cron, pdf
 			// create invoice and cron
 			try {
 				const dueDate = new Date()
-				dueDate.setDate(dueDate.getDate() + 30) // 30 days to pay
+				dueDate.setDate(dueDate.getDate() + 31) // 31 days to pay from the day the invoice has been generated
 
 				// get report
 				await horseReporter.getReport()
@@ -60,14 +91,17 @@ export class InvoiceService extends BaseService {
 				if (horseReporter.totalPriceVatIncluded === 0.0) {
 					continue
 				}
+
 				// create invoice
 				invoice = await db.models.Invoice.create({
 					clientId: user.id,
+					horseId: horseReporter.horse.id,
 					bucket: null,
 					key: null,
 					number: lastInvoice ? lastInvoice.number + 1 : 1,
 					price: horseReporter.totalPriceVatIncluded,
 					status: 'UNPAID',
+					period: startingAt,
 					dueDateAt: dueDate,
 					paidAt: null,
 				})
@@ -81,6 +115,7 @@ export class InvoiceService extends BaseService {
 						user.id
 					} at date ${new Date()} with report ${horseReporter} : error ${error}`
 				)
+				errors.push(error)
 				await transaction1.rollback()
 				const roleService = new RoleService()
 				const adminRole = await roleService.getRoleByNameOrFail('ADMIN')
@@ -115,7 +150,8 @@ export class InvoiceService extends BaseService {
 					contact,
 					horseReporter
 				)
-				// mind this update is not strictly required
+
+				// mind this update is not strictly required but we execute it to keep consistent
 				await db.models.AdditiveData.update(
 					{ status: 'INVOICED' },
 					{
@@ -132,6 +168,7 @@ export class InvoiceService extends BaseService {
 					'error',
 					`error while creating pdf invoice for client ${user.id} at date ${new Date()} : error ${error}`
 				)
+				errors.push(error)
 				await transaction2.rollback()
 				continue
 			}
@@ -140,7 +177,8 @@ export class InvoiceService extends BaseService {
 			const transaction3 = await db.transaction()
 			try {
 				const templateSource = await readFile(
-					path.join(PathUtils.getSrcPath(), 'modules', 'invoice', 'emails', 'invoice.hbs')
+					path.join(PathUtils.getSrcPath(), 'modules', 'invoice', 'emails', 'invoice.hbs'),
+					'utf8'
 				)
 				const template = handlebars.compile(templateSource)
 				const html = template({ contact: contact, horse: horseReporter.horse })
@@ -159,9 +197,24 @@ export class InvoiceService extends BaseService {
 						invoice.id
 					} : error ${error}`
 				)
+				errors.push(error)
 				await transaction3.rollback()
 			}
+			invoices.push(invoice)
 		}
+
+		return {
+			errors: errors,
+			invoices: invoices,
+		}
+	}
+
+	async manualCreateInvoiceForUserId(userId, referenceDatetime = undefined) {
+		const user = await db.models.User.findByPk(userId)
+		if (!user) {
+			throw createError(422, i18next.t('invoice_422_inexistingUser'))
+		}
+		return await this.createInvoicesForUser(user, referenceDatetime)
 	}
 
 	async markAsPaid(invoice, paidAt = undefined) {
@@ -243,7 +296,7 @@ export class InvoiceService extends BaseService {
 
 		const drawInvoiceItem = item => {
 			// item {name: string, price: string, monthlyPrice ?: string, nbDays?: integer)
-			['name', 'monthlyPrice', 'nbDays', 'price'].forEach((key, index) => {
+			;['name', 'monthlyPrice', 'nbDays', 'price'].forEach((key, index) => {
 				currentX = margin + (index / 4) * availableWith
 				let printedValue = !item[key] ? '-' : item[key]
 				if (typeof printedValue === 'number') {
@@ -353,20 +406,5 @@ export class InvoiceService extends BaseService {
 
 		await this._awsService.upload(key, pdfStream)
 		return pdfStream
-	}
-
-	// rename generateInvoice
-	async generateInvoice(key) {
-		// the content is static for now
-		const doc = await PDFDocument.create()
-		const page = doc.addPage([400, 200])
-		const text = 'This is important.Sure.'
-		page.drawText(text, { x: 50, y: 150 })
-
-		const pdfStream = new PassThrough()
-		const pdfBytes = await doc.save()
-		await pdfStream.end(pdfBytes)
-
-		await this._awsService.upload(key, pdfStream)
 	}
 }

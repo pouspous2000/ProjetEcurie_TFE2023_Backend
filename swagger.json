@@ -4380,6 +4380,65 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Generate invoice for userId and with optional period [ADMIN]",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "userId"
+              ],
+              "properties": {
+                "userId": {
+                  "type": "integer"
+                },
+                "period": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/InvoiceCreate"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+              "$ref": "#/definitions/UnprocessableEntityResponse"
+            }
+          }
+        },
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Generate an invoice for a client and with optional period (datetime)"
       }
     },
     "/invoices/{id}": {
@@ -5521,6 +5580,23 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/Invoice"
+      }
+    },
+    "InvoiceCreate": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "invoices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Invoice"
+          }
+        }
       }
     }
   }

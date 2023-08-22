@@ -17,6 +17,14 @@ invoiceRouter.get(
 	controller.index
 )
 
+invoiceRouter.post(
+	`/${prefix}`,
+	isAuthenticated,
+	hasRoleCategory(['ADMIN']),
+	validate(InvoiceValidator.create()),
+	controller.manualCreateInvoiceForUserId
+)
+
 invoiceRouter.get(
 	`/${prefix}/download/:id`,
 	isAuthenticated,
@@ -48,8 +56,5 @@ invoiceRouter.post(
 	validate(InvoiceValidator.show()),
 	controller.markAsUnpaid
 )
-
-// invoiceRouter.post(`/${prefix}`, isAuthenticated, uploadFile.single('document'), controller.upload)
-// invoiceRouter.post(`/${prefix}/generatepdf`, isAuthenticated, controller.generateInvoice)
 
 export default invoiceRouter

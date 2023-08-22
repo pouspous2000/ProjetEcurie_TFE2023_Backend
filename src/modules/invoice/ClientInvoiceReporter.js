@@ -4,9 +4,9 @@ import db from '@/database'
 import { Task } from '@/modules/task/model'
 
 export class HorseInvoiceReporter {
-	constructor(horse) {
-		this._startingAt = DateUtils.getFirstDayOfLastMonth()
-		this._endingAt = DateUtils.getLastDateOfLastMonth()
+	constructor(horse, startingAt, endingAt) {
+		this._startingAt = new Date(startingAt)
+		this._endingAt = new Date(endingAt)
 		this._horse = horse
 		this._totalPriceVatExcluded = 0.0
 		this._totalPriceVatIncluded = 0.0
@@ -95,16 +95,20 @@ export class HorseInvoiceReporter {
 					order: [['id', 'DESC']],
 					paranoid: false,
 				})
-
-				const pensionDataReport = {
-					name: previousPensionData.name,
-					monthlyPrice: previousPensionData.monthlyPrice,
+				if (previousPensionData) {
+					const pensionDataReport = {
+						name: previousPensionData.name,
+						monthlyPrice: previousPensionData.monthlyPrice,
+					}
+					pensionDataReport.nbDays = DateUtils.getNbDaysBetween2Dates(
+						pensionDatas[0].createdAt,
+						this._startingAt
+					)
+					const nbOfDaysOfMonth = DateUtils.getNbDaysOfMonthFromDate(previousPensionData.deletedAt)
+					const dailyPrice = pensionDataReport.monthlyPrice / nbOfDaysOfMonth
+					pensionDataReport.price = dailyPrice * pensionDataReport.nbDays
+					this._pensionDataReport.push(pensionDataReport)
 				}
-				pensionDataReport.nbDays = DateUtils.getNbDaysBetween2Dates(pensionDatas[0].createdAt, this._startingAt)
-				const nbOfDaysOfMonth = DateUtils.getNbDaysOfMonthFromDate(previousPensionData.deletedAt)
-				const dailyPrice = pensionDataReport.monthlyPrice / nbOfDaysOfMonth
-				pensionDataReport.price = dailyPrice * pensionDataReport.nbDays
-				this._pensionDataReport.push(pensionDataReport)
 			}
 
 			pensionDatas.forEach(pensionData => {

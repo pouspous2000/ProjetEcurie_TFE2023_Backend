@@ -12,17 +12,18 @@ import { UserFactory } from '@/modules/authentication/factory'
 import { ContactFactory } from '@/modules/contact/factory'
 import { InvoiceFactory } from '@/modules/invoice/factory'
 import { CronFactory } from '@/modules/cron/factory'
-
-import { PensionDataService } from '@/modules/pension-data/service'
-import { RideDataService } from '@/modules/ride-data/service'
-
-import i18next from '../../../i18n'
 import { HorseFactory } from '@/modules/horse/factory'
 import { RideFactory } from '@/modules/ride/factory'
 import { PensionFactory } from '@/modules/pension/factory'
 import { AdditiveFactory } from '@/modules/additive/factory'
 import { TaskFactory } from '@/modules/task/factory'
+import { StableFactory } from '@/modules/stable/factory'
+
+import { PensionDataService } from '@/modules/pension-data/service'
+import { RideDataService } from '@/modules/ride-data/service'
 import { InvoiceService } from '@/modules/invoice/service'
+
+import i18next from '../../../i18n'
 
 chai.should()
 chai.use(chaiHttp)
@@ -45,7 +46,9 @@ describe('Invoice module', async function () {
 		await db.models.Horse.destroy({ truncate: { cascade: true } })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })
+		await db.models.Stable.destroy({ truncate: { cascade: true } })
 
+		await db.models.Stable.create(StableFactory.createBonnet())
 		//create roles
 		roleAdmin = await db.models.Role.create(RoleFactory.createAdmin())
 		roleEmployee = await db.models.Role.create(RoleFactory.createEmployee())
@@ -585,12 +588,7 @@ describe('Invoice module', async function () {
 			})
 
 			const invoiceService = new InvoiceService()
-			try {
-				await invoiceService.createInvoicesForUser(testClientUser1)
-				// [Imp] test the amount here
-			} catch (error) {
-				console.log(error)
-			}
+			await invoiceService.createInvoicesForUser(testClientUser1)
 		})
 	})
 })

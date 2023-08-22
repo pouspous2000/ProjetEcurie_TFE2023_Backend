@@ -12,6 +12,7 @@ export class Invoice extends Model {
 
 	static associate(models) {
 		Invoice.belongsTo(models.User, { foreignKey: 'clientId', as: 'client' })
+		Invoice.belongsTo(models.Horse, { foreignKey: 'horseId', as: 'horse' })
 		Invoice.hasOne(models.Cron, { foreignKey: 'invoiceId', as: 'cron' })
 	}
 }
@@ -27,6 +28,10 @@ export default function (sequelize) {
 			clientId: {
 				type: DataTypes.INTEGER,
 				allowNull: true, // to prevent data lost if client deleted its account
+			},
+			horseId: {
+				type: DataTypes.INTEGER,
+				allowNull: true,
 			},
 			bucket: {
 				type: DataTypes.STRING,
@@ -61,16 +66,13 @@ export default function (sequelize) {
 				allowNull: false,
 				values: ['UNPAID', 'PAID'],
 			},
+			period: {
+				type: DataTypes.DATE,
+				allowNull: false,
+			},
 			dueDateAt: {
 				type: DataTypes.DATE,
 				allowNull: false,
-				validate: {
-					isAfterNow(value) {
-						if (value < new Date()) {
-							throw new Error(i18next.t('invoice_sql_validation_dueDate_isAfterNow'))
-						}
-					},
-				},
 			},
 			paidAt: {
 				type: DataTypes.DATE,

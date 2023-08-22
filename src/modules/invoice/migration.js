@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize'
 import { Invoice } from '@/modules/invoice/model'
 import { User } from '@/modules/authentication/model'
+import { Horse } from '@/modules/horse/model'
 
 export const upInvoice = async (queryInterface, Sequelize) =>
 	queryInterface.createTable(Invoice.getTable(), {
@@ -14,6 +15,16 @@ export const upInvoice = async (queryInterface, Sequelize) =>
 			allowNull: true,
 			references: {
 				model: User.getTable(),
+				field: 'id',
+			},
+			onDelete: 'SET NULL',
+			onUpdate: 'CASCADE',
+		},
+		horseId: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			references: {
+				model: Horse.getTable(),
 				field: 'id',
 			},
 			onDelete: 'SET NULL',
@@ -39,6 +50,10 @@ export const upInvoice = async (queryInterface, Sequelize) =>
 			type: DataTypes.ENUM,
 			allowNull: false,
 			values: ['UNPAID', 'PAID'],
+		},
+		period: {
+			type: DataTypes.DATE,
+			allowNull: false,
 		},
 		dueDateAt: {
 			type: DataTypes.DATE,
