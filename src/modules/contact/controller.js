@@ -23,4 +23,14 @@ export class ContactController extends BaseController {
 			return next(error)
 		}
 	}
+
+	async getContactByRoleCategory(request, response, next) {
+        try {
+            const { roleCategory } = request.params
+            const contacts = await this._service.getContactsByRoleCategory(roleCategory)
+            return response.status(200).json(this._view.index(contacts))
+        } catch (error) {
+            next(error)
+        }
+    }
 }
