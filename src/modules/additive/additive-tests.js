@@ -20,7 +20,7 @@ describe('Additive module', function () {
 	let roleAdmin, roleEmployee, roleClient
 
 	beforeEach(async function () {
-		await db.models.AdditiveData.destroy({ truncate: { cascade: true } })
+		await db.models.AdditiveData.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.Additive.destroy({ truncate: { cascade: true }, force: true })
 		await db.models.User.destroy({ truncate: { cascade: true } })
 		await db.models.Role.destroy({ truncate: { cascade: true } })

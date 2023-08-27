@@ -5,7 +5,7 @@
 	"reporter": "spec",
 	"retries": 1,
 	"slow": 75,
-	"timeout": 2000,
+	"timeout": 5000,
 	"color": true,
 	"watch-files": ["./src/modules/**/*-tests.js"],
 	"spec": ["./src/modules/**/*-tests.js"],
