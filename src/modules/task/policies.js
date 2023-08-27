@@ -58,7 +58,6 @@ export class TaskPolicy {
 						'creatorId',
 						'employeeId',
 						'name',
-						'description',
 						'startingAt',
 						'endingAt',
 						'remark',

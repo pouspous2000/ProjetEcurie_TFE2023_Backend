@@ -22,6 +22,8 @@ export const ContactLocales = {
 		contact_request_validation_lastName_exists: 'vous devez renseigner le champs lastName',
 		contact_request_validation_lastName_length: 'le champs lastname doit contenir entre 1 et 255 caractères',
 		contact_request_validation_address_exists: 'vous devez renseigner le champs address',
+		contact_422_invalidRoleCategory: 'La catégorie de contact n’existe pas valeurs possibles [ADMIN, EMPLOYEE, CONTACT]',
+		contact_request_validation_roleCategory_isIn: 'vous devez renseigner une catégorie de rôles valide [ADMIN, EMPLOYEE, CLIENT]',	
 	},
 	en: {},
 	nl: {},

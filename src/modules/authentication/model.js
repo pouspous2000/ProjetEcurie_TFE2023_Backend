@@ -27,13 +27,13 @@ export class User extends Model {
 		await EmailUtils.sendEmail(this.email, subject, html, attachments)
 	}
 
-	generateToken(expiresIn = '1h') {
+	generateToken() {
 		return TokenUtils.generateToken(
 			{
 				id: this.id,
 				email: this.email,
 			},
-			{ expiresIn: expiresIn }
+			{ }
 		)
 	}
 

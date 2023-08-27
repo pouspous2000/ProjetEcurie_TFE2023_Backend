@@ -1,4 +1,4 @@
-import { body } from 'express-validator'
+import { body, param } from 'express-validator'
 import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
 
@@ -6,6 +6,13 @@ export class ContactValidator extends BaseValidator {
 	static byRole() {
 		return [...super.show('roleId')]
 	}
+	static byRoleCategory() {
+        return [
+            param('roleCategory')
+                .isIn(['ADMIN', 'EMPLOYEE', 'CLIENT'])
+                .withMessage(i18next.t('contact_request_validation_roleCategory_isIn')),
+        ]
+    }
 
 	static create() {
 		return [

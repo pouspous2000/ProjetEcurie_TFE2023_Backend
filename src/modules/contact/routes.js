@@ -8,13 +8,6 @@ import { ContactController } from '@/modules/contact/controller'
 const contactRouter = Router()
 const controller = new ContactController()
 
-contactRouter.get(
-    `/${prefix}/by-role-category/:roleCategory`,
-    isAuthenticated,
-    hasRoleCategory(['ADMIN', 'EMPLOYEE']),
-    validate(ContactValidator.byRoleCategory()),
-    controller.getContactByRoleCategory
-)
 
 const prefix = 'contacts'
 contactRouter.get(`/${prefix}`, isAuthenticated, hasRoleCategory(['ADMIN', 'EMPLOYEE', 'CLIENT']), controller.index)
@@ -24,6 +17,13 @@ contactRouter.get(
 	hasRoleCategory(['ADMIN', 'EMPLOYEE']),
 	validate(ContactValidator.byRole()),
 	controller.getContactByRole
+)
+contactRouter.get(
+    `/${prefix}/by-role-category/:roleCategory`,
+    isAuthenticated,
+    hasRoleCategory(['ADMIN', 'EMPLOYEE']),
+    validate(ContactValidator.byRoleCategory()),
+    controller.getContactByRoleCategory
 )
 contactRouter.get(
 	`/${prefix}/:id`,

@@ -107,4 +107,11 @@ export class RoleService extends BaseService {
 		}
 		return role
 	}
+	async getRoleCategories(){
+        return await this.index({
+            where: {
+                isEditable: false
+            }
+        })
+    }
 }
