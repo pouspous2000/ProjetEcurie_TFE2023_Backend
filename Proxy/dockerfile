@@ -1,0 +1,16 @@
+FROM ubuntu:jammy
+RUN apt update
+RUN apt upgrade -y
+RUN apt install apache2 openssl -y
+
+# Add proxy configuration
+RUN a2enmod proxy proxy_http
+COPY ports.conf /etc/apache2/
+COPY proxy.conf /etc/apache2/sites-available/
+RUN a2ensite proxy
+
+# Add https
+RUN openssl req -new -x509 -subj "/C=BE/ST=Brabant-wallon/L=Louvain-La-Neuve/O=Ephec/OU=IT/CN=34.228.210.132" -days 365 -nodes -out /etc/ssl/certs/server.crt -keyout /etc/ssl/private/server.key
+RUN a2enmod ssl
+
+CMD apachectl -D FOREGROUND

@@ -4,7 +4,7 @@
 	"package": "./package.json",
 	"reporter": "spec",
 	"retries": 1,
-	"slow": 75,
+	"slow": 100,
 	"timeout": 5000,
 	"color": true,
 	"watch-files": ["./src/modules/**/*-tests.js"],
