@@ -9,7 +9,6 @@ if [ -d "$backend_dir/frontend" ]; then
   echo "Le répertoire frontend existe déjà. Suppression en cours..."
   rm -rf "$backend_dir/frontend"
 fi
-cd "$backend_dir"
 git clone "$frontend_repo" frontend
 cd "$backend_dir"
 docker-compose -f docker-compose_dev.yml build
