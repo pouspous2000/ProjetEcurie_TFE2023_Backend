@@ -12,12 +12,14 @@ services:
       - db_dev
       - db2_test
       - frontend
+    dockerfile: dockerfile_dev
   frontend:
     build:
       context: git@github.com:pouspous2000/ProjetEcurie_TFE2023_Front.git
     ports:
       - "3000:3000" 
-  db1:
+    dockerfile: dockerfile_dev
+  db_dev:
     image: postgres:latest
     environment:
       POSTGRES_USER: process.env.DATABASE_USERNAME
