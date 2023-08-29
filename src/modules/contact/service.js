@@ -6,6 +6,7 @@ import { User } from '@/modules/authentication/model'
 import { BaseService } from '@/core/BaseService'
 import { RoleService } from '@/modules/role/service'
 import i18next from '../../../i18n'
+import { Horse } from '@/modules/horse/model'
 
 export class ContactService extends BaseService {
 	constructor() {
@@ -43,28 +44,30 @@ export class ContactService extends BaseService {
 		})
 	}
 	async getContactsByRoleCategory(roleCategory) {
-        const roleService = new RoleService()
-        const roleCategories = await roleService.getRoleCategories()
+		const roleService = new RoleService()
+		const roleCategories = await roleService.getRoleCategories()
 
-        if (!roleCategories.find(roleCat => roleCat.name === roleCategory)) {
-            throw createError(422, i18next.t('contact_422_invalidRoleCategory'))
-        }
-        const subRoleIds = await roleService.getSubRoleIds(roleCategories.find(roleCat => roleCat.name))
+		if (!roleCategories.find(roleCat => roleCat.name === roleCategory)) {
+			throw createError(422, i18next.t('contact_422_invalidRoleCategory'))
+		}
+		const subRoleIds = await roleService.getSubRoleIds(
+			roleCategories.find(roleCat => roleCat.name === roleCategory)
+		)
 
-        return await this.index({
-            include: {
-                model: User,
-                as: 'user',
-                include: {
-                    model: Horse,
-                    as: 'horses',
-                },
-            },
-            where: {
-                '$user.roleId$': {
-                    [Op.in]: subRoleIds,
-                },
-            },
-        })
-    }
+		return await this.index({
+			include: {
+				model: User,
+				as: 'user',
+				include: {
+					model: Horse,
+					as: 'horses',
+				},
+			},
+			where: {
+				'$user.roleId$': {
+					[Op.in]: subRoleIds,
+				},
+			},
+		})
+	}
 }

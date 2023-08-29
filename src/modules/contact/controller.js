@@ -12,6 +12,7 @@ export class ContactController extends BaseController {
 		this.create = this.create.bind(this)
 		this.update = this.update.bind(this)
 		this.getContactByRole = this.getContactByRole.bind(this)
+		this.getContactByRoleCategory = this.getContactByRoleCategory.bind(this)
 	}
 
 	async getContactByRole(request, response, next) {
@@ -25,12 +26,12 @@ export class ContactController extends BaseController {
 	}
 
 	async getContactByRoleCategory(request, response, next) {
-        try {
-            const { roleCategory } = request.params
-            const contacts = await this._service.getContactsByRoleCategory(roleCategory)
-            return response.status(200).json(this._view.index(contacts))
-        } catch (error) {
-            next(error)
-        }
-    }
+		try {
+			const { roleCategory } = request.params
+			const contacts = await this._service.getContactsByRoleCategory(roleCategory)
+			return response.status(200).json(this._view.index(contacts))
+		} catch (error) {
+			next(error)
+		}
+	}
 }

@@ -1,6 +1,6 @@
-import { body } from 'express-validator'
 import { BaseValidator } from '@/core/BaseValidator'
 import i18next from '../../../i18n'
+import { body, param } from 'express-validator'
 
 export class ContactValidator extends BaseValidator {
 	static byRole() {
@@ -38,6 +38,13 @@ export class ContactValidator extends BaseValidator {
 			body('phone').isLength({ max: 255 }).withMessage(i18next.t('contact_request_validation_phone_isLength')),
 			body('mobile').isLength({ max: 255 }).withMessage(i18next.t('contact_request_validation_mobile_isLength')),
 			body('invoicingAddress').optional(),
+		]
+	}
+	static byRoleCategory() {
+		return [
+			param('roleCategory')
+				.isIn(['ADMIN', 'EMPLOYEE', 'CLIENT'])
+				.withMessage(i18next.t('contact_request_validation_roleCategory_isIn')),
 		]
 	}
 }
