@@ -25,7 +25,7 @@ const server = http.createServer(app)
 // check db connexion and serve only if connexion is successful
 db.authenticate()
 	.then(() => {
-		server.listen(port)
+		server.listen(port, '0.0.0.0')
 		server.on('error', onError)
 		server.on('listening', onListening)
 	})
