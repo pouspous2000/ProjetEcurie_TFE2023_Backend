@@ -7,5 +7,4 @@ COPY . /app
 RUN npm run db:rollback:dev
 RUN npm run db:migrate:dev
 RUN npm run db:seed:dev
-RUN npm run build
 CMD npm run dev
