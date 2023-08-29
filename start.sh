@@ -12,4 +12,4 @@ npm install
 npm run build
 cd "$backend_dir"
 docker-compose -f docker-compose_dev build
-docker-compose down && docker-compose up
+docker-compose -f docker-compose_dev down && docker-compose f docker-compose_dev up
