@@ -5,7 +5,7 @@ import { RoleService } from '@/modules/role/service'
 export default function (roleCategories) {
 	return async (request, response, next) => {
 		if (!request.user) {
-			return next(createError(401, i18next.t('authentication_notAuthenticated')))
+			return next(createError(401, 'authentication_notAuthenticated'))
 		}
 
 		if (!request.user.roleCategory) {

@@ -164,7 +164,7 @@ describe('Authentication module', function () {
 			email: 'arsene.lupin@gmail.com',
 			password: 'password',
 		})
-		response.should.have.status(404)
+		response.should.have.status(401)
 		response.body.should.have.property('message').eql(i18next.t('authentication_404'))
 	})
 
@@ -175,7 +175,7 @@ describe('Authentication module', function () {
 			email: cecileObj.email,
 			password: 'wrong password',
 		})
-		response.should.have.status(400)
+		response.should.have.status(401)
 		response.body.should.have.property('message').eql(i18next.t('authentication_login_password_invalid'))
 	})
 
@@ -186,7 +186,7 @@ describe('Authentication module', function () {
 			email: userObj.email.toLowerCase(),
 			password: userObj.password,
 		})
-		response.should.have.status(400)
+		response.should.have.status(401)
 		response.body.should.have.property('message').eql(i18next.t('authentication_login_user_unconfirmed'))
 	})
 

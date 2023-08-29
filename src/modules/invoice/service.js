@@ -296,7 +296,7 @@ export class InvoiceService extends BaseService {
 
 		const drawInvoiceItem = item => {
 			// item {name: string, price: string, monthlyPrice ?: string, nbDays?: integer)
-			;['name', 'monthlyPrice', 'nbDays', 'price'].forEach((key, index) => {
+			['name', 'monthlyPrice', 'nbDays', 'price'].forEach((key, index) => {
 				currentX = margin + (index / 4) * availableWith
 				let printedValue = !item[key] ? '-' : item[key]
 				if (typeof printedValue === 'number') {

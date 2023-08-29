@@ -9,6 +9,10 @@ export class TokenUtils {
 
 	static verifyToken(token) {
 		new Dotenv()
-		return verify(token, process.env.JWT_KEY)
+		try {
+			return verify(token, process.env.JWT_KEY)
+		} catch (error) {
+			return undefined
+		}
 	}
 }

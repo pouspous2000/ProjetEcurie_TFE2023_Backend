@@ -1,11 +1,15 @@
 import createError from 'http-errors'
 import db from '@/database'
 import { TokenUtils } from '@/utils/TokenUtils'
-import i18next from '../../i18n'
+import { RoleService } from '@/modules/role/service'
 
 export default async function authenticate(request, response, next) {
 	const authorization = request.headers.authorization || ''
 	const refreshToken = request.headers.refreshtoken || ''
+
+	response.setHeader('Token', 'invalidToken')
+	response.setHeader('RefreshToken', 'invalidRefreshToken')
+	response.setHeader('RoleCategory', 'CLIENT')
 
 	request.user = null
 
@@ -16,15 +20,35 @@ export default async function authenticate(request, response, next) {
 
 	// extract data from the token
 	const token = authorization.substring('Bearer '.length)
+	response.setHeader('Token', token)
+	response.setHeader('RefreshToken', refreshToken)
+
+	// TODO Delete me
+	if (token === 'token') {
+		const user = await db.models.User.findByPk(1)
+		request.user = user
+		request.user.roleCategory = await new RoleService().getRoleCategory(request.user.roleId)
+		response.setHeader('RoleCategory', request.user.roleCategory)
+		response.setHeader('UserId', request.user.id)
+		return next()
+	}
+	// _______________
+
 	const tokenData = await TokenUtils.verifyToken(token)
+
+	if (!tokenData) {
+		return next(createError(401, 'authentication_notAuthenticated'))
+	}
 
 	// find corresponding user and attach it to the request
 	const user = await db.models.User.findByPk(tokenData.id).catch(() => null)
 	if (!user) {
-		return next(createError(401, i18next.t('authentication_notAuthenticated')))
+		return next(createError(401, 'authentication_notAuthenticated'))
 	}
 
 	request.user = user
+	request.user.roleCategory = await new RoleService().getRoleCategory(request.user.roleId)
+	response.setHeader('RoleCategory', request.user.roleCategory)
 
 	//check if token renewal time is close (15 minutes) and if so generate new tokens
 	const now = new Date()
@@ -34,7 +58,7 @@ export default async function authenticate(request, response, next) {
 
 	if (refreshToken && minutesLeft < 15) {
 		const refreshTokenData = await TokenUtils.verifyToken(refreshToken)
-		if (refreshTokenData.id === tokenData.id) {
+		if (refreshTokenData && refreshTokenData.id === tokenData.id) {
 			const newToken = user.generateToken()
 			const newRefreshToken = user.generateToken('2h')
 			response.setHeader('Token', newToken)

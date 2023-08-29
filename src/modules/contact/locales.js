@@ -5,7 +5,8 @@ export const ContactLocales = {
 		contact_401: "Vous n'avez pas les permissions requises pour ce contact",
 		contact_422_inexistingUser: "L'utilisateur renseigné n'existe pas",
 		contact_422_alreadyContact: "L'utilisateur renseigné possède déjà un contact",
-
+		contact_422_invalidRoleCategory:
+			'La catégorie de contact n’existe pas valeurs possibles [ADMIN, EMPLOYEE, CONTACT]',
 		//validation(sql)
 		contact_sql_validation_userId_isInt: 'le contact doit être associé à un utilisateur valide',
 		contact_sql_validation_userId_min: 'le contact doit être associé à un utilisateur valide',
@@ -22,6 +23,8 @@ export const ContactLocales = {
 		contact_request_validation_lastName_exists: 'vous devez renseigner le champs lastName',
 		contact_request_validation_lastName_length: 'le champs lastname doit contenir entre 1 et 255 caractères',
 		contact_request_validation_address_exists: 'vous devez renseigner le champs address',
+		contact_request_validation_roleCategory_isIn:
+			'vous devez renseigner une catégorie de rôles valide [ADMIN, EMPLOYEE, CLIENT]',
 	},
 	en: {},
 	nl: {},

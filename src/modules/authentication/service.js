@@ -1,6 +1,7 @@
 import { Op } from 'sequelize'
 import createError from 'http-errors'
 import db from '@/database'
+import { RoleService } from '@/modules/role/service'
 import i18next from '../../../i18n'
 
 export class AuthenticationService {
@@ -43,13 +44,15 @@ export class AuthenticationService {
 		const user = await this.findUserByEmailOrFail(data.email)
 		await this.validatePassword(user, data.password)
 		if (user.status !== 'ACTIVE') {
-			throw createError(400, i18next.t('authentication_login_user_unconfirmed'))
+			throw createError(401, i18next.t('authentication_login_user_unconfirmed'))
 		}
 		const token = user.generateToken()
 		const refreshToken = user.generateToken('2h')
+		const roleCategory = await new RoleService().getRoleCategory(user.roleId)
 		return {
 			token,
 			refreshToken,
+			roleCategory,
 		}
 	}
 
@@ -64,7 +67,7 @@ export class AuthenticationService {
 	async findUserByConfirmPasswordOrFail(confirmationCode) {
 		const user = await db.models.User.findOne({ where: { confirmationCode } })
 		if (!user) {
-			throw createError(404, i18next.t('authentication_404'))
+			throw createError(401, i18next.t('authentication_404'))
 		}
 		return user
 	}
@@ -80,7 +83,7 @@ export class AuthenticationService {
 	async validatePassword(user, password) {
 		const isPasswordValid = await user.validatePassword(password)
 		if (!isPasswordValid) {
-			throw createError(400, i18next.t('authentication_login_password_invalid'))
+			throw createError(401, i18next.t('authentication_login_password_invalid'))
 		}
 		return isPasswordValid
 	}
