@@ -8,5 +8,5 @@ frontend_repo="https://github.com/pouspous2000/ProjetEcurie_TFE2023_Front.git"
 cd "$backend_dir"
 git clone "$frontend_repo" frontend
 cd ..
-docker-compose -f docker-compose_dev build
-docker-compose -f docker-compose_dev down && docker-compose f docker-compose_dev up
+docker-compose -f docker-compose_dev.yml build
+docker-compose -f docker-compose_dev.yml down && docker-compose f docker-compose_dev.yml up
