@@ -6,7 +6,7 @@ services:
     ports:
       - "3003:3003"
     environment:
-      DATABASE_URL: "postgres://postgres:p@stable_api:5432/stable_api"
+      DATABASE_URL: "postgres://postgres:p@db_dev:5432/stable_api"
     depends_on:
       - db_dev
       - frontend
