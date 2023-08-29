@@ -1,0 +1,29 @@
+version: '3'
+services:
+  backend:
+    backend:
+    build:
+      context: git@github.com:pouspous2000/ProjetEcurie_TFE2023_Backend.git
+    ports:
+      - "3003:3003"  
+    environment:
+      DATABASE_URL: "postgres://process.env.DATABASE_USERNAME:process.env.DATABASE_PASSWORD@process.env.DATABASE_NAME:5432/process.env.DATABASE_NAME" 
+    depends_on:
+      - db_dev
+      - db2_test
+      - frontend
+  frontend:
+    build:
+      context: git@github.com:pouspous2000/ProjetEcurie_TFE2023_Front.git
+    ports:
+      - "3000:3000" 
+  db1:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: process.env.DATABASE_USERNAME
+      POSTGRES_PASSWORD: process.env.DATABASE_PASSWORD
+      POSTGRES_DB: process.env.DATABASE_NAME
+      POSTGRES_HOST : process.env.DATABASE_HOST
+      POSTGRES_PORT: process.env.DATABASE_PORT
+    ports:
+      - "5432:5432"  # Port de la première base de données
