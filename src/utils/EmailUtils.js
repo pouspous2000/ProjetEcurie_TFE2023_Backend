@@ -1,4 +1,5 @@
 import { createTransport, createTestAccount, getTestMessageUrl } from 'nodemailer'
+const smtpPassword = require('aws-smtp-credentials')
 import { Dotenv } from '@/utils/Dotenv'
 
 export class EmailUtils {
@@ -22,7 +23,7 @@ export class EmailUtils {
 				port: process.env.SMTP_PORT,
 				auth: {
 					user: process.env.SMTP_USERNAME,
-					pass: process.env.SMTP_PASSWORD,
+					pass: smtpPassword(process.env.SMTP_PASSWORD),
 				},
 				logger: false,
 				secure: Number(process.env.SMTP_PORT) === 465,
