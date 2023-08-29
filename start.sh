@@ -13,4 +13,4 @@ cd "$backend_dir"
 git clone "$frontend_repo" frontend
 cd "$backend_dir"
 docker-compose -f docker-compose_dev.yml build
-docker-compose -f docker-compose_dev.yml down && docker-compose f docker-compose_dev.yml up -d
+docker-compose -f docker-compose_dev.yml down && docker-compose -f docker-compose_dev.yml up -d
