@@ -3,6 +3,7 @@ services:
   backend:
     build:
       context: .
+      dockerfile: dockerfile_dev
     ports:
       - "3003:3003"
     environment:
@@ -13,6 +14,7 @@ services:
   frontend:
     build:
       context: ./frontend 
+      dockerfile: dockerfile_dev
     ports:
       - "3000:3000"
   db_dev:
