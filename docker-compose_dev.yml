@@ -4,10 +4,13 @@ services:
     build:
       context: .
       dockerfile: dockerfile_dev
-    ports:
-      - "3003:3003"
     environment:
-      DATABASE_URL: "postgres://postgres:p@db_dev:5432/stable_api"
+    DATABASE_URL: "postgres://postgres:p@db_dev:5432/stable_api"
+    networks:
+      custom-network:
+        ipv4_address: 192.168.10.10
+    ports:
+      - 3003:3003
     depends_on:
       - db_dev
       - frontend
@@ -19,7 +22,7 @@ services:
       context: ./frontend 
       dockerfile: dockerfile_dev
     ports:
-      - "3000:3000"
+      - 3000:3000
     volumes:
       - ./frontend:/app 
 
