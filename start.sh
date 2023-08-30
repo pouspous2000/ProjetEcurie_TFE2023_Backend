@@ -1,6 +1,6 @@
 if [ -z "$1" ]; then
   echo "Usage: ./nom_du_script.sh <chemin_vers_backend>"
-  exit 1
+  exit 
 fi
 
 backend_dir="$1"
@@ -9,3 +9,5 @@ git clone "$frontend_repo" frontend
 cd "$backend_dir"
 docker-compose -f docker-compose_dev.yml build
 docker-compose -f docker-compose_dev.yml down && docker-compose -f docker-compose_dev.yml up -d
+
+echo "Le script s'est exécuté avec succès ! Vous avez a présent accès à l'application : http://localhost:3000/"

@@ -11,19 +11,24 @@ services:
     depends_on:
       - db_dev
       - frontend
+    volumes:
+      - .:/app 
   frontend:
     build:
       context: ./frontend 
       dockerfile: dockerfile_dev
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app 
   db_dev:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: p
       POSTGRES_DB: stable_api
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: 5432
-    ports:
-      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
