@@ -29,6 +29,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: p
       POSTGRES_DB: stable_api
+    networks:
+      custom-network:
+        ipv4_address: 192.168.10.11
     volumes:
       - pg_data:/var/lib/postgresql/data
 
