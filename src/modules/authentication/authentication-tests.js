@@ -73,9 +73,7 @@ describe('Authentication module', function () {
 		})
 
 		response.should.have.status(422)
-		response.body.errors.should.have.length(1)
-		response.body.errors[0].should.have.property('path').eql('email')
-		response.body.errors[0].errors.should.have.length(1)
+		response.body.should.have.property('message').eql(i18next.t('authentication_already_registered'))
 	})
 
 	// register manually

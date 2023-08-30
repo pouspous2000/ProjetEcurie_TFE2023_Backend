@@ -31,9 +31,9 @@ export class AwsService {
 	}
 
 	async upload(key, data) {
-		if (process.env.NODE_ENV === 'TEST') {
-			return
-		}
+		// if (process.env.NODE_ENV === 'TEST') {
+		// 	return
+		// }
 
 		try {
 			return await this._client

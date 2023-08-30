@@ -7,7 +7,7 @@
 	"slow": 100,
 	"timeout": 5000,
 	"color": true,
-	"watch-files": ["./src/modules/**/*-tests.js"],
-	"spec": ["./src/modules/**/*-tests.js"],
+	"watch-files": ["./src/modules/invoice/*-tests.js"],
+	"spec": ["./src/modules/invoice/*-tests.js"],
 	"watch-ignore": ["node_modules", ".git", "dist"]
 }

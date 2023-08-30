@@ -5,7 +5,7 @@ import { RoleService } from '@/modules/role/service'
 import i18next from '../../../i18n'
 
 export class AuthenticationService {
-	constructor() {}
+	constructor() { }
 
 	async register(data) {
 		return await db.models.User.create(data)
@@ -19,18 +19,32 @@ export class AuthenticationService {
 				},
 			},
 		})
+		const user = await db.models.User.findOne({
+			where: {
+				email: data.email,
+			},
+		})
+		if (user) {
+			throw createError(422, i18next.t('authentication_already_registered'))
+		}
 		data.roleId = clientRole.id
 		return await this.register(data)
 	}
-
 	async registerManually(data) {
 		const role = await db.models.Role.findByPk(data.roleId)
 		if (!role) {
 			throw createError(404, i18next.t('role_404'))
 		}
+		const user = await db.models.User.findOne({
+			where: {
+				email: data.email,
+			},
+		})
+		if (user) {
+			throw createError(422, i18next.t('authentication_already_registered'))
+		}
 		return await this.register(data)
 	}
-
 	async confirm(confirmationCode) {
 		const user = await this.findUserByConfirmPasswordOrFail(confirmationCode)
 		if (user.status === 'ACTIVE') {
@@ -39,7 +53,6 @@ export class AuthenticationService {
 		user.status = 'ACTIVE'
 		return await user.save()
 	}
-
 	async login(data) {
 		const user = await this.findUserByEmailOrFail(data.email)
 		await this.validatePassword(user, data.password)
@@ -55,19 +68,18 @@ export class AuthenticationService {
 			roleCategory,
 		}
 	}
-
 	async delete(user) {
 		return await user.destroy()
 	}
-
 	async update(user, data) {
 		return await user.set(data).save()
+
 	}
 
 	async findUserByConfirmPasswordOrFail(confirmationCode) {
 		const user = await db.models.User.findOne({ where: { confirmationCode } })
 		if (!user) {
-			throw createError(401, i18next.t('authentication_404'))
+			throw createError(404, i18next.t('authentication_404'))
 		}
 		return user
 	}
@@ -75,7 +87,7 @@ export class AuthenticationService {
 	async findUserByEmailOrFail(email) {
 		const user = await db.models.User.findOne({ where: { email } })
 		if (!user) {
-			throw createError(404, i18next.t('authentication_404'))
+			throw createError(401, i18next.t('authentication_404'))
 		}
 		return user
 	}

@@ -23,16 +23,6 @@ export default async function authenticate(request, response, next) {
 	response.setHeader('Token', token)
 	response.setHeader('RefreshToken', refreshToken)
 
-	// TODO Delete me
-	if (token === 'token') {
-		const user = await db.models.User.findByPk(1)
-		request.user = user
-		request.user.roleCategory = await new RoleService().getRoleCategory(request.user.roleId)
-		response.setHeader('RoleCategory', request.user.roleCategory)
-		response.setHeader('UserId', request.user.id)
-		return next()
-	}
-	// _______________
 
 	const tokenData = await TokenUtils.verifyToken(token)
 
