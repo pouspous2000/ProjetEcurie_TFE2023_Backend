@@ -13,6 +13,7 @@ services:
       - frontend
     volumes:
       - .:/app 
+
   frontend:
     build:
       context: ./frontend 
@@ -21,25 +22,24 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app 
+
   db_dev:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: p
       POSTGRES_DB: stable_api
-    networks:
-      custom-network:
-        ipv4_address: 192.168.10.11
     volumes:
       - pg_data:/var/lib/postgresql/data
-  networks:
-    custom-network:
-      name: custom-network
-      driver: bridge
-      ipam:
-        config:
-          - subnet: 192.168.10.0/24
-            gateway: 192.168.10.1
+
+networks:
+  custom-network:
+    name: custom-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
 
 volumes:
   pg_data:
