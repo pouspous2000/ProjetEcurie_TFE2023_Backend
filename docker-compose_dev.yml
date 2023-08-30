@@ -1,16 +1,30 @@
 version: '3'
 services:
+  db_dev:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_DB=stable_api
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=p
+    networks:
+      custom-network:
+        ipv4_address: 192.168.10.11
+    expose:
+      - "5432"  
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
   backend:
     build:
       context: .
       dockerfile: dockerfile_dev
-    # networks:
-    #   custom-network:
-    #     ipv4_address: 192.168.10.10
+    networks:
+      custom-network:
+        ipv4_address: 192.168.10.10
     ports:
       - 3003:3003
     environment:
-      DATABASE_URL: "postgres://postgres:p@db_dev:5432/stable_api"
+      - DB_URL=postgres://postgres:p@db_dev:5432/stable_api
     depends_on:
       - db_dev
       - frontend
@@ -25,29 +39,21 @@ services:
       - 3000:3000
     volumes:
       - ./frontend:/app 
+    networks:
+      custom-network:
+        ipv4_address: 192.168.10.12
 
-  db_dev:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: p
-      POSTGRES_DB: stable_api
-    # networks:
-    #   custom-network:
-    #     ipv4_address: 192.168.10.11
-    expose:
-      - "5432"  
-    volumes:
-      - pg_data:/var/lib/postgresql/data
+  
 
-# networks:
-#   custom-network:
-#     name: custom-network
-#     driver: bridge
-#     ipam:
-#       config:
-#         - subnet: 192.168.10.0/24
-#           gateway: 192.168.10.1
+networks:
+  custom-network:
+    name: custom-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
 
 volumes:
   pg_data:
+
