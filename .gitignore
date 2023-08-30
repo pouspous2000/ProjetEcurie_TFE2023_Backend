@@ -12,5 +12,5 @@ package-lock.json
 .eslintcache
 
 .env
-# .env.dev
+.env.dev
 .env.test
