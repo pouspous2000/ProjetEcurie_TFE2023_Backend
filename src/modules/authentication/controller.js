@@ -35,7 +35,7 @@ export class AuthenticationController {
 
 	async confirm(request, response, next) {
 		try {
-			const { confirmationCode } = request.params
+			const { confirmationCode } = request.body
 			await this._service.confirm(confirmationCode)
 			return response.status(200).send(this._view.confirm())
 		} catch (error) {

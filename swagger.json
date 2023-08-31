@@ -196,16 +196,25 @@
         "description": "Register a new user (any role)"
       }
     },
-    "/authentication/confirm/{confirmationCode}": {
-      "get": {
+    "/authentication/confirm/": {
+      "post": {
         "summary": "Confirm a user",
         "parameters": [
           {
-            "in": "path",
-            "name": "confirmationCode",
-            "type": "string",
+            "name": "body",
+            "in": "body",
             "required": true,
-            "description": "confirmation code"
+            "schema": {
+              "type": "object",
+              "required": [
+              "confirmationCode"
+              ],
+              "properties": {
+                "confirmationCode": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {

@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator'
+import { body } from 'express-validator'
 import i18next from '../../../i18n'
 
 export class AuthenticationValidator {
@@ -46,7 +46,7 @@ export class AuthenticationValidator {
 
 	static validateConfirmationCode() {
 		return [
-			param('confirmationCode')
+			body('confirmationCode')
 				.exists()
 				.withMessage(i18next.t('common_invalidId'))
 				.isLength({ min: 10, max: 255 })

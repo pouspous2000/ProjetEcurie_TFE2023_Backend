@@ -26,7 +26,7 @@ export class EmailUtils {
 					pass: smtpPassword(process.env.SMTP_PASSWORD),
 				},
 				logger: false,
-				secure: Number(process.env.SMTP_PORT) === 465,
+				secure: Number(process.env.SMTP_PORT) === 25,
 			})
 		}
 		return transporter

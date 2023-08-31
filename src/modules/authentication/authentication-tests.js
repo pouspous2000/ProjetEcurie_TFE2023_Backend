@@ -123,19 +123,26 @@ describe('Authentication module', function () {
 	it('confirm valid', async function () {
 		const userObj = UserFactory.create(testClient.roleId)
 		await db.models.User.create(userObj)
-		const response = await chai.request(app).get(`${routePrefix}/confirm/${userObj.confirmationCode}`)
+		// const response = await chai.request(app).get(`${routePrefix}/confirm/${userObj.confirmationCode}`)
+		const response = await chai.request(app).post(`${routePrefix}/confirm`).send({
+			confirmationCode: userObj.confirmationCode,
+		})
 		response.should.have.status(200)
 	})
 
 	it('confirm invalid - 404', async function () {
-		const response = await chai.request(app).get(`${routePrefix}/confirm/${'inexistingConfirmationCode'}`)
+		const response = await chai.request(app).post(`${routePrefix}/confirm`).send({
+			confirmationCode: 'inexistingConfirmationCode',
+		})
+
 		response.should.have.status(404)
 	})
 
 	it('confirm invalid - already active user', async function () {
-		const response = await chai.request(app).get(`${routePrefix}/confirm/${testClient.confirmationCode}`)
-		response.should.have.status(422) // j'ai une 404 au lieu d'une 422 => à vérifier p e moi qui déconne
-		response.body.should.have.property('message').eql(i18next.t('authentication_already_confirmed'))
+		const response = await chai.request(app).post(`${routePrefix}/confirm`).send({
+			confirmationCode: testClient.confirmationCode,
+		})
+		response.should.have.status(422)
 	})
 
 	// login

@@ -123,7 +123,7 @@ export default function (sequelize) {
 		)
 		const template = handlebars.compile(templateSource)
 		const html = template({
-			authenticationConfirmLink: AppUtils.getAbsoluteUrl(`authentication/confirm/${user.confirmationCode}`),
+			confirmationCode: user.confirmationCode,
 			rgpdLink: AppUtils.getAbsoluteUrl('rgpd'),
 		})
 		user.sendMail('email verification', html)
@@ -137,7 +137,7 @@ export default function (sequelize) {
 			)
 			const template = handlebars.compile(templateSource)
 			const html = template({
-				authenticationConfirmLink: AppUtils.getAbsoluteUrl(`authentication/confirm/${user.confirmationCode}`),
+				confirmationCode: user.confirmationCode,
 				rgpdLink: AppUtils.getAbsoluteUrl('rgpd'),
 			})
 			user.sendMail('email update', html)

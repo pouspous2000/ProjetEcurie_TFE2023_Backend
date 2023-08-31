@@ -1,11 +1,11 @@
 import { Op } from 'sequelize'
 import createError from 'http-errors'
 import db from '@/database'
-import { RoleService } from '@/modules/role/service'
 import i18next from '../../../i18n'
+import { RoleService } from '@/modules/role/service'
 
 export class AuthenticationService {
-	constructor() { }
+	constructor() {}
 
 	async register(data) {
 		return await db.models.User.create(data)
@@ -30,6 +30,7 @@ export class AuthenticationService {
 		data.roleId = clientRole.id
 		return await this.register(data)
 	}
+
 	async registerManually(data) {
 		const role = await db.models.Role.findByPk(data.roleId)
 		if (!role) {
@@ -45,6 +46,7 @@ export class AuthenticationService {
 		}
 		return await this.register(data)
 	}
+
 	async confirm(confirmationCode) {
 		const user = await this.findUserByConfirmPasswordOrFail(confirmationCode)
 		if (user.status === 'ACTIVE') {
@@ -53,6 +55,7 @@ export class AuthenticationService {
 		user.status = 'ACTIVE'
 		return await user.save()
 	}
+
 	async login(data) {
 		const user = await this.findUserByEmailOrFail(data.email)
 		await this.validatePassword(user, data.password)
@@ -68,18 +71,19 @@ export class AuthenticationService {
 			roleCategory,
 		}
 	}
+
 	async delete(user) {
 		return await user.destroy()
 	}
+
 	async update(user, data) {
 		return await user.set(data).save()
-
 	}
 
 	async findUserByConfirmPasswordOrFail(confirmationCode) {
 		const user = await db.models.User.findOne({ where: { confirmationCode } })
 		if (!user) {
-			throw createError(404, i18next.t('authentication_404'))
+			throw createError(404, i18next.t('authentication_401_confirmationCode'))
 		}
 		return user
 	}

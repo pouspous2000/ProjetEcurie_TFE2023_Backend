@@ -21,8 +21,8 @@ AuthenticationRouter.post(
 	validate(AuthenticationValidator.registerClient()),
 	controller.registerClient
 )
-AuthenticationRouter.get(
-	`/${prefix}/confirm/:confirmationCode`,
+AuthenticationRouter.post(
+	`/${prefix}/confirm`,
 	validate(AuthenticationValidator.validateConfirmationCode()),
 	controller.confirm
 )
