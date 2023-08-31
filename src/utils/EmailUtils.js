@@ -18,16 +18,22 @@ export class EmailUtils {
 				},
 			})
 		} else {
-			transporter = createTransport({
-				host: process.env.SMTP_HOST,
-				port: process.env.SMTP_PORT,
-				auth: {
-					user: process.env.SMTP_USERNAME,
-					pass: smtpPassword(process.env.SMTP_PASSWORD),
-				},
-				logger: false,
-				secure: Number(process.env.SMTP_PORT) === 25,
-			})
+			// transporter = createTransport({
+			// 	host: "smtp.sendgrid.net",
+				
+			// 	auth: {
+			// 		'user': "apikey",
+			// 		'pass': smtpPassword('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'),
+			// 	},
+			// 	port: 25,
+			// 	secure: false,
+			// 	logger: true,
+			// 	debug: true,
+			// 	ignoreTLS: true,
+			// 	tls:{
+			// 		rejectUnauthorized:false
+			// 	}
+			// })
 		}
 		return transporter
 	}
